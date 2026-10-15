@@ -1,0 +1,528 @@
+/* ============================================================
+   VARIÁVEIS DE TEMA (DARK E LIGHT)
+   ============================================================ */
+
+/* ---------- TEMA ESCURO (Dark Mode) ---------- */
+:root, html.dark {
+  --bg-primary: #0a0c10;        /* Fundo principal super escuro e imersivo */
+  --bg-secondary: #11161f;      /* Fundo de cartões e blocos estruturais */
+  --bg-tertiary: #1a2130;       /* Fundos auxiliares e realces internos */
+  --bg-header: rgba(10, 12, 16, 0.92); /* Cabeçalho translúcido sutil */
+  --bg-footer: #0d1117;         /* Fundo sólido para o rodapé */
+
+  --text-primary: #c8d3e0;      /* Texto principal suave e legível */
+  --text-heading: #e6edf5;      /* Títulos marcantes em tom claro */
+  --text-secondary: #7f8fa6;    /* Textos secundários e descrições */
+  --text-muted: #4f5b6b;        /* Detalhes, metadados e elementos discretos */
+
+  --border-color: #1f2937;      /* Bordas discretas e elegantes */
+
+  --accent-blue: #5eead4;       /* Teal vibrante para destaque primário no dark */
+  --accent-purple: #c084fc;     /* Roxo vibrante para destaque secundário no dark */
+  --accent-pink: #f472b6;       /* Rosa vibrante para destaque terciário no dark */
+
+  --code-bg: #0d1117;           /* Fundo escuro profundo para blocos de código */
+  --code-text: #c9d1d9;         /* Texto padrão do código */
+
+  --link-color: #7dd3fc;        /* Azul claro acessível para links */
+  --link-hover: #5eead4;        /* Teal brilhante no hover dos links (Dark) */
+
+  --shadow-hover: rgba(94, 234, 212, 0.25); /* Sombra difusa em Teal para cartões no hover */
+  --pulse-color: rgba(94, 234, 212, 0.4);   /* Cor de brilho para animações de pulso */
+
+  /* Variáveis exclusivas do botão de copiar no modo escuro */
+  --copy-btn-bg: #11161f;
+  --copy-btn-text: #5eead4;
+  --copy-btn-border: #1f2937;
+  --copy-btn-hover-bg: #5eead4;
+  --copy-btn-hover-text: #0a0c10;
+
+  /* Variáveis exclusivas para o menu dropdown e submenus no modo escuro */
+  --dropdown-hover-bg: #1a2130;
+  --dropdown-hover-color: #5eead4;
+}
+
+/* ---------- TEMA CLARO (Light Mode - 100% Independente e Confortável) ---------- */
+html.light {
+  --bg-primary: #eef1f5;        /* Cinza-gelo fosco: absorve reflexos e elimina o branco puro */
+  --bg-secondary: #ffffff;      /* Cartões em branco puro suave para destacar conteúdo */
+  --bg-tertiary: #e2e6eb;       /* Fundos secundários, callouts e áreas internas */
+  --bg-header: rgba(238, 241, 245, 0.92); /* Cabeçalho claro translúcido */
+  --bg-footer: #d8dee4;         /* Rodapé em tom consistente com o fundo */
+
+  --text-primary: #2b3137;      /* Cinza chumbo escuro: evita o cansaço do preto absoluto */
+  --text-heading: #1a1e22;      /* Títulos profundos e marcantes */
+  --text-secondary: #57606a;    /* Textos secundários de alta legibilidade */
+  --text-muted: #8c959f;        /* Metadados e detalhes secundários */
+
+  --border-color: #d0d7de;      /* Bordas suaves e perfeitamente visíveis */
+
+  --accent-blue: #0d9488;       /* Teal encorpado e exclusivo para o modo claro */
+  --accent-purple: #7e22ce;     /* Roxo fechado, sofisticado e legível */
+  --accent-pink: #db2777;       /* Rosa/vinho elegante sem estourar a vista */
+
+  --code-bg: #e8ecf1;           /* Fundo sutilmente destacado para blocos de código */
+  --code-text: #1a1e22;         /* Texto escuro e nítido dentro do código */
+
+  --link-color: #0284c7;        /* Azul sóbrio e acessível para links */
+  --link-hover: #7e22ce;        /* Roxo sofisticado no hover dos links (Light) */
+
+  --shadow-hover: rgba(13, 148, 136, 0.18); /* Sombra leve em Teal para o light */
+  --pulse-color: rgba(13, 148, 136, 0.3);   /* Brilho suave para pulso no light */
+
+  /* Variáveis exclusivas do botão de copiar no modo claro */
+  --copy-btn-bg: #ffffff;
+  --copy-btn-text: #0d9488;
+  --copy-btn-border: #d0d7de;
+  --copy-btn-hover-bg: #0d9488;
+  --copy-btn-hover-text: #ffffff;
+
+  /* Variáveis exclusivas para o menu dropdown e submenus no modo claro */
+  --dropdown-hover-bg: #e2e6eb;
+  --dropdown-hover-color: #7e22ce;
+}
+
+
+/* ============================================================
+   BASE E TIPOGRAFIA
+   ============================================================ */
+
+/* Garante que paddings e borders não alterem o tamanho total dos elementos */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Ativa a rolagem suave ao clicar em links de âncora */
+html { scroll-behavior: smooth; }
+
+/* Configurações globais da página e corpo */
+body {
+  background-color: var(--bg-primary); /* Fundo dinâmico controlado pelas variáveis de tema */
+  color: var(--text-primary);          /* Texto principal adaptado ao tema atual */
+  min-height: 100vh;                   /* Assegura que o corpo ocupe pelo menos 100% da tela */
+  margin: 0;                           /* Remove margens padrão do navegador */
+  padding: 0;                          /* Remove espaçamentos internos padrão */
+  font-family: 'Space Grotesk', system-ui, sans-serif; /* Tipografia geométrica moderna */
+  letter-spacing: 0.01em;              /* Leve espaçamento para facilitar a leitura */
+}
+
+/* Tipografia de destaque para títulos */
+h1, h2, h3, .font-display {
+  font-family: 'Orbitron', sans-serif; /* Fonte futurista para títulos */
+  color: var(--text-heading);          /* Cor específica para títulos */
+  letter-spacing: 0.02em;              /* Espaçamento elegante entre letras */
+}
+h1 { letter-spacing: 0.03em; }         /* Espaçamento extra exclusivo para o título principal */
+
+/* Fontes monoespaçadas para trechos de código e elementos técnicos */
+code, pre, .font-mono, .dev-link, .nav-link {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+
+/* ============================================================
+   ESTRUTURA: HEADER E FOOTER
+   ============================================================ */
+
+/* Cabeçalho fixo com fundo translúcido e borda temática */
+.site-header {
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Rodapé do site alinhado com o fundo secundário */
+.site-footer {
+  background-color: var(--bg-footer);
+  border-top: 1px solid var(--border-color);
+}
+.footer-heading { color: var(--text-muted); }     /* Títulos do rodapé mais discretos */
+.footer-text { color: var(--text-secondary); }   /* Textos descritivos do rodapé */
+.footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.footer-link:hover { color: var(--link-hover); }   /* Efeito hover nos links do rodapé */
+
+
+/* ============================================================
+   REGRAS DE DESEMPENHO DO HEADER (TRAVA DE ANIMAÇÕES)
+   ============================================================ */
+
+/* 
+  Trava rigorosa: proíbe animações ou transições no header inteiro,
+  exceto no identificador da marca (#terminal-brand) e no cursor.
+*/
+.site-header,
+.site-header *:not(#terminal-brand):not(.brand-cursor) {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Estilização estática e limpa para os links de navegação */
+.nav-link.dev-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.nav-link.dev-link:hover {
+  color: var(--link-hover);
+}
+
+/* Estado ativo do menu: utiliza a cor de hover de cada tema de forma isolada */
+.nav-link.dev-link.active {
+  color: var(--link-hover);
+}
+
+/* Link especial do menu (ex: "Conteúdos"): usa o roxo sofisticado (--accent-purple) em ambos os temas */
+.dev-link-special {
+  color: var(--accent-purple) !important;
+  border: 1px dashed var(--accent-purple);
+  padding: 0.4rem 0.7rem !important;
+}
+.dev-link-special:hover {
+  color: var(--accent-purple) !important;
+}
+
+/* Menu suspenso (Dropdown) sem animações bruscas */
+.dropdown-menu {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Itens do submenu: adaptados estritamente ao tema ativo via variáveis dedicadas */
+.dropdown-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.dropdown-item:hover {
+  color: var(--dropdown-hover-color) !important; /* Respeita a cor de hover específica do tema (Dark ou Light) */
+  background: var(--dropdown-hover-bg) !important; /* Respeita o fundo auxiliar específico do tema */
+}
+
+/* Painel de navegação mobile */
+.mobile-menu-panel {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Botão de alternância de tema */
+.theme-toggle { color: var(--text-secondary); }
+.theme-toggle:hover { color: var(--accent-blue); }
+
+
+/* ============================================================
+   COMPONENTES ESPECIAIS: CURSOR DA MARCA E CANVAS
+   ============================================================ */
+
+/* Animação de piscar para simular cursor de terminal antigo */
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.brand-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--accent-blue);
+  animation: blink 1s step-end infinite !important;
+  font-weight: 400;
+}
+
+/* Camada de fundo interativa (Canvas) */
+#bg-canvas { z-index: -10; }
+html.light #bg-canvas { opacity: 0.18; } /* Suaviza a opacidade do canvas no modo claro */
+
+
+/* ============================================================
+   ELEMENTOS VISUAIS: SCROLLBAR E BORDAS PIXELADAS
+   ============================================================ */
+
+/* Personalização da barra de rolagem lateral */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+  border-radius: 6px;
+  border: 2px solid var(--bg-secondary);
+}
+
+/* Moldura decorativa com detalhes pixelados nos cantos */
+.pixel-border {
+  position: relative;
+  border: 2px solid var(--border-color);
+}
+.pixel-border::before,
+.pixel-border::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--accent-blue);
+  opacity: 0.7;
+}
+.pixel-border::before {
+  top: -2px; left: -2px;
+  box-shadow: calc(100% + 2px) 0 0 var(--accent-purple);
+}
+.pixel-border::after {
+  bottom: -2px; right: -2px;
+  box-shadow: calc(-100% - 2px) 0 0 var(--accent-pink);
+}
+
+
+/* ============================================================
+   CARTÕES DE POSTS (CARDS)
+   ============================================================ */
+
+/* Estilização base para blocos de cartões de postagem */
+.post-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+.post-card:hover {
+  transform: translateY(-4px); /* Efeito de levitação suave */
+  border-color: var(--accent-blue);
+  box-shadow: 0 8px 30px -8px var(--shadow-hover); /* Sombra dinâmica isolada por tema */
+}
+.post-card p { color: var(--text-secondary); }
+.post-card h1, .post-card h2, .post-card h3 { color: var(--text-heading); }
+
+
+/* ============================================================
+   BLOCOS DE CÓDIGO E BOTÃO DE COPIAR
+   ============================================================ */
+
+/* Caixa contenedora de blocos de código */
+pre {
+  position: relative;
+  background: var(--code-bg) !important;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem 1rem 1rem;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  margin: 1.5rem 0;
+}
+pre code {
+  background: transparent !important;
+  font-family: inherit;
+  color: var(--code-text);
+}
+
+/* Botão flutuante para copiar código com regras 100% isoladas por tema */
+.copy-btn {
+  position: absolute;
+  top: 8px; 
+  right: 8px;
+  background: var(--copy-btn-bg);        /* Fundo dedicado ao tema ativo */
+  color: var(--copy-btn-text);          /* Texto dedicado ao tema ativo */
+  border: 1px solid var(--copy-btn-border); /* Borda dedicada ao tema ativo */
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Estado de hover do botão de copiar com variáveis próprias de cada tema */
+.copy-btn:hover { 
+  background: var(--copy-btn-hover-bg); 
+  color: var(--copy-btn-hover-text); 
+  border-color: var(--copy-btn-hover-bg);
+}
+
+/* Estado de sucesso ao copiar (.copied): verde esmeralda universal de feedback visual */
+.copy-btn.copied { 
+  background: #10b981; 
+  color: #ffffff; 
+  border-color: #10b981; 
+}
+
+/* Doutrina de cores para realce de sintaxe (Prism.js) vinculada às variáveis de tema */
+.token.comment, .token.prolog, .token.doctype, .token.cdata { color: var(--text-muted); font-style: italic; }
+.token.punctuation { color: var(--text-muted); }
+.token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol { color: var(--accent-pink); }
+.token.selector, .token.attr-name, .token.string, .token.char, .token.builtin { color: var(--accent-blue); }
+.token.operator, .token.entity, .token.url { color: var(--accent-purple); }
+.token.atrule, .token.attr-value, .token.keyword { color: var(--accent-purple); font-weight: 500; }
+.token.function, .token.class-name { color: var(--accent-blue); }
+.token.regex, .token.important, .token.variable { color: var(--accent-pink); }
+
+
+/* ============================================================
+   COMPONENTES: CALLOUTS E TOC (SUMÁRIO)
+   ============================================================ */
+
+/* Caixas de destaque e avisos dentro do conteúdo */
+.callout {
+  border-left: 4px solid var(--accent-blue);
+  background: var(--bg-tertiary);
+  padding: 1rem 1.25rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.5rem 0;
+  color: var(--text-primary);
+}
+.callout.warning { border-color: #f59e0b; }
+.callout.danger { border-color: var(--accent-pink); }
+.callout.success { border-color: #10b981; }
+
+/* Links do sumário lateral (Table of Contents) */
+.toc-link {
+  display: block;
+  padding: 6px 12px;
+  border-left: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-decoration: none;
+}
+.toc-link:hover, .toc-link.active {
+  border-left-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: var(--bg-tertiary);
+}
+
+
+/* ============================================================
+   CONTEÚDO DO POST E TIPOGRAFIA INTERNA
+   ============================================================ */
+
+/* Estilização padrão para artigos e textos de postagens */
+.post-content {
+  color: var(--text-primary);
+  line-height: 1.75;
+  font-size: 1.02rem;
+}
+.post-content h1, .post-content h2, .post-content h3 {
+  color: var(--text-heading);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+.post-content h2 { font-size: 1.5rem; }
+.post-content h3 { font-size: 1.2rem; }
+.post-content p { margin-bottom: 1rem; color: var(--text-primary); }
+.post-content strong { color: var(--text-heading); }
+.post-content em { color: var(--accent-purple); font-style: italic; }
+.post-content a { color: var(--link-color); text-decoration: underline; }
+.post-content a:hover { color: var(--link-hover); }
+
+
+/* ============================================================
+   ANIMAÇÕES GLOBAIS (FORA DO HEADER)
+   ============================================================ */
+
+/* Animação de entrada suave para blocos de conteúdo */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+
+/* Animação de pulso luminoso controlada por variáveis de tema */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); }
+  50% { box-shadow: 0 0 20px 4px var(--pulse-color); }
+}
+.glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+
+/* ============================================================
+   SIDEBAR E WIDGETS
+   ============================================================ */
+
+/* Blocos de widgets laterais */
+.sidebar-widget {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+  color: var(--text-primary);
+}
+.sidebar-widget p { color: var(--text-secondary); }
+
+/* Listagem de posts populares na barra lateral */
+.ranked-post {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.ranked-post:last-child { border-bottom: none; }
+.ranked-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent-purple);
+  min-width: 32px;
+}
+
+
+/* ============================================================
+   AJUSTES RESPONSIVOS E HELPERS DE LAYOUT
+   ============================================================ */
+
+/* Posicionamento adaptativo para sumário em telas menores */
+@media (max-width: 768px) {
+  .toc-sidebar { position: static !important; margin-bottom: 1.5rem; }
+}
+
+/* Espaço fixo reservado para o título/marca no header para evitar quebra de layout */
+.brand-wrap {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  overflow-x: hidden;
+}
+
+/* Redimensionamento do espaço da marca em dispositivos móveis */
+@media (max-width: 640px) {
+  .brand-wrap {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+  }
+}
+
+/* Estrutura de hover contínuo para menus dropdown (evita o fechamento acidental) */
+.dropdown-wrap {
+  position: relative;
+}
+
+/* Ponte invisível que preenche o espaço entre o botão e o menu suspenso */
+.dropdown-wrap::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 8px; 
+}
+
+.dropdown-wrap > button.nav-link.dev-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  height: auto;
+  padding: 8px 12px;
+}
+
+.dropdown-wrap > .dropdown-menu {
+  top: 100%;
+  margin-top: 0;
+}
