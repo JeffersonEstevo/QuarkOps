@@ -1,0 +1,41 @@
+/* Custom pixelated and retro scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+    background: #0f1724;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #387eb8;
+    border: 1px solid #1e3048;
+}
+::-webkit-scrollbar-track {
+    background: #fbfaf5;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border: 1px solid #e2e8f0;
+}
+
+.pixel-border {
+    box-shadow: 4px 4px 0px 0px currentColor;
+}
+.pixel-border-sm {
+    box-shadow: 2px 2px 0px 0px currentColor;
+}
+.pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px currentColor;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.retro-title {
+    font-family: 'VT323', monospace;
+    letter-spacing: 1px;
+}
+.code-block {
+    font-family: 'Courier New', Courier, monospace;
+}
