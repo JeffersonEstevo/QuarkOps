@@ -17,7 +17,7 @@
 
 ### Requisitos Não Funcionais (RNF) — Tecnologias e Arquitetura
 - [RNF-001] O armazenamento de dados (posts, comentários e curtidas) deve utilizar o `LocalStorage` do navegador para a versão MVP, com posterior migração para Django + Postgres.
-- [RNF-002] O design e a estilização da interface devem ser desenvolvidos utilizando **Tailwind CSS**.
+- [RNF-002] O design e a estilização da interface devem ser desenvolvidos utilizando **Tailwind CSS (v4)** com suporte a variantes customizadas de tema.
 - [RNF-003] O código da interface deve ser estruturado em componentes modulares, isolados e nas menores partes independentes possíveis (ex: Cards, Botões, Cabeçalho, Rodapé) dentro do diretório do React.
 - [RNF-004] A aplicação deve ser totalmente responsiva, adaptando-se a dispositivos móveis, tablets e desktops.
 
@@ -32,7 +32,7 @@
 ### Requisitos Funcionais (RF) — Módulo 2: Interação do Leitor
 - [RF-006] O usuário deve conseguir enviar comentários em um post informando seu nome e o texto do comentário.
 - [RF-011] O usuário deve conseguir interagir com posts através de um botão de curtidas (*likes*), com o contador sendo persistido no `LocalStorage`.
-- [RF-012] O usuário deve conseguir copiar o link direto de um post para a área de transferência com facilidade.
+- [RF-012] O usuário deve conseguir copiar o link direto de um post para a área de transferência com facilidade, recebendo feedback visual via notificação Toast.
 
 ### Requisitos Funcionais (RF) — Módulo 3: Gestão de Conteúdo (Painel Administrativo)
 - [RF-013] O sistema deve contar com uma área administrativa protegida (simulada via senha local) para o gerenciamento do blog.
@@ -59,3 +59,6 @@
     ├── package.json
     ├── tailwind.config.js    
     └── vite.config.js
+```
+
+---

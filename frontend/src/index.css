@@ -1,111 +1,67 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@import "tailwindcss";
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Habilita o modo escuro baseado na classe .dark no Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+/* Garante que todos os botões do sistema tenham o cursor de ponteiro (mãozinha) */
+button {
+  cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+@theme {
+  --font-mono: "Courier New", Courier, monospace;
+  --font-pixel: "VT323", monospace;
+  --font-sans: "Inter", sans-serif;
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+  --color-python-blue: #387eb8;
+  --color-python-yellow: #ffd43b;
+  --color-python-darkblue: #1e3048;
+  --color-python-deep: #0f1724;
+  --color-python-lightbg: #fbfaf5;
+  --color-python-lightcard: #f4f1ea;
+  --color-python-lightborder: #dcd5c4;
 }
 
+/* Custom pixelated and retro scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+    background: #0f1724;
+}
+.dark ::-webkit-scrollbar-thumb {
+    background: #387eb8;
+    border: 1px solid #1e3048;
+}
+::-webkit-scrollbar-track {
+    background: #fbfaf5;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border: 1px solid #e2e8f0;
+}
+
+.pixel-border {
+    box-shadow: 4px 4px 0px 0px currentColor;
+}
+.pixel-border-sm {
+    box-shadow: 2px 2px 0px 0px currentColor;
+}
+.pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px currentColor;
+}
 body {
-  margin: 0;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+.retro-title {
+    font-family: 'VT323', monospace;
+    letter-spacing: 1px;
 }
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.code-block {
+    font-family: 'Courier New', Courier, monospace;
 }
