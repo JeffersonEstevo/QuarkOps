@@ -1,20 +1,24 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-*   **Fase Atual:** [Fase 1: Definição do Template Frontend da aplicação]
-*   **Última Atualização:** 15/10/2026
-*   **Meta Imediata:** Colocar a tela de login funcional integrada ao banco de dados.
+- **Fase Atual:** [Fase 1: Configuração do Ambiente Frontend (React + Vite + Tailwind v4)]
+- **Última Atualização:** 17/10/2026
+- **Meta Imediata:** [RNF-003] Estruturar os componentes modulares iniciais dentro da pasta `frontend/src/components/`.
 
 ## Quadro de Tarefas
 
 ### 🟩 Concluído (Backlog Concluído)
-*   [x] Separação do HTML, CSS e JS, com o JS e CSS para a pasta /static.
-*   [x] Configurar Tailwind CSS e testar injeção de estilos.
+- [x] [RNF-001] Definição da arquitetura inicial utilizando `LocalStorage` para o MVP.
+- [x] [RNF-002] Configuração do Tailwind CSS v4 integrado ao Vite (`frontend/`).
+- [x] Criação do guia de comandos e documentação base (`docs/`).
 
 ### 🟨 Em Andamento (Foco Atual da IA)
-*   [ ] [RF-003] Criar uma separação do arquivo HTML em partes menores possíveis.
-*   [ ] Configurar armazenamento local via localStorage como fallback inicial.
+- [ ] [RNF-003] Criar a componentização modular da interface (`frontend/src/components/`).
+- [ ] [RF-004] Desenvolver a página de leitura de posts com tipografia limpa (`frontend/src/pages/`).
 
 ### 🟥 A Fazer (Próximos Passos - Não Mexer Ainda)
-*   [ ] Criar sistema de criptografia para salvar no banco.
-*   [ ] Implementar barra de busca de notas por tag.
+- [ ] [RF-005 & RF-007] Implementar página inicial com destaque e listagem de posts recentes.
+- [ ] [RF-008 & RF-009] Adicionar filtro por tags/categorias e busca em tempo real.
+- [ ] [RF-006 & RF-011] Implementar sistema de comentários e curtidas salvos no `LocalStorage`.
+- [ ] [RF-013 ao RF-017] Criar painel administrativo protegido por senha local.
+- [ ] Futura integração do backend Django + PostgreSQL.
