@@ -1,16 +1,39 @@
 # QuarkOps — Especificação Técnica & Funcional
 
-## 1. Sumário Executivo
-O **QuarkOps** é um template de blog técnico/desenvolvedor moderno, altamente otimizado para leitura prolongada, focado em ergonomia visual (anti-fadiga) e com identidade visual inspirada em terminais e design futurista clean...
-Este projeto consiste em um template de blog técnico/desenvolvedor moderno, altamente otimizado para leitura prolongada, focado em ergonomia visual (anti-fadiga) e com identidade visual inspirada em terminais e design futurista clean. A aplicação conta com suporte nativo a múltiplos temas (Dark Mode imersivo e Light Mode fosco/antirreflexo), tipografia rica (Space Grotesk, Orbitron e JetBrains Mono), blocos de código com realce de sintaxe (Prism.js) e botão de copiar dedicado, além de elementos estruturais estáticos no cabeçalho para máxima performance e usabilidade.
+## 1. Visão Geral do Projeto
+*   **Nome do Projeto:** [QuarkOps]
+*   **Objetivo:** [Blog/Agregador_de_Conteúdo/Leitor_de_RSS]
+*   **Público-Alvo:** [Desenvolvedores/Amantes_de_Tecnologia]
 
-## 2. Objetivos & Não-Objetivos
-### Objetivos
-- **Conforto Visual Absoluto:** Eliminar o branco puro no tema claro (utilizando um fundo cinza-gelo fosco `#eef1f5` que absorve o reflexo da tela) e evitar o preto absoluto no dark mode.
-- **Isolamento de Temas (Dark vs Light):** Garantir que o Tema Light tenha identidade própria, variáveis dedicadas e alta legibilidade, sem herdar cores ou comportamentos inadequados do Dark Mode (como vazamento de submenus ciano/verde).
-- **Consistência de Cores:** Padronizar uma paleta de destaque corporativa e elegante (Teal encorpado `#0d9488`, Roxo sofisticado `#7e22ce` e Rosa/Vinho focado em legibilidade `#db2777` para o Light; e versões pastéis vibrantes equivalentes para o Dark).
-- **Performance e Estabilidade do Header:** Garantir que o cabeçalho e seus componentes internos não possuam animações ou transições desnecessárias (travas de performance via CSS), mantendo apenas o cursor da marca interativo.
+## 2. Stack Tecnológica (REGRAS RÍGIDAS)
+> **Instrução para a IA:** Não sugira nenhuma biblioteca ou ferramenta fora desta lista.
+*   **Linguagem:** HTML / Javascript / CSS
+*   **Framework/Lib:** React (Vite)
+*   **Banco de Dados:** Postgres
+*   **Estilização:** Tailwind CSS
 
-### Não-Objetivos
-- **Utilizar Branco Puro (`#ffffff`) como fundo geral:** Evitado propositalmente por causar cansaço visual e reflexo excessivo em ambientes iluminados.
-- **Uso de dependências pesadas de UI:** O design e os componentes são estruturados com CSS puro e variáveis nativas (`var()`), garantindo leveza e carregamento instantâneo.
+## 3. Requisitos Funcionais (RF)
+*   [RF-001] Uso de LocalStorage para MVP.
+*   [RF-002] Tailwind CSS em vez de Styled Components.
+*   [RF-003] O HTML da aplicação deve ser separados nas menores partes independetenes possível
+*   [RF-004] O usuário deve conseguir ler posts e artigos em uma página limpa e clara.
+*   [RF-005] O sistema deve ter um post mais lido sendo exibido na página principal.
+*   [RF-006] O usuário deve conseguir enviar comentários.
+
+## 4. Estrutura de Pastas Esperada
+```text
+📁 026_QuarkOps
+├── 📁 docs
+│   ├── 📖 DECISIONS.md
+│   ├── 📖 PROGRESS.md
+│   └── 📖 SPEC.md
+├── 📁 static
+│   ├── 🟨 scripts.js
+│   └── 🎨 styles.css
+├── 🐙 .gitignore
+├── 📖 AI_METRICS_GUIDE.md
+├── 📖 Comandos_para_guia_IA.md
+└── 🌐 index.html              # Arquivo Principal da aplicação
+```
+
+---

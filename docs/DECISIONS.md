@@ -1,11 +1,17 @@
 # Log de Decisões Técnicas (ADR — Architecture Decision Records)
 
-Registro de decisões técnicas relevantes do projeto, com data e motivo. Consulte antes de propor mudanças a algo já decidido aqui.
+## ADR-001: Uso de LocalStorage para MVP
+*   **Data:** 15/10/2026
+*   **Status:** Aceito
+*   **Contexto:** Precisamos de um protótipo funcional rápido rodando no navegador sem depender de infraestrutura complexa de banco de dados nos primeiros dias.
+*   **Decisão:** Utilizaremos a API nativa do `localStorage` do navegador para persistir os dados textuais das notas temporariamente.
+*   **Consequências:** 
+    *   *Positiva:* Desenvolvimento acelerado e zero configuração de servidores.
+    *   *Negativa:* Limite de armazenamento de ~5MB e ausência de criptografia robusta nesta fase.
 
-| Data | Decisão | Motivo |
-| :--- | :--- | :--- |
-| 2026-10-14 | **Adoção de Fundo Cinza-Gelo Fosco (`#eef1f5`) no Light Mode** | Evitar o uso de branco puro (`#ffffff`) no fundo geral, prevenindo fadiga ocular e absorvendo o reflexo de telas em ambientes claros. |
-| 2026-10-14 | **Uso de Cinza Chumbo (`#2b3137`) em vez de Preto Puro (`#000000`) para Textos** | O preto absoluto sobre fundo claro gera o fenômeno de irradiação óptica, causando cansaço visual rápido. O cinza chumbo mantém 100% da legibilidade de forma confortável. |
-| 2026-10-14 | **Isolamento de Variáveis para o Botão de Copiar (`.copy-btn`)** | Evitar conflitos visuais e perda de contraste entre os temas, criando propriedades dedicadas para o estado normal e de hover em cada modo de cor. |
-| 2026-10-14 | **Travas de Performance no Header (`transition: none !important`)** | Garantir estabilidade visual absoluta no cabeçalho e impedir que micro-animações gerem recálculos de layout incômodos ao navegar. |
-| 2026-10-14 | **Padronização do menu especial e submenus via variáveis dinâmicas** | Impedir o vazamento de cores do tema escuro (como o ciano brilhante) para dentro do tema claro, mantendo a consistência visual da paleta escolhida. |
+## ADR-002: Tailwind CSS em vez de Styled Components
+*   **Data:** 15/10/2026
+*   **Status:** Aceito
+*   **Contexto:** O modelo de IA local gera layouts muito mais rápidos e com menos bugs de tipagem quando usa classes utilitárias diretas.
+*   **Decisão:** Adotar estritamente Tailwind CSS.
+*   **Consequências:** Códigos de componentes mais enxutos e facilidade para a IA gerar CSS inline correto de primeira.
