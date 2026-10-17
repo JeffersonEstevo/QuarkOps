@@ -8,7 +8,8 @@
 ## 2. Stack Tecnológica (REGRAS RÍGIDAS)
 > **Instrução para a IA:** Não sugira nenhuma biblioteca ou ferramenta fora desta lista.
 *   **Linguagem:** HTML / Javascript / CSS
-*   **Framework/Lib:** React (Vite)
+*   **Framework/Lib (Frontend):** React (Vite)
+*   **Framework/Lib (Backend):** Django (Python)
 *   **Banco de Dados:** Postgres
 *   **Estilização:** Tailwind CSS
 
@@ -20,7 +21,7 @@
 *   [RF-005] O sistema deve ter um post mais lido sendo exibido na página principal.
 *   [RF-006] O usuário deve conseguir enviar comentários.
 
-## 4. Estrutura de Pastas Esperada
+## 4. Estrutura de Pastas Inicial
 ```text
 📁 026_QuarkOps
 ├── 📁 docs
@@ -31,8 +32,6 @@
 │   ├── 🟨 scripts.js
 │   └── 🎨 styles.css
 ├── 🐙 .gitignore
-├── 📖 AI_METRICS_GUIDE.md
-├── 📖 Comandos_para_guia_IA.md
 └── 🌐 index.html              # Arquivo Principal da aplicação
 ```
 
