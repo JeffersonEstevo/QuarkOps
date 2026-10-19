@@ -22,7 +22,7 @@ const INITIAL_ARTICLES = [
       <p>Abaixo temos um trecho clássico simulando uma rotina de processamento paralelo com múltiplos processos (alternativa padrão ao GIL):</p>
 
       <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto">
-        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); alert('Código copiado!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
+        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); window.triggerToast('Código copiado para a área de transferência!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
           <i class="fa-regular fa-copy mr-1"></i> Copiar
         </button>
         <pre><code><span class="text-amber-300">import</span> multiprocessing
@@ -76,7 +76,7 @@ const INITIAL_ARTICLES = [
       <p>Veja como estruturar um build limpo utilizando Alpine Linux como base final:</p>
 
       <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto">
-        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); alert('Código copiado!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
+        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); window.triggerToast('Código copiado para a área de transferência!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
           <i class="fa-regular fa-copy mr-1"></i> Copiar
         </button>
         <pre><code><span class="text-amber-300">FROM</span> python:3.11-slim AS builder
@@ -118,7 +118,7 @@ const INITIAL_ARTICLES = [
 
       <h2 id="script-python-lora" class="text-2xl font-bold font-sans pt-4">2. Configurando LoRA em Python</h2>
       <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto">
-        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); alert('Código copiado!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
+        <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); window.triggerToast('Código copiado para a área de transferência!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer">
           <i class="fa-regular fa-copy mr-1"></i> Copiar
         </button>
         <pre><code><span class="text-amber-300">from</span> peft <span class="text-amber-300">import</span> LoraConfig, get_peft_model

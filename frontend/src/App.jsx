@@ -5,6 +5,24 @@ import { getStoredArticles, saveArticles } from './utils/storage';
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
 
+  useEffect(() => {
+    const VERSAO_ATUAL_STORAGE = '3.0.0'; // Mude isso quando quiser forçar nova limpeza
+    const versaoSalva = localStorage.getItem('quarkops_storage_version');
+
+    if (versaoSalva !== VERSAO_ATUAL_STORAGE) {
+      const chavesParaRemover = [
+        'quarkops_articles',
+        'quarkops_articles_version',
+        'theme',
+        'byte_lore_theme'
+      ];
+
+      chavesParaRemover.forEach(chave => localStorage.removeItem(chave));
+      localStorage.setItem('quarkops_storage_version', VERSAO_ATUAL_STORAGE);
+      console.log('🔄 Storage do QuarkOps limpo por atualização de versão.');
+    }
+  }, []);
+
   // Efeito para sincronizar a classe 'dark' no HTML e salvar no localStorage
   useEffect(() => {
     const root = document.documentElement;
@@ -22,7 +40,8 @@ export default function App() {
     setDarkMode(nextMode);
     triggerToast(nextMode ? 'Tema alterado para: Modo Escuro' : 'Tema alterado para: Modo Claro');
   };
-  const [articles, setArticles] = useState([]);
+  // Inicializa o estado diretamente com os dados do storage, sem precisar de useEffect para isso
+  const [articles, setArticles] = useState(() => getStoredArticles());
   const [currentView, setCurrentView] = useState('home'); // 'home' or 'article'
   const [selectedArticleId, setSelectedArticleId] = useState(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
@@ -61,10 +80,6 @@ export default function App() {
   const [commentAuthor, setCommentAuthor] = useState('');
   const [commentRole, setCommentRole] = useState('');
   const [commentText, setCommentText] = useState('');
-
-  useEffect(() => {
-    setArticles(getStoredArticles());
-  }, []);
 
   // Disponibiliza a função do Toast para os elementos HTML injetados (dangerouslySetInnerHTML)
   useEffect(() => {
@@ -489,7 +504,7 @@ export default function App() {
                       <p className="text-xs font-mono opacity-60 italic">// Nenhum comentário ainda. Seja o primeiro a registrar sua contribuição!</p>
                     ) : (
                       selectedArticle.comments?.map(c => (
-                        <div key={c.id || Math.random()} className="bg-white dark:bg-slate-900 border border-slate-700 p-4 space-y-2 pixel-border-sm font-mono text-xs">
+                        <div key={c.id} className="bg-white dark:bg-slate-900 border border-slate-700 p-4 space-y-2 pixel-border-sm font-mono text-xs">
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-[#387eb8]">{c.author} {c.role && <span className="text-[10px] opacity-60">({c.role})</span>}</span>
                             <span className="text-[10px] opacity-60">{c.date}</span>
@@ -556,6 +571,7 @@ export default function App() {
                 <label className="block mb-1 font-bold">Título do Artigo:</label>
                 <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} required placeholder="ex: Otimizando Queries SQL" className="w-full bg-[#fbfaf5] dark:bg-slate-900 border border-slate-700 px-3 py-2 rounded focus:outline-none focus:border-[#387eb8]" />
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1 font-bold">Categoria:</label>
@@ -572,6 +588,19 @@ export default function App() {
                   <input type="text" value={newTags} onChange={(e) => setNewTags(e.target.value)} required placeholder="python, backend" className="w-full bg-[#fbfaf5] dark:bg-slate-900 border border-slate-700 px-3 py-2 rounded focus:outline-none focus:border-[#387eb8]" />
                 </div>
               </div>
+
+              {/* ADICIONADO: Campos de Autor e Tempo de Leitura para usar os states */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-bold">Autor:</label>
+                  <input type="text" value={newAuthor} onChange={(e) => setNewAuthor(e.target.value)} required placeholder="ex: Guido Dev" className="w-full bg-[#fbfaf5] dark:bg-slate-900 border border-slate-700 px-3 py-2 rounded focus:outline-none focus:border-[#387eb8]" />
+                </div>
+                <div>
+                  <label className="block mb-1 font-bold">Tempo de Leitura:</label>
+                  <input type="text" value={newReadTime} onChange={(e) => setNewReadTime(e.target.value)} required placeholder="ex: 5 min de leitura" className="w-full bg-[#fbfaf5] dark:bg-slate-900 border border-slate-700 px-3 py-2 rounded focus:outline-none focus:border-[#387eb8]" />
+                </div>
+              </div>
+
               <div>
                 <label className="block mb-1 font-bold">Resumo:</label>
                 <textarea value={newSummary} onChange={(e) => setNewSummary(e.target.value)} required rows="2" className="w-full bg-[#fbfaf5] dark:bg-slate-900 border border-slate-700 px-3 py-2 rounded focus:outline-none focus:border-[#387eb8] resize-none"></textarea>
