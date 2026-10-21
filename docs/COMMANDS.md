@@ -36,3 +36,16 @@ export default defineConfig({
 ```
 
 *(E importe `@import "tailwindcss";` no topo do seu arquivo CSS principal).*
+
+## 5. Instalar o plugin de tipografia para o Tailwind CSS
+```bash 
+npm i -D @tailwindcss/typography
+```
+
+## 6. Instalar o plugin de destaque de código
+
+Para habilitar o destaque de sintaxe dos códigos nos posts, instale o pacote `highlight.js`:
+
+```bash
+npm i highlight.js
+```

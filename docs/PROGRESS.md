@@ -1,28 +1,31 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase Final: Sincronização de Documentação e Planejamento da Produção]
-- **Última Atualização:** 17/10/2026
-- **Meta Imediata:** Consolidar a documentação técnica e estruturar os próximos passos para o desenvolvimento do backend.
+- **Fase Atual:** [Fase 1 Concluída: Frontend Modularizado e Funcional]
+- **Última Atualização:** 20/10/2026
+- **Meta Imediata:** Iniciar a configuração do backend (Django + PostgreSQL).
 
 ## Quadro de Tarefas
 
-### 🟩 Concluído (Backlog Concluído)
-- [x] [RNF-001] Definição da arquitetura inicial utilizando `LocalStorage` para o MVP.
-- [x] [RNF-002] Configuração do Tailwind CSS v4 integrado ao Vite (`frontend/`) com suporte a variantes customizadas (`.dark`).
-- [x] [RNF-003] Estruturação da componentização modular e migração completa para React (`frontend/src/components/` e `pages/`).
-- [x] [RF-004 ao RF-010] Implementação da página de leitura, TOC dinâmico, listagem de posts recentes, filtros e busca em tempo real.
-- [x] [RF-011 & RF-012] Sistema de curtidas, comentários, cópia com feedback visual via Toast global e troca de tema (Claro/Escuro).
-- [x] [RF-013 ao RF-017] Painel administrativo/CRM protegido para gestão completa de artigos e moderação.
+### 🟩 Concluído (Frontend MVP)
+- [x] [RNF-001] Definição da arquitetura inicial utilizando `LocalStorage`.
+- [x] [RNF-002] Configuração do Tailwind CSS v4 (`@theme`, `@custom-variant`).
+- [x] [RNF-003] Refatoração modular completa em React (`components`, `pages`, `hooks`, `contexts`).
+- [x] [RF-004 ao RF-010] Leitura, TOC, listagem, filtros e busca.
+- [x] [RF-011 & RF-012] Curtidas, comentários, copiar link e notificações Toast.
+- [x] [RF-013] Autenticação local simulada no CRM (ADR-007).
+- [x] [RF-014 ao RF-017] CRUD de artigos no CRM (criar, editar, excluir) e moderação de comentários.
+- [x] [UX] Substituição de `window.prompt/confirm/alert` por modais próprios (`CodeBlockModal`, `ConfirmDialog`).
+- [x] [UX] Highlight syntax no CRM (`highlight.js`) e correção de scroll do TOC.
 
-### 🟨 Em Andamento (Foco Atual da IA)
-- [ ] Sincronização e atualização final dos arquivos de documentação e ADRs (`docs/`).
+### 🟨 Em Andamento (Foco Atual)
+- [ ] Sincronização final dos arquivos de documentação (`docs/`).
 
-### 🟥 A Fazer (Próximos Passos — Trilha para Produção)
-- [ ] **Passo 1 (Frontend):** Criar camada de serviço desacoplada (`services/api.js`) mantendo um adaptador provisório para o `LocalStorage`.
-- [ ] **Passo 2 (Backend):** Inicializar o projeto Django na pasta `backend/` e configurar a conexão com o banco **PostgreSQL**.
-- [ ] **Passo 3 (Backend):** Modelar as entidades no Django (`Post` e `Comment`) e expor os endpoints via **Django REST Framework (DRF)**.
-- [ ] **Passo 4 (Integração):** Substituir o adaptador do `LocalStorage` no frontend por chamadas `fetch` reais integradas à API do Django.
-- [ ] **Passo 5 (Autenticação):** Substituir a senha local simulada pelo sistema seguro de autenticação do Django (JWT ou Session Auth) para o painel CRM.
-- [ ] **Passo 6 (Infraestrutura):** Criar o `Dockerfile` do backend e configurar o **Docker Compose** para orquestrar PostgreSQL, Django e Frontend.
-- [ ] **Passo 7 (Deploy):** Configurar variáveis de ambiente, otimização de assets (WhiteNoise) e preparar a aplicação para ambiente de produção.
+### 🟥 A Fazer (Próximos Passos — Trilha para Produção Backend)
+- [ ] **Passo 1 (Frontend):** Criar a camada `services/api.js` mantendo um adaptador provisório para o `LocalStorage`.
+- [ ] **Passo 2 (Backend):** Inicializar o projeto Django em `backend/` e conectar ao **PostgreSQL**.
+- [ ] **Passo 3 (Backend):** Modelar `Post`, `Comment` e `User` no Django e expor endpoints (DRF).
+- [ ] **Passo 4 (Backend):** Implementar highlight e sanitização no servidor (usar `Pygments` ou `markdown-it`).
+- [ ] **Passo 5 (Integração):** Substituir o adaptador `LocalStorage` por chamadas `fetch` reais.
+- [ ] **Passo 6 (Segurança):** Substituir a senha local por JWT/DRF Token Auth no `AuthProvider`.
+- [ ] **Passo 7 (Deploy):** Docker Compose (PostgreSQL + Django + Frontend) e variáveis de ambiente.

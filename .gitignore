@@ -1,6 +1,119 @@
-# Personal Dirs
+# ==========================================
+# 1. PERSONAL / CUSTOM (Suas regras)
+# ==========================================
 _legacy/
-
-# Personal Archives
+myscripts
 notes.md
 modelagem.txt
+
+# ==========================================
+# 2. SISTEMAS OPERACIONAIS
+# ==========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*
+
+# ==========================================
+# 3. EDITORES E IDES
+# ==========================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# JetBrains (WebStorm, PyCharm, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+
+# ==========================================
+# 4. NODE.JS / REACT / VITE (Frontend)
+# ==========================================
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Builds e Cache
+dist/
+dist-ssr/
+build/
+.vite/
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Variáveis de ambiente do Frontend
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ==========================================
+# 5. PYTHON / DJANGO (Backend)
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes Virtuais (venv, virtualenv, poetry)
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+/static/
+
+# Variáveis de ambiente do Backend
+.env
+.env.*
+
+# Testes e Cobertura (pytest, coverage)
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# ==========================================
+# 6. DOCKER (Preparação para Produção)
+# ==========================================
+# Se houver volumes locais mapeados
+docker-compose.override.yml
