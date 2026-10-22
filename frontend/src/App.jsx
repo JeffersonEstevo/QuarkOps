@@ -90,7 +90,7 @@ export default function App() {
   });
 
   const readingProgress = useReadingProgress(currentView);
-  useToc({ currentView, selectedArticleId });
+  //useToc({ currentView, selectedArticleId, content: selectedArticle?.content });
 
   // ── Navegação ────────────────────────────────────────────────
   const navigateHome = () => {
@@ -186,6 +186,9 @@ export default function App() {
   const editingArticle = editingArticleId
     ? articles.find((a) => a.id === editingArticleId) || null
     : null;
+
+  // ── TOC (depende de selectedArticle) ─────────────────────────
+  useToc({ currentView, selectedArticleId, content: selectedArticle?.content });
 
   return (
     <div className="bg-python-lightbg text-slate-800 dark:bg-python-deep dark:text-slate-100 min-h-screen flex flex-col font-sans selection:bg-python-yellow selection:text-slate-900">

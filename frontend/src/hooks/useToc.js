@@ -12,35 +12,52 @@ import { VIEWS } from '../utils/constants';
  *
  * Depende de:
  *  - currentView === VIEWS.ARTICLE
- *  - selectedArticleId (para refazer quando o artigo muda)
- *  - contentHash (opcional): qualquer valor que mude quando o conteúdo muda
- *    (útil se o mesmo id receber conteúdo atualizado via CRM).
+ *  - selectedArticleId  → refaz quando o artigo muda
+ *  - content            → refaz quando o HTML muda (criação/edição via CRM)
+ *
+ * Estratégia anti-corrida:
+ *  - requestAnimationFrame garante que o commit do React terminou.
+ *  - Se os <h2> ainda não existirem (ex: dangerouslySetInnerHTML pesado),
+ *    um MutationObserver aguarda o DOM do body até os headings aparecerem,
+ *    desconectando-se em seguida. Zero polling.
  *
  * Container alvo:  #art-detail-body
  * Container TOC:   #toc-container
  */
-export function useToc({ currentView, selectedArticleId, bodyId = 'art-detail-body', tocId = 'toc-container' }) {
+export function useToc({
+  currentView,
+  selectedArticleId,
+  content,
+  bodyId = 'art-detail-body',
+  tocId = 'toc-container',
+}) {
   useEffect(() => {
     if (currentView !== VIEWS.ARTICLE) return;
 
-    // Delay pequeno para garantir que o HTML injetado já foi montado no DOM
-    const timer = setTimeout(() => {
+    let observer = null;
+    let cancelled = false;
+
+    const buildToc = () => {
+      if (cancelled) return true; // retorna true = "terminei, pode parar de observar"
+
       const body = document.getElementById(bodyId);
       const tocContainer = document.getElementById(tocId);
-      if (!body || !tocContainer) return;
+      if (!body || !tocContainer) return false;
 
       const h2Elements = body.querySelectorAll('h2');
       if (h2Elements.length === 0) {
+        // Pode ser artigo vazio OU conteúdo ainda não montado.
+        // Só consideramos "vazio definitivo" se o body já tem HTML.
+        if (body.innerHTML.trim() === '') return false;
+
         tocContainer.innerHTML =
           '<p class="opacity-60 italic">// Nenhum índice disponível.</p>';
-        return;
+        return true;
       }
 
       let tocHtml = '';
       h2Elements.forEach((h2, index) => {
-        if (!h2.id) {
-          h2.id = `heading-${index}`;
-        }
+        if (!h2.id) h2.id = `heading-${index}`;
         tocHtml += `
           <a href="#${h2.id}" class="block py-1.5 px-2 rounded hover:bg-python-blue hover:text-white transition-colors truncate cursor-pointer">
             &gt; ${h2.innerText}
@@ -48,8 +65,30 @@ export function useToc({ currentView, selectedArticleId, bodyId = 'art-detail-bo
         `;
       });
       tocContainer.innerHTML = tocHtml;
-    }, 50);
+      return true;
+    };
 
-    return () => clearTimeout(timer);
-  }, [currentView, selectedArticleId, bodyId, tocId]);
+    // 1) Tenta no próximo frame (após commit do React)
+    const raf = requestAnimationFrame(() => {
+      if (buildToc()) return; // achou h2, ou artigo genuinamente vazio
+
+      // 2) Fallback: observa o body até o HTML dos headings aparecer
+      const body = document.getElementById(bodyId);
+      if (!body) return;
+
+      observer = new MutationObserver(() => {
+        if (buildToc()) {
+          observer?.disconnect();
+          observer = null;
+        }
+      });
+      observer.observe(body, { childList: true, subtree: true });
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      observer?.disconnect();
+    };
+  }, [currentView, selectedArticleId, content, bodyId, tocId]);
 }

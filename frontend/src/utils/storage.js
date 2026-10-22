@@ -1,3 +1,9 @@
+// src/utils/storage.js
+// ⚠️ LEGADO (MVP) — Mantido para referência e uso interno do localStorageAdapter.
+// A camada pública de dados agora é src/services/api.js.
+// Não importe storage.js diretamente em componentes/hooks. Use `api`.
+// Será removido quando o backend Django entrar em produção.
+
 // frontend/src/utils/storage.js
 
 const INITIAL_ARTICLES = [

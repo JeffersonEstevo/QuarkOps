@@ -1,137 +1,151 @@
-// frontend/src/hooks/useArticles.js
-import { useCallback, useMemo, useState } from 'react';
-import { getStoredArticles, saveArticles } from '../utils/storage';
+// src/hooks/useArticles.js
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { api } from '../services/api';
 
-export function useArticles({ activeCategory = 'ALL', searchTerm = '', onOpen, onCreated, onComment, onUpdated, onDeleted, onCommentDeleted } = {}) {
-  const [articles, setArticles] = useState(() => getStoredArticles());
+export function useArticles({
+  activeCategory = 'ALL',
+  searchTerm = '',
+  onOpen,
+  onCreated,
+  onComment,
+  onUpdated,
+  onDeleted,
+  onCommentDeleted,
+} = {}) {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const commit = useCallback((updater) => {
-    setArticles((prev) => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      saveArticles(next);
-      return next;
-    });
+  // -------- Fetch inicial --------
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await api.listArticles();
+        if (!cancelled) setArticles(data);
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Erro ao carregar artigos');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  // -------- Ações (mesmo contrato público de antes) --------
+
   const openArticle = useCallback(
-    (id) => {
-      commit((prev) =>
-        prev.map((art) => (art.id === id ? { ...art, views: art.views + 1 } : art))
-      );
+    async (id) => {
+      try {
+        const updated = await api.incrementViews(id);
+        setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
+      } catch (err) {
+        setError(err.message);
+      }
       onOpen?.(id);
     },
-    [commit, onOpen]
+    [onOpen]
   );
 
   const createArticle = useCallback(
-    (payload) => {
-      const newArt = {
-        id: `art-${Date.now()}`,
-        title: payload.title,
-        category: payload.category,
-        date: 'Hoje',
-        readTime: payload.readTime,
-        views: 1,
-        author: payload.author,
-        avatar: payload.author.substring(0, 2).toUpperCase(),
-        summary: payload.summary,
-        tags: payload.tags,
-        content: payload.content,
-        comments: [],
-        likes: 0,
-      };
-      commit((prev) => [newArt, ...prev]);
-      onCreated?.(newArt);
-      return newArt;
+    async (payload) => {
+      try {
+        const newArt = await api.createArticle(payload);
+        setArticles((prev) => [newArt, ...prev]);
+        onCreated?.(newArt);
+        return newArt;
+      } catch (err) {
+        setError(err.message);
+        return null;
+      }
     },
-    [commit, onCreated]
+    [onCreated]
   );
 
-  // ── NOVO: atualizar artigo existente ─────────────────────────
   const updateArticle = useCallback(
-    (id, payload) => {
-      let updated = null;
-      commit((prev) =>
-        prev.map((art) => {
-          if (art.id !== id) return art;
-          updated = {
-            ...art,
-            title: payload.title,
-            category: payload.category,
-            readTime: payload.readTime,
-            author: payload.author,
-            avatar: payload.author.substring(0, 2).toUpperCase(),
-            summary: payload.summary,
-            tags: payload.tags,
-            content: payload.content,
-          };
-          return updated;
-        })
-      );
-      onUpdated?.(id);
-      return updated;
+    async (id, payload) => {
+      try {
+        const updated = await api.updateArticle(id, payload);
+        setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
+        onUpdated?.(id);
+        return updated;
+      } catch (err) {
+        setError(err.message);
+        return null;
+      }
     },
-    [commit, onUpdated]
+    [onUpdated]
   );
 
-  // ── NOVO: excluir artigo (e limpar seleção via onDeleted) ────
   const deleteArticle = useCallback(
-    (id) => {
-      commit((prev) => prev.filter((art) => art.id !== id));
-      onDeleted?.(id);
+    async (id) => {
+      try {
+        await api.deleteArticle(id);
+        setArticles((prev) => prev.filter((art) => art.id !== id));
+        onDeleted?.(id);
+      } catch (err) {
+        setError(err.message);
+      }
     },
-    [commit, onDeleted]
-  );
-
-  // ── NOVO: excluir comentário (moderação) ─────────────────────
-  const deleteComment = useCallback(
-    (articleId, commentId) => {
-      commit((prev) =>
-        prev.map((art) =>
-          art.id === articleId
-            ? { ...art, comments: (art.comments || []).filter((c) => c.id !== commentId) }
-            : art
-        )
-      );
-      onCommentDeleted?.(articleId, commentId);
-    },
-    [commit, onCommentDeleted]
+    [onDeleted]
   );
 
   const postComment = useCallback(
-    (articleId, comment) => {
-      if (!articleId) return;
-      const newComment = {
-        id: Date.now(),
-        author: comment.author,
-        role: comment.role || 'Leitor',
-        text: comment.text,
-        date: 'Agora mesmo',
-      };
-      commit((prev) =>
-        prev.map((art) =>
-          art.id === articleId
-            ? { ...art, comments: [newComment, ...(art.comments || [])] }
-            : art
-        )
-      );
-      onComment?.(articleId);
-      return newComment;
+    async (articleId, comment) => {
+      if (!articleId) return null;
+      try {
+        const newComment = await api.postComment(articleId, comment);
+        setArticles((prev) =>
+          prev.map((art) =>
+            art.id === articleId
+              ? { ...art, comments: [newComment, ...(art.comments || [])] }
+              : art
+          )
+        );
+        onComment?.(articleId);
+        return newComment;
+      } catch (err) {
+        setError(err.message);
+        return null;
+      }
     },
-    [commit, onComment]
+    [onComment]
   );
 
-  const likeArticle = useCallback(
-    (articleId) => {
-      commit((prev) =>
-        prev.map((art) =>
-          art.id === articleId ? { ...art, likes: (art.likes || 0) + 1 } : art
-        )
-      );
+  const deleteComment = useCallback(
+    async (articleId, commentId) => {
+      try {
+        await api.deleteComment(articleId, commentId);
+        setArticles((prev) =>
+          prev.map((art) =>
+            art.id === articleId
+              ? {
+                  ...art,
+                  comments: (art.comments || []).filter((c) => c.id !== commentId),
+                }
+              : art
+          )
+        );
+        onCommentDeleted?.(articleId, commentId);
+      } catch (err) {
+        setError(err.message);
+      }
     },
-    [commit]
+    [onCommentDeleted]
   );
 
+  const likeArticle = useCallback(async (articleId) => {
+    try {
+      const updated = await api.incrementLikes(articleId);
+      setArticles((prev) => prev.map((art) => (art.id === articleId ? updated : art)));
+    } catch (err) {
+      setError(err.message);
+    }
+  }, []);
+
+  // -------- Derivados (mesma lógica de antes) --------
   const sortedByViews = useMemo(
     () => [...articles].sort((a, b) => b.views - a.views),
     [articles]
@@ -157,12 +171,14 @@ export function useArticles({ activeCategory = 'ALL', searchTerm = '', onOpen, o
     featured,
     sortedByViews,
     filteredArticles,
+    loading,
+    error,
     openArticle,
     createArticle,
-    updateArticle,     // 🆕
-    deleteArticle,     // 🆕
+    updateArticle,
+    deleteArticle,
     postComment,
-    deleteComment,     // 🆕
+    deleteComment,
     likeArticle,
   };
 }
