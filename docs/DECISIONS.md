@@ -54,3 +54,30 @@
 - **Status:** Pendente para o Backend
 - **Contexto:** O `dangerouslySetInnerHTML` renderiza o HTML salvo pelo CRM.
 - **Decisão:** Como o autor é local, não sanitizamos agora. Em produção, o HTML deverá ser sanitizado antes de salvar ou renderizar, via `bleach` (Python) ou `DOMPurify` (React).
+
+## ADR-009: Camada `services/api.js` com Adapters (LocalStorage → HTTP)
+- **Data:** 21/10/2026
+- **Status:** Aceito
+- **Contexto:** O frontend MVP estava concluído com `localStorage` acessado diretamente por `useArticles` via `storage.js`. O Passo 5 (integração Django) exigiria reescrever o hook e todos os componentes dependentes. Precisávamos de uma fachada estável que permitisse trocar a fonte de dados sem tocar em UI.
+- **Decisão:**
+  - Criar `src/services/api.js` como **fachada única** consumida pela aplicação (contrato estável: `listArticles`, `getArticle`, `createArticle`, `updateArticle`, `deleteArticle`, `incrementLikes`, `incrementViews`, `postComment`, `deleteComment`, `login`).
+  - Implementar dois adapters em `src/services/adapters/`:
+    - `localStorageAdapter.js` (MVP) — reutiliza `storage.js` como persistência bruta.
+    - `httpAdapter.js` (stub) — `fetch` contra Django/DRF, pronto para o Passo 5.
+  - Selecionar adapter via `VITE_API_ADAPTER` (`local` default, `http` futuro). `VITE_API_URL` define a base da API HTTP (default `/api`).
+  - `storage.js` vira **legado** (comentário de aviso), importado apenas por `localStorageAdapter.js`. Nenhum componente/hook importa `storage.js` diretamente.
+  - **Comentários permanecem aninhados** em `article.comments[]` (shape atual do MVP), refletido no contrato (`postComment(articleId, comment)`, `deleteComment(articleId, commentId)`). Não há endpoints planos de comentário nesta fase.
+  - **Hidratação de campos derivados** (`id`, `date`, `views`, `avatar`, `likes`) moveu do hook para o adapter — o hook apenas repassa `payload` cru.
+  - `useArticles` migra para `api.*` e ganha `loading`/`error` (pré-requisito para `fetch` assíncrono). Contrato público **preservado 1:1**: `articles`, `featured`, `sortedByViews`, `filteredArticles`, `openArticle`, `createArticle`, `updateArticle`, `deleteArticle`, `postComment`, `deleteComment`, `likeArticle` + callbacks (`onOpen`, `onCreated`, `onUpdated`, `onDeleted`, `onComment`, `onCommentDeleted`).
+- **Consequências:** Troca de backend é uma linha de env (`VITE_API_ADAPTER=http`). Nenhum componente sabe se os dados vêm de `localStorage` ou HTTP. `loading`/`error` existem mas não bloqueiam UI ainda (sem skeleton — fica para o Passo 5). `storage.js` será removido quando Django entrar em produção. **Dívida técnica:** `login()` existe no adapter mas o `AuthProvider` ainda usa senha hardcoded (ADR-007) — migração para `api.login()` é o Passo 6.
+
+## ADR-010: Geração de TOC resiliente a criação/edição de artigos
+- **Data:** 21/10/2026
+- **Status:** Aceito
+- **Contexto:** Após criar um artigo pelo CRM, o TOC (`#toc-container`) exibia `"// Nenhum índice disponível."` até que a página fosse recarregada. Causa: o `useToc` disparava `setTimeout(50)` reagindo a `selectedArticleId`, mas o commit do React com o novo `dangerouslySetInnerHTML` em `#art-detail-body` podia não ter ocorrido ainda — a corrida era ganha apenas no reload (artigo já no estado inicial). Além disso, o hook dependia só de `selectedArticleId`, então **editar** um artigo já aberto (mesmo `id`, `content` novo) não regenerava o TOC — bug latente.
+- **Decisão:**
+  - Adicionar `content` (string HTML) como dependência do `useEffect` no `useToc` — cobre criação **e** edição. Chamada no `App.jsx` passa `content: selectedArticle?.content`.
+  - Substituir `setTimeout(50)` fixo por estratégia dupla: `requestAnimationFrame` (garante commit do React) + `MutationObserver` no `#art-detail-body` como fallback (aguarda os `<h2>` aparecerem em cenários lentos). Observer desconecta sozinho ao encontrar os headings — zero polling.
+  - Mover a chamada de `useToc` no `App.jsx` para **depois** da declaração de `selectedArticle` (temporal dead zone do `const` — o uso anterior lançaria `ReferenceError`).
+  - Contrato público do `useToc` preservado + `content` opcional (retrocompatível).
+- **Consequências:** TOC renderiza de primeira em artigos criados/editados pelo CRM. Nenhum componente de artigo (`ArticleBody`, `TocSidebar`) precisou mudar. Zero `setInterval`. O custo do `MutationObserver` é desprezível (desconecta no primeiro `<h2>` encontrado).

@@ -49,3 +49,21 @@ Para habilitar o destaque de sintaxe dos códigos nos posts, instale o pacote `h
 ```bash
 npm i highlight.js
 ```
+
+## Variáveis de Ambiente (Frontend — Vite)
+
+Criar `.env.local` na raiz de `frontend/` para sobrescrever defaults:
+
+| Variável | Valores | Default | Descrição |
+|---|---|---|---|
+| `VITE_API_ADAPTER` | `local` \| `http` | `local` | Seleciona o adapter da camada `services/api.js`. `local` = MVP (`localStorage`); `http` = Django/DRF (Passo 5). |
+| `VITE_API_URL` | URL base | `/api` | Usado apenas quando `VITE_API_ADAPTER=http`. Base dos endpoints DRF. |
+
+**Exemplo — preparar para o backend Django (fase futura):**
+```bash
+# frontend/.env.local
+VITE_API_ADAPTER=http
+VITE_API_URL=http://localhost:8000/api
+```
+
+No console (modo dev), o adapter ativo é logado: `[QuarkOps] API adapter ativo: local`.

@@ -7,28 +7,36 @@ O frontend foi refatorado para uma arquitetura modular baseada em React (Vite) e
 ```text
 src/
 ├── components/
-│   ├── article/       # Componentes da página de leitura (Header do artigo, Comentários, TOC, etc.)
-│   ├── crm/           # Modais e telas do painel administrativo (CrmModal, LoginGate, CodeBlockModal)
-│   ├── home/          # Componentes da página inicial (Banner, Grid, FeaturedArticle)
-│   ├── layout/        # Estrutura base (Header, Footer, ReadingProgressBar)
-│   ├── providers/     # Provedores de Contexto (Theme, Toast, Auth)
-│   └── ui/            # Componentes visuais genéricos e reutilizáveis (Button, Badge, Toast, ConfirmDialog)
-├── contexts/          # Definição dos Contextos e Hooks de consumo (useTheme, useToast, useAuth)
-├── hooks/             # Hooks customizados de lógica (useArticles, useReadingProgress, useToc)
-├── pages/             # Composição das páginas (HomePage, ArticlePage)
-├── utils/             # Constantes e Utilitários (storage.js, constants.js)
-├── App.jsx            # Orquestrador principal (navegação e amarração dos modais)
-└── main.jsx           # Ponto de entrada, envolto pelos Providers
+│   ├── article/
+│   ├── crm/
+│   ├── home/
+│   ├── layout/
+│   ├── providers/
+│   └── ui/
+├── contexts/
+├── hooks/
+├── pages/
+├── services/                # 🆕 Camada de dados (fachada + adapters)
+│   ├── adapters/
+│   │   ├── localStorageAdapter.js   # MVP
+│   │   └── httpAdapter.js           # Stub Django/DRF (Passo 5)
+│   └── api.js               # Fachada única consumida pela aplicação
+├── utils/                   # constants.js, storage.js (legado)
+├── App.jsx
+└── main.jsx
 ```
 
 ## 3. Fluxo de Dados e Estado
 - **Navegação (`App.jsx`):** `currentView`, `selectedArticleId`, `activeCategory`, `searchTerm`.
 - **Autenticação (`AuthProvider`):** `isCrmAuthenticated`, `login()`, `logout()`.
-- **CRUD de Dados (`useArticles`):** Toda a manipulação de artigos e comentários passa por aqui. Atualmente usa `localStorage`, mas está abstraído para facilitar a troca por `fetch` no futuro.
+- **CRUD de Dados (`useArticles` → `services/api.js`):** `useArticles` consome a fachada `api` (não `localStorage` diretamente). O adapter ativo (`local` por padrão, `http` no futuro) é escolhido via `VITE_API_ADAPTER`. Trocar de backend não toca em hook nem em componente (ADR-009).
 - **Apresentação:** A maior parte dos componentes (ex: `CommentItem`, `ArticleCard`) são "burros" (recebem props e renderizam), enquanto `App.jsx` e `ArticlePage` fazem a ponte com os hooks e contexts.
 
 ## 4. Pontos de Integração com o Backend (Próximos Passos)
-Para plugar o Django, basta:
-1. Criar `services/api.js`.
-2. Substituir as chamadas do `storage.js` dentro de `hooks/useArticles.js` por chamadas à API.
-3. Trocar a validação do `login()` no `AuthProvider` por um `POST /api/token/` (JWT).
+
+A fachada já existe. Para plugar o Django:
+1. Implementar os endpoints DRF conforme o contrato de `services/api.js`.
+2. Definir `VITE_API_ADAPTER=http` e `VITE_API_URL=<base>` no `.env.local` do frontend.
+3. Substituir a validação do `AuthProvider` por `api.login()` (POST /api/token/) — Passo 6.
+4. Adicionar estados de `loading`/`error` na UI (skeletons, toasts de erro) — os dados já estão expostos pelo hook.
+5. Remover `storage.js` e `localStorageAdapter.js` quando o backend estiver estável em produção.
