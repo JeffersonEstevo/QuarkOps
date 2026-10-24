@@ -67,3 +67,108 @@ VITE_API_URL=http://localhost:8000/api
 ```
 
 No console (modo dev), o adapter ativo é logado: `[QuarkOps] API adapter ativo: local`.
+
+
+## Backend (Django + PostgreSQL)
+
+### Pré-requisitos (instalação única, em qualquer máquina)
+
+Instale, caso ainda não tenha:
+
+- **Python 3.11+** — https://www.python.org/downloads/ (marque *"Add Python to PATH"* no Windows)
+- **Docker Desktop** — https://www.docker.com/products/docker-desktop/
+  - No Windows, requer WSL2 habilitado (instalador já oferece).
+
+> Não é necessário instalar PostgreSQL localmente — ele roda em container Docker.
+
+### 1. Criar ambiente virtual e instalar dependências
+
+```bash
+cd backend
+
+# Criar venv
+python -m venv venv
+
+# Ativar (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Ativar (Windows cmd)
+.\venv\Scripts\activate.bat
+
+# Ativar (Git Bash / WSL / macOS / Linux)
+source venv/Scripts/activate     # Windows (Git Bash)
+source venv/bin/activate         # macOS / Linux
+
+# Instalar dependências
+pip install -r requirements.txt
+```
+
+> Se o PowerShell bloquear a ativação (*execution policy*), execute antes:
+> ```powershell
+> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+> ```
+
+### 2. Configurar variáveis de ambiente
+
+```bash
+# Copiar o modelo
+cp .env.example .env
+```
+
+Editar `backend/.env` e substituir `DJANGO_SECRET_KEY` por uma chave real:
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+### 3. Subir o PostgreSQL (Docker)
+
+```bash
+# Na pasta backend/
+docker compose -f docker-compose.yml up -d
+
+# Conferir saúde do container
+docker compose -f docker-compose.yml ps
+# Esperado: quarkops_db ... Up (healthy)
+
+# Logs (se algo falhar)
+docker compose -f docker-compose.yml logs db
+```
+
+### 4. Aplicar migrations e subir o servidor
+
+```bash
+python manage.py check           # deve retornar "no issues"
+python manage.py migrate         # aplica migrations default do Django no Postgres
+python manage.py runserver       # sobe em http://127.0.0.1:8000/
+```
+
+Acesse **`http://localhost:8000/admin/`** — tela de login do Django Admin.
+
+### 5. (Opcional) Criar superusuário do Admin
+
+```bash
+python manage.py createsuperuser
+```
+
+Guarde as credenciais — serão usadas para testar login real no Passo 6.
+
+### Comandos úteis do dia a dia
+
+```bash
+# Ver logs do Postgres
+docker compose -f docker-compose.yml logs -f db
+
+# Parar Postgres (mantém dados no volume)
+docker compose -f docker-compose.yml down
+
+# Parar Postgres E apagar dados (⚠️ destrutivo)
+docker compose -f docker-compose.yml down -v
+
+# Criar novas migrations (após editar models.py)
+python manage.py makemigrations
+python manage.py migrate
+
+# Abrir shell interativo do Django
+python manage.py shell
+```

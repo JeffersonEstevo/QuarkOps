@@ -1,9 +1,9 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase 1 Concluída: Frontend Modularizado e Funcional + Camada de Serviços pronta]
-- **Última Atualização:** 21/10/2026
-- **Meta Imediata:** Iniciar a configuração do backend (Django + PostgreSQL).
+- **Fase Atual:** [Fase 2 Concluída: Backend Django + PostgreSQL operacional]
+- **Última Atualização:** 23/10/2026
+- **Meta Imediata:** Modelar entidades de domínio (`Post`, `Comment`) e expor endpoints DRF (Passo 3).
 
 ## Quadro de Tarefas
 
@@ -20,13 +20,13 @@
 - [x] Sincronização final dos arquivos de documentação (`docs/`).
 - [x] **Passo 1 (Frontend):** Criada camada `services/api.js` com fachada + adapters (`localStorageAdapter` MVP, `httpAdapter` stub). `useArticles` migrado (contrato preservado) com `loading`/`error`. `storage.js` marcado como legado (ADR-009).
 - [x] **Bug TOC:** Gerado índice resiliente a criação/edição de artigos via `requestAnimationFrame` + `MutationObserver` + `content` como dependência (ADR-010).
+- [x] **Passo 2 (Backend):** Projeto Django inicializado em `backend/` (`core/` + app `api/`), DRF + SimpleJWT + CORS configurados, PostgreSQL 16 via Docker Compose, migrations default aplicadas, Django Admin acessível (ADR-011).
 
 ### 🟨 Em Andamento (Foco Atual)
-- [ ] _Nada no frontend no momento._ Próximo foco: backend (Passo 2).
+- [ ] **Passo 3 (Backend):** Modelar `Post`, `Comment` e `User` no Django e expor endpoints DRF conforme o contrato de `services/api.js`.
 
-### 🟥 A Fazer (Próximos Passos — Trilha para Produção Backend)
-- [ ] **Passo 2 (Backend):** Inicializar o projeto Django em `backend/` e conectar ao **PostgreSQL**.
-- [ ] **Passo 3 (Backend):** Modelar `Post`, `Comment` e `User` no Django e expor endpoints (DRF).
+### 🟥 A Fazer (Trilha para Produção Backend)
+> Passos ainda **não iniciados**. Ao começar um item, mova-o para 🟨. Ao concluir, mova-o para 🟩.
 - [ ] **Passo 4 (Backend):** Implementar highlight e sanitização no servidor (usar `Pygments` ou `markdown-it`).
 - [ ] **Passo 5 (Integração):** Substituir o adaptador `LocalStorage` por chamadas `fetch` reais.
 - [ ] **Passo 6 (Segurança):** Substituir a senha local por JWT/DRF Token Auth no `AuthProvider`.

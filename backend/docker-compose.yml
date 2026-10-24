@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: quarkops_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-quarkops}
+      POSTGRES_USER: ${POSTGRES_USER:-quarkops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quarkops_dev}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - quarkops_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quarkops} -d ${POSTGRES_DB:-quarkops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  quarkops_pgdata:

@@ -81,3 +81,20 @@
   - Mover a chamada de `useToc` no `App.jsx` para **depois** da declaração de `selectedArticle` (temporal dead zone do `const` — o uso anterior lançaria `ReferenceError`).
   - Contrato público do `useToc` preservado + `content` opcional (retrocompatível).
 - **Consequências:** TOC renderiza de primeira em artigos criados/editados pelo CRM. Nenhum componente de artigo (`ArticleBody`, `TocSidebar`) precisou mudar. Zero `setInterval`. O custo do `MutationObserver` é desprezível (desconecta no primeiro `<h2>` encontrado).
+
+## ADR-011: Stack Backend — Django 5.1 + DRF + JWT + PostgreSQL (Docker)
+- **Data:** 23/10/2026
+- **Status:** Aceito
+- **Contexto:** O frontend MVP está concluído e a camada `services/api.js` está pronta para receber dados reais. Precisamos inicializar o backend respeitando a stack rígida do `SPEC.md` (Django + PostgreSQL) e preparar o terreno para o Passo 5 (integração).
+- **Decisão:**
+  - **Django 5.1** como framework backend, projeto nomeado `core` (convenção: evita colisão com a pasta `backend/`).
+  - **App único `api/`** para todas as entidades do domínio (`Post`, `Comment`, `User`). Blog com 3 entidades não justifica split em múltiplos apps — refatora-se se crescer.
+  - **Django REST Framework** (`djangorestframework`) para endpoints.
+  - **JWT via `djangorestframework-simplejwt`** — alinha com ADR-007 e com o `httpAdapter.js` do frontend (que já usa `Authorization: Bearer <token>`).
+  - **PostgreSQL 16-alpine via Docker Compose** (`backend/docker-compose.yml`). Porta 5432, volume persistente nomeado (`quarkops_pgdata`), healthcheck `pg_isready` para evitar race condition no `migrate`.
+  - **`python-dotenv`** para carregar `.env` em `settings.py` (mantém segredos fora do versionamento).
+  - **`django-cors-headers`** configurado para permitir `localhost:5173` (Vite dev).
+  - **`psycopg[binary]` v3** como driver Postgres (binário pré-compilado, evita compilar C no Windows).
+  - **Estrutura final:** `backend/{manage.py, core/, api/, requirements.txt, docker-compose.yml, .env, .gitignore}`.
+  - **Escopo do Passo 2 é infraestrutura apenas:** sem models, sem endpoints, sem serializers. Migrations default do Django (auth, sessions, admin) aplicadas no Postgres já.
+- **Consequências:** Backend sobe com `python manage.py runserver`, aponta para Postgres do Docker, e o Django Admin é acessível em `/admin/`. Modelagem de domínio (`Post`, `Comment`) fica para o Passo 3. `docker-compose.yml` está em `backend/` por enquanto — no Passo 7 (deploy), unificamos na raiz do monorepo com o frontend.

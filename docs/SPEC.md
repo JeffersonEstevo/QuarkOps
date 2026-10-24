@@ -41,24 +41,39 @@
 - [RF-016] O administrador deve conseguir excluir posts do sistema.
 - [RF-017] O administrador deve conseguir visualizar e moderar (excluir) comentários inadequados enviados pelos leitores.
 
-## 4. Estrutura de Pastas Inicial
+## 4. Estrutura de Pastas (estado atual)
 ```text
 📁 026_QuarkOps
 ├── 📁 docs
 │   ├── 📖 COMMANDS.md
 │   ├── 📖 DECISIONS.md
 │   ├── 📖 PROGRESS.md
-│   └── 📖 SPEC.md
-├── 📁 backend                # Futuro Django (Python / Postgres)
-└── 📁 frontend               # React + Vite + Tailwind CSS (MVP com LocalStorage)
+│   ├── 📖 SPEC.md
+│   └── 📖 STRUCTURE.md
+├── 📁 backend                # Django 5.1 + DRF + SimpleJWT + PostgreSQL
+│   ├── 📁 core               # Projeto Django (settings, urls, wsgi, asgi)
+│   ├── 📁 api                # App de domínio (models vazios — Passo 3)
+│   │   └── 📁 migrations
+│   ├── 📄 manage.py
+│   ├── 📄 requirements.txt
+│   ├── 📄 docker-compose.yml # PostgreSQL 16 (container quarkops_db)
+│   ├── 📄 .env.example       # Modelo de variáveis (commitar)
+│   ├── 📄 .env               # Variáveis locais (NÃO commitar)
+│   └── 📄 .gitignore
+└── 📁 frontend               # React + Vite + Tailwind CSS v4
     ├── 📁 src
-    │   ├── 📁 components
-    │   ├── 📁 pages
-    │   ├── App.jsx
-    │   └── main.jsx
-    ├── package.json
-    ├── tailwind.config.js    
-    └── vite.config.js
+    │   ├── 📁 components     # article/, crm/, home/, layout/, providers/, ui/
+    │   ├── 📁 contexts       # useTheme, useToast, useAuth
+    │   ├── 📁 hooks          # useArticles, useReadingProgress, useToc
+    │   ├── 📁 pages          # HomePage, ArticlePage
+    │   ├── 📁 services       # 🆕 Camada de dados
+    │   │   ├── 📁 adapters   # localStorageAdapter.js, httpAdapter.js
+    │   │   └── 📄 api.js     # Fachada única (VITE_API_ADAPTER)
+    │   ├── 📁 utils          # constants.js, storage.js (legado)
+    │   ├── 📄 App.jsx
+    │   └── 📄 main.jsx
+    ├── 📄 index.css          # Tailwind v4 (@theme, @custom-variant)
+    ├── 📄 package.json
+    └── 📄 vite.config.js
 ```
-
 ---
