@@ -172,3 +172,55 @@ python manage.py migrate
 # Abrir shell interativo do Django
 python manage.py shell
 ```
+
+### 6. Popular banco com dados iniciais (seed)
+
+Após rodar `migrate` pela primeira vez, popule o banco com autores e artigos iniciais (idempotente — pode rodar várias vezes):
+
+```bash
+python manage.py seed_articles
+```
+
+Esperado: `Seed concluído: 3 novos posts criados, 3 posts no total.`
+
+### 7. Testar endpoints da API (via curl)
+
+Com `runserver` ativo em outro terminal:
+
+```bash
+# Listar posts
+curl http://localhost:8000/api/posts/
+
+# Detalhe (substituir <uuid> pelo id retornado acima)
+curl http://localhost:8000/api/posts/<uuid>/
+
+# Curtir (público)
+curl -X POST http://localhost:8000/api/posts/<uuid>/like/
+
+# Visualizar (público)
+curl -X POST http://localhost:8000/api/posts/<uuid>/view/
+
+# Comentar anonimamente (RF-006)
+curl -X POST http://localhost:8000/api/posts/<uuid>/comments/ \
+  -H "Content-Type: application/json" \
+  -d '{"author_name":"Test Reader","text":"Muito bom!","role":"Leitor"}'
+
+# Listar comentários do post
+curl http://localhost:8000/api/posts/<uuid>/comments/
+
+# Criar post (exige staff autenticado — deve retornar 403 sem token)
+curl -X POST http://localhost:8000/api/posts/ \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test","category":"Test","summary":"x","content":"<p>x</p>"}'
+```
+
+### 8. Resetar banco do zero (⚠️ destrutivo)
+
+Se precisar recriar tudo (ex: após alterar models com dependência forte):
+
+```bash
+docker compose -f docker-compose.yml down -v
+docker compose -f docker-compose.yml up -d
+python manage.py migrate
+python manage.py seed_articles
+```

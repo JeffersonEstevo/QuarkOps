@@ -7,16 +7,16 @@
 
 ## 2. Stack Tecnológica (REGRAS RÍGIDAS)
 > **Instrução para a IA:** Não sugira nenhuma biblioteca ou ferramenta fora desta lista.
-- **Linguagem:** HTML5 / JavaScript (ES6+) / CSS3
+- **Linguagem:** HTML5 / JavaScript (ES6+) / CSS3 / Python 3.11+
 - **Framework/Lib (Frontend):** React (Vite)
-- **Framework/Lib (Backend):** Django (Python) — *Planejado para fase posterior*
-- **Banco de Dados:** Postgres (via Django) — *Planejado para fase posterior* (MVP utiliza `LocalStorage`)
+- **Framework/Lib (Backend):** Django 5.1 + Django REST Framework (+ SimpleJWT)
+- **Banco de Dados:** PostgreSQL 16 (via Docker Compose)
 - **Estilização:** Tailwind CSS (v4)
 
 ## 3. Requisitos do Sistema
 
 ### Requisitos Não Funcionais (RNF) — Tecnologias e Arquitetura
-- [RNF-001] O armazenamento de dados (posts, comentários e curtidas) deve utilizar o `LocalStorage` do navegador para a versão MVP, com posterior migração para Django + Postgres.
+- [RNF-001] O armazenamento de dados (posts, comentários e curtidas) utilizou o `LocalStorage` do navegador no MVP e está migrando para Django + PostgreSQL. A camada `services/api.js` do frontend abstrai o adapter ativo (ADR-009).
 - [RNF-002] O design e a estilização da interface devem ser desenvolvidos utilizando **Tailwind CSS (v4)** com suporte a variantes customizadas de tema.
 - [RNF-003] O código da interface deve ser estruturado em componentes modulares, isolados e nas menores partes independentes possíveis (ex: Cards, Botões, Cabeçalho, Rodapé) dentro do diretório do React.
 - [RNF-004] A aplicação deve ser totalmente responsiva, adaptando-se a dispositivos móveis, tablets e desktops.

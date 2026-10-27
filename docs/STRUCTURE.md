@@ -43,27 +43,26 @@ A fachada já existe. Para plugar o Django:
 
 ## 5. Backend (Django + PostgreSQL)
 
-### Arquitetura atual (Passo 2)
+### Arquitetura atual (após Passo 3)
 
 - **Projeto Django:** `core/` (settings, urls, wsgi, asgi).
-- **App de domínio:** `api/` (vazio nesta fase — `models.py` recebe `Post`, `Comment` no Passo 3).
+- **App de domínio:** `api/` com **models** (`User`, `Post`, `Comment`), **serializers**, **views** (ViewSets + ações customizadas), **urls** (DefaultRouter) e **permissions** (`IsAdminOrReadOnly`, `AllowAnyForCreateReadAuth`).
+- **Comando de seed:** `python manage.py seed_articles` (idempotente — popula autores e 3 artigos iniciais).
 - **Banco:** PostgreSQL 16 via Docker Compose (`quarkops_db`, porta 5432, volume `quarkops_pgdata`).
-- **Autenticação:** SimpleJWT instalado e configurado, endpoint `/api/token/` será criado no Passo 6.
+- **Autenticação:** SimpleJWT instalado e configurado. O endpoint `/api/token/` será criado no Passo 6.
 - **CORS:** `localhost:5173` (Vite dev) liberado via `django-cors-headers`.
 
-### Como os endpoints vão bater com o frontend
+### Endpoints implementados (Passo 3)
 
-O contrato de `frontend/src/services/api.js` define os paths REST esperados. No Passo 3, os endpoints DRF serão criados espelhando esse contrato:
-
-| Método em `services/api.js` | Endpoint Django (Passo 3) |
-|---|---|
-| `listArticles()` | `GET /api/posts/` |
-| `getArticle(id)` | `GET /api/posts/:id/` |
-| `createArticle(data)` | `POST /api/posts/` |
-| `updateArticle(id, data)` | `PUT /api/posts/:id/` |
-| `deleteArticle(id)` | `DELETE /api/posts/:id/` |
-| `incrementLikes(id)` | `POST /api/posts/:id/like/` |
-| `incrementViews(id)` | `POST /api/posts/:id/view/` |
-| `postComment(articleId, c)` | `POST /api/posts/:id/comments/` |
-| `deleteComment(articleId, cId)` | `DELETE /api/posts/:id/comments/:cId/` |
-| `login(creds)` | `POST /api/token/` |
+| Método em `services/api.js` | Endpoint Django | Auth |
+|---|---|---|
+| `listArticles()` | `GET /api/posts/` | público |
+| `getArticle(id)` | `GET /api/posts/:id/` | público |
+| `createArticle(data)` | `POST /api/posts/` | staff |
+| `updateArticle(id, data)` | `PUT /api/posts/:id/` | staff |
+| `deleteArticle(id)` | `DELETE /api/posts/:id/` | staff |
+| `incrementLikes(id)` | `POST /api/posts/:id/like/` | público |
+| `incrementViews(id)` | `POST /api/posts/:id/view/` | público |
+| `postComment(articleId, c)` | `POST /api/posts/:id/comments/` | público |
+| `deleteComment(articleId, cId)` | `DELETE /api/comments/:cId/` | staff |
+| `login(creds)` | `POST /api/token/` (Passo 6) | — |

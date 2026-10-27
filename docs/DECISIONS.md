@@ -98,3 +98,23 @@
   - **Estrutura final:** `backend/{manage.py, core/, api/, requirements.txt, docker-compose.yml, .env, .gitignore}`.
   - **Escopo do Passo 2 é infraestrutura apenas:** sem models, sem endpoints, sem serializers. Migrations default do Django (auth, sessions, admin) aplicadas no Postgres já.
 - **Consequências:** Backend sobe com `python manage.py runserver`, aponta para Postgres do Docker, e o Django Admin é acessível em `/admin/`. Modelagem de domínio (`Post`, `Comment`) fica para o Passo 3. `docker-compose.yml` está em `backend/` por enquanto — no Passo 7 (deploy), unificamos na raiz do monorepo com o frontend.
+
+## ADR-012: Modelagem de Domínio — User Customizado, UUIDs e Comentário Híbrido
+- **Data:** 27/10/2026
+- **Status:** Aceito
+- **Contexto:** Passo 3 exige modelar `Post`, `Comment` e `User`. Decisões estruturais aqui (mudar depois = migrações dolorosas). O frontend MVP usava IDs string (`"art-1"`), autores como string livre (`"Guido Dev"`) e comentários anônimos. O RF-006 exige comentários sem login. O backlog (Bug 2) pedia modelar `Author` com `bio`/`avatar` para resolver o subtítulo hardcoded.
+- **Decisão:**
+  - **`User` customizado** (`AbstractUser` em `api.User`) com `id: UUID`, `display_name`, `bio`, `avatar_url`, `role`. Definido **antes** do primeiro `migrate` (via `AUTH_USER_MODEL = "api.User"`) — banco recriado, zero dados de domínio perdidos. Resolve o Bug 2 de raiz.
+  - **`Post.author` = FK para `User`** (não string). Autor é entidade real. O CRM admin (staff) cria posts autenticado. `on_delete=CASCADE`.
+  - **`Comment` híbrido:** `author_name: CharField` (sempre preenchido — RF-006) + `author_user: FK(User, null=True)` (preenchido só em comentários autenticados, futuro Passo 6). `on_delete=SET_NULL` (comentário sobrevive se o usuário for deletado). Zero atrito no Passo 5; "comentário verificado" no futuro é trivial.
+  - **Todos os IDs são `UUID`** (`uuid.uuid4`). URLs não enumeráveis (compartilhamento — RF-012). Frontend já aceita IDs string.
+  - **`Post.tags = JSONField`** (lista de strings). Simples e suficiente — `ArrayField` do Postgres exigiria dependência extra.
+  - **`Post.views` e `Post.likes`** como `PositiveIntegerField` no próprio Post. Incrementos atômicos via `save(update_fields=["likes"])`.
+  - **`Post.read_time` como `CharField`** (string formatada, ex: `"7 min de leitura"`). Coerente com o frontend MVP, que exibe direto.
+  - **Permissões:**
+    - `PostViewSet`: `IsAdminOrReadOnly` — GET público, escrita só staff.
+    - Ações `like` e `view`: `AllowAnyForCreateReadAuth` — públicos.
+    - `CommentViewSet`: apenas `DELETE` exposto (moderação, staff). Criação/listagem via `/api/posts/{id}/comments/`.
+  - **Rotas DRF** (`DefaultRouter`): `/api/posts/`, `/api/posts/{id}/`, `/api/posts/{id}/like/`, `/api/posts/{id}/view/`, `/api/posts/{id}/comments/`, `/api/comments/{id}/` (DELETE).
+  - **Comando `seed_articles`** (management command) para popular autores + 3 artigos iniciais. Idempotente (usa `get_or_create`).
+- **Consequências:** Backend expõe o contrato de `services/api.js` quase 1:1 (Passo 5 só ajusta o adapter HTTP). Bug 2 resolvido. `author_user: null` em comentários anônimos permite badge "verificado" no futuro sem migração. UUID em todas as entidades — zero colisão em URLs compartilhadas. Seed permite testar `/api/posts/` imediatamente. **Dívida técnica:** `PostViewSet` ainda não tem autenticação JWT real ativa (Passo 6); o CRM continuará usando `admin123` no frontend até lá.
