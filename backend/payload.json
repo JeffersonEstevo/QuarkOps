@@ -1,0 +1,4 @@
+{
+  "author_name": "XSS Test",
+  "text": "<script>alert(1)</script>"
+}

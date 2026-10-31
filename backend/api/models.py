@@ -56,7 +56,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=60)
     summary = models.TextField(help_text="Resumo exibido nos cards da home.")
-    content = models.TextField(help_text="HTML completo do artigo.")
+    content = models.TextField(help_text="HTML completo do artigo (sanitizado no save).")
     tags = models.JSONField(
         default=list,
         blank=True,
@@ -87,6 +87,15 @@ class Post(models.Model):
             models.Index(fields=["-created_at"]),
             models.Index(fields=["category"]),
         ]
+
+    def save(self, *args, **kwargs):
+        """Sanitiza o HTML antes de persistir (ADR-013)."""
+        # Import local evita import circular em tempo de app-loading.
+        from .sanitizers import sanitize_html
+
+        if self.content:
+            self.content = sanitize_html(self.content)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
