@@ -118,3 +118,34 @@
   - **Rotas DRF** (`DefaultRouter`): `/api/posts/`, `/api/posts/{id}/`, `/api/posts/{id}/like/`, `/api/posts/{id}/view/`, `/api/posts/{id}/comments/`, `/api/comments/{id}/` (DELETE).
   - **Comando `seed_articles`** (management command) para popular autores + 3 artigos iniciais. Idempotente (usa `get_or_create`).
 - **Consequências:** Backend expõe o contrato de `services/api.js` quase 1:1 (Passo 5 só ajusta o adapter HTTP). Bug 2 resolvido. `author_user: null` em comentários anônimos permite badge "verificado" no futuro sem migração. UUID em todas as entidades — zero colisão em URLs compartilhadas. Seed permite testar `/api/posts/` imediatamente. **Dívida técnica:** `PostViewSet` ainda não tem autenticação JWT real ativa (Passo 6); o CRM continuará usando `admin123` no frontend até lá.
+
+
+## ADR-013: Sanitização de HTML com `nh3` no `Post.save()`
+- **Data:** 31/10/2026
+- **Status:** Aceito
+- **Contexto:** O `Post.content` é HTML arbitrário vindo do CRM. O ADR-008 registrou a dívida de sanitização como pendente. `highlight.js` gera `<span class="...">` no cliente, que precisa ser preservado. Precisávamos de uma solução server-side que remova XSS sem quebrar a formatação legítima.
+- **Decisão:**
+  - **Biblioteca:** `nh3` (wrapper Python do `ammonia` em Rust). Mais rápido e ativamente mantido que `bleach` (modo manutenção desde 2023).
+  - **Estratégia de highlight:** manter `highlight.js` no cliente. O backend **apenas sanitiza** — o HTML chega do CRM já com spans coloridos pelo `highlight.js`, e o `nh3` preserva `class` em `span`/`div`/`pre`/`code` (necessário para Tailwind e highlight).
+  - **Ponto de sanitização:** `Post.save()` em `models.py`. Garante que **nada** sujo entra no banco, independente de como o `Post` foi criado (API, admin, shell, script).
+  - **Config permissiva:** lista explícita de tags (`ALLOWED_TAGS`) e atributos (`ALLOWED_ATTRIBUTES`) cobrindo tudo que o CRM gera. `class` liberado em qualquer tag (`"*": {"class"}`). `id` liberado em `h2`/`h3`/`h4` (TOC). `href`/`src` validados por esquema (`http`, `https`, `mailto`).
+  - **Removidos por padrão:** `<script>`, `<iframe>`, `<object>`, `<embed>`, `<form>`, atributos `on*` (event handlers), `style` (injeção CSS), URLs `javascript:`/`data:`.
+  - **Links externos:** `rel="noopener noreferrer"` adicionado automaticamente via `link_rel`. ⚠️ **Não listar `rel` em `ALLOWED_ATTRIBUTES["a"]`** — o `ammonia` entra em pânico (Rust panic) se você definir `rel` manualmente e usar `link_rel` ao mesmo tempo.
+  - **Migração de dados:** comando `sanitize_existing_posts` (management command) com `--dry-run`, para re-salvar posts antigos (aplicação manual, não automática).
+- **Consequências:** Banco só contém HTML seguro. Frontend pode renderizar via `dangerouslySetInnerHTML` com confiança. `highlight.js` continua no cliente (Passo 5 pode considerar remoção futura, mas não é prioridade). Custo de CPU no `save()` é desprezível (`nh3` é Rust, ~microssegundos por post). **Dívida técnica:** posts antigos (se houver) precisam rodar `sanitize_existing_posts` manualmente após revisão.
+
+## ADR-014: Integração Frontend ↔ Backend — Mapeamento no Adapter, Auth Adiada
+- **Data:** 02/11/2026
+- **Status:** Aceito
+- **Contexto:** O backend Django expõe os endpoints do contrato de `services/api.js` (Passo 3). O frontend precisa consumir dados reais. Porém, o shape do backend difere do esperado pelo frontend: `author` é objeto (`{display_name, avatar_url, bio, role}`), `created_at` é ISO 8601, campos em `snake_case` (`read_time`, `author_name`). O `AuthProvider` ainda usa senha local (`admin123` — ADR-007), e o endpoint `/api/token/` só existe no Passo 6.
+- **Decisão:**
+  - **Adapter HTTP com URL absoluta.** `VITE_API_URL=http://localhost:8000/api` em `frontend/.env.local`. CORS já configurado no backend (`localhost:5173`). Vite proxy **não** é usado — reservado para o deploy do Passo 7 (Nginx/Caddy reverse proxy real).
+  - **Mapeamento no `httpAdapter.js`.** Toda tradução de shape (backend → frontend) vive no adapter, não em `useArticles` nem no backend. Motivo: o adapter é a **fronteira** entre "transporte" e "domínio do frontend". Se o backend mudar o shape, **só o adapter muda**. `useArticles` e componentes continuam "limpos".
+  - **Funções de mapeamento:** `mapPost()` (backend post → frontend article), `mapComment()` (backend comment → frontend comment), `formatDate()` (ISO → "Hoje" / "02 Nov 2026"), `formatRelativeDate()` (ISO → "Há 2 horas"), `getInitials()` (fallback para avatar).
+  - **Shape achatado (compatível com o MVP):** `author` (string), `avatar` (string), `date` (string formatada), `readTime` (string). Campos extras do backend (`authorBio`, `authorRole`) são expostos **junto**, para resolver o Bug 2 (`ArticleHeader` usa `article.authorBio || 'Engenheiro...'`).
+  - **Paginação:** `listArticles()` detecta se DRF retorna `{results: [...]}` ou array direto. Com `PAGE_SIZE=20`, mais de 20 posts exigiriam paginação infinita (fora do escopo — dívida futura).
+  - **`AuthProvider` NÃO migra no Passo 5.** `VITE_API_ADAPTER=http` + `admin123` local. Login JWT real é **Passo 6**.
+  - **Escritas bloqueadas por 401** (esperado). `PostViewSet` exige staff autenticado. O frontend **não tem UI de erro** ainda (`error` do `useArticles` existe, mas nenhum componente consome). Toast de erro e mensagens amigáveis ficam para o Passo 6 (junto com JWT), quando erros deixam de ser 401 genérico e passam a ser "sessão expirada" etc.
+  - **Validação tripla:** (1) leitura HTTP com backend real; (2) escritas bloqueadas por 401; (3) fallback `localStorage` (switch `VITE_API_ADAPTER=local`).
+  - **`login(credentials)`** no `httpAdapter` é stub: lança `Error('Login JWT será implementado no Passo 6...')`. Não é chamado por nenhum componente (o `AuthProvider` ainda usa senha hardcoded).
+- **Consequências:** Backend é consumido em modo leitura. Curtidas, views e comentários anônimos **funcionam** via HTTP (auth público). Escritas de posts (`createArticle`, `updateArticle`, `deleteArticle`) e moderação de comentários (`deleteComment`) retornam `401` — comportamento **correto e esperado** até o Passo 6. O adapter abstrai o shape, então o Passo 6 **não toca em `httpAdapter`** (só adiciona o header `Authorization`). Bug 2 resolvido no frontend via `authorBio` (o backend já tinha o dado desde o Passo 3). **Dívida técnica:** UI de erro (toast genérico + mensagens amigáveis) fica para o Passo 6; paginação infinita para quando houver > 20 posts.

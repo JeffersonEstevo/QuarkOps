@@ -16,10 +16,12 @@
 ## 3. Requisitos do Sistema
 
 ### Requisitos Não Funcionais (RNF) — Tecnologias e Arquitetura
-- [RNF-001] O armazenamento de dados (posts, comentários e curtidas) utilizou o `LocalStorage` do navegador no MVP e está migrando para Django + PostgreSQL. A camada `services/api.js` do frontend abstrai o adapter ativo (ADR-009).
+- [RNF-001] O armazenamento de dados (posts, comentários e curtidas) utilizou o `LocalStorage` do navegador no MVP e está integrado ao Django + PostgreSQL. A camada `services/api.js` do frontend abstrai o adapter ativo (`local` ou `http`) via `VITE_API_ADAPTER` (ADR-009, ADR-014).
 - [RNF-002] O design e a estilização da interface devem ser desenvolvidos utilizando **Tailwind CSS (v4)** com suporte a variantes customizadas de tema.
 - [RNF-003] O código da interface deve ser estruturado em componentes modulares, isolados e nas menores partes independentes possíveis (ex: Cards, Botões, Cabeçalho, Rodapé) dentro do diretório do React.
 - [RNF-004] A aplicação deve ser totalmente responsiva, adaptando-se a dispositivos móveis, tablets e desktops.
+- [RNF-005] O HTML dos posts deve ser sanitizado no servidor (via `nh3`) antes de ser persistido, removendo scripts, event handlers inline (`on*`), `style` e URLs perigosas (`javascript:`, `data:`). Classes CSS (Tailwind/highlight.js) e IDs de headings (TOC) são preservados (ADR-013).
+- [RNF-006] A conversão de shape entre backend e frontend (snake_case ↔ camelCase, author objeto ↔ string, ISO date ↔ string formatada) deve ser centralizada no `httpAdapter` (`frontend/src/services/adapters/httpAdapter.js`), mantendo `useArticles` e componentes agnósticos ao backend (ADR-014).
 
 ### Requisitos Funcionais (RF) — Módulo 1: Leitura e Navegação (Público)
 - [RF-004] O usuário deve conseguir ler posts e artigos em uma página de leitura limpa, clara e focada em tipografia.

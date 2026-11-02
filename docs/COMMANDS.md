@@ -224,3 +224,74 @@ docker compose -f docker-compose.yml up -d
 python manage.py migrate
 python manage.py seed_articles
 ```
+
+### 9. Sanitizar posts existentes (após ADR-013)
+
+Se houver posts criados **antes** do Passo 4 (sem sanitização), re-salve-os para aplicar `sanitize_html`:
+
+```bash
+# Modo seguro — apenas lista o que seria alterado
+python manage.py sanitize_existing_posts --dry-run
+
+# Aplicar as mudanças
+python manage.py sanitize_existing_posts
+```
+
+Esperado: `Resumo: N post(s) alterado(s), M sem mudanças.`
+
+> ⚠️ Sempre rode `--dry-run` primeiro. Posts com tags/atributos não permitidos terão esses trechos removidos.
+
+## Integração Frontend ↔ Backend (Passo 5)
+
+### Alternar entre adapters (localStorage ↔ HTTP)
+
+O frontend pode operar em **modo offline** (MVP, `localStorage`) ou **modo integrado** (backend Django). A troca é feita em `frontend/.env.local`.
+
+**Modo HTTP (backend real):**
+```env
+# frontend/.env.local
+VITE_API_ADAPTER=http
+VITE_API_URL=http://localhost:8000/api
+```
+
+**Modo Local (fallback MVP):**
+```env
+# frontend/.env.local
+VITE_API_ADAPTER=local
+# VITE_API_URL=http://localhost:8000/api  ← pode deixar comentado
+```
+
+> ⚠️ **Vite só recarrega variáveis de ambiente na inicialização.** Após editar `.env.local`, é obrigatório reiniciar o Vite (`Ctrl+C` + `npm run dev`).
+
+### Ordem de inicialização completa (dev)
+
+Backend e frontend rodam em terminais separados.
+
+**Terminal 1 — Backend:**
+```bash
+cd backend
+# Docker Desktop aberto (ícone da baleia na bandeja)
+docker compose -f docker-compose.yml ps         # confirmar 'healthy'
+python manage.py runserver "[::1]:8000"
+```
+
+**Terminal 2 — Frontend:**
+```bash
+cd frontend
+npm run dev                                     # http://localhost:5173/
+```
+
+No navegador, abra o DevTools (F12) → Console. Esperado ver:
+```
+[QuarkOps] API adapter ativo: http
+```
+
+### Validação rápida dos 3 cenários
+
+| Cenário | Configuração | Esperado |
+|---|---|---|
+| **1. Leitura HTTP** | `VITE_API_ADAPTER=http` + backend up | Home lista posts do Postgres (3 do seed). Curtidas/comentários anônimos funcionam. |
+| **2. Escrita bloqueada** | Idem, tentar CRM "Publicar" | Backend responde `401 Unauthorized` (staff exigido). UI silenciosa (erro fica no estado `error` do hook, sem toast — Passo 6). |
+| **3. Fallback local** | `VITE_API_ADAPTER=local` | Home lista 6 artigos do `localStorage`. CRM funciona (criar/editar/deletar). |
+
+> **Sobre o `[::1]:8000`:** ver nota na seção Backend. Docker Desktop pode comentar as entradas de `localhost` no `hosts` do Windows; `[::1]` contorna sem precisar editar arquivos do sistema.

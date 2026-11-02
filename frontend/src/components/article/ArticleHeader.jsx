@@ -58,7 +58,9 @@ export default function ArticleHeader({ article, onLike, canManage = false, onEd
         </div>
         <div>
           <p className="text-xs font-mono font-bold">{article.author}</p>
-          <p className="text-[10px] font-mono opacity-60">Engenheiro de Software &amp; Maintainer</p>
+          <p className="text-[10px] font-mono opacity-60">
+            {article.authorBio || 'Engenheiro de Software & Maintainer'}
+          </p>
         </div>
       </div>
     </div>
