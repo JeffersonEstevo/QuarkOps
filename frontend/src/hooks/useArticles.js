@@ -11,12 +11,27 @@ export function useArticles({
   onUpdated,
   onDeleted,
   onCommentDeleted,
+  onError, // 🆕
 } = {}) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // -------- Helper centralizado de erros --------
+  const handleErr = useCallback(
+    (err, defaultMsg = 'Erro inesperado') => {
+      const msg = err?.message || defaultMsg;
+      setError(msg);
+      onError?.(msg);
+    },
+    [onError]
+  );
+
   // -------- Fetch inicial --------
+  // ⚠️ Dependência vazia INTENCIONAL.
+  // handleErr depende de onError (callback instável do App). Incluí-lo aqui
+  // causava loop infinito de fetch. O fetch inicial roda UMA VEZ na montagem.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -24,7 +39,7 @@ export function useArticles({
         const data = await api.listArticles();
         if (!cancelled) setArticles(data);
       } catch (err) {
-        if (!cancelled) setError(err.message || 'Erro ao carregar artigos');
+        if (!cancelled) handleErr(err, 'Erro ao carregar artigos');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -32,7 +47,7 @@ export function useArticles({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, []); // ⚠️ Deliberadamente vazio — ver comentário acima
 
   // -------- Ações (mesmo contrato público de antes) --------
 
@@ -42,11 +57,11 @@ export function useArticles({
         const updated = await api.incrementViews(id);
         setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
       }
       onOpen?.(id);
     },
-    [onOpen]
+    [onOpen, handleErr]
   );
 
   const createArticle = useCallback(
@@ -57,11 +72,11 @@ export function useArticles({
         onCreated?.(newArt);
         return newArt;
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
         return null;
       }
     },
-    [onCreated]
+    [onCreated, handleErr]
   );
 
   const updateArticle = useCallback(
@@ -72,11 +87,11 @@ export function useArticles({
         onUpdated?.(id);
         return updated;
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
         return null;
       }
     },
-    [onUpdated]
+    [onUpdated, handleErr]
   );
 
   const deleteArticle = useCallback(
@@ -86,10 +101,10 @@ export function useArticles({
         setArticles((prev) => prev.filter((art) => art.id !== id));
         onDeleted?.(id);
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
       }
     },
-    [onDeleted]
+    [onDeleted, handleErr]
   );
 
   const postComment = useCallback(
@@ -107,11 +122,11 @@ export function useArticles({
         onComment?.(articleId);
         return newComment;
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
         return null;
       }
     },
-    [onComment]
+    [onComment, handleErr]
   );
 
   const deleteComment = useCallback(
@@ -130,20 +145,23 @@ export function useArticles({
         );
         onCommentDeleted?.(articleId, commentId);
       } catch (err) {
-        setError(err.message);
+        handleErr(err);
       }
     },
-    [onCommentDeleted]
+    [onCommentDeleted, handleErr]
   );
 
-  const likeArticle = useCallback(async (articleId) => {
-    try {
-      const updated = await api.incrementLikes(articleId);
-      setArticles((prev) => prev.map((art) => (art.id === articleId ? updated : art)));
-    } catch (err) {
-      setError(err.message);
-    }
-  }, []);
+  const likeArticle = useCallback(
+    async (articleId) => {
+      try {
+        const updated = await api.incrementLikes(articleId);
+        setArticles((prev) => prev.map((art) => (art.id === articleId ? updated : art)));
+      } catch (err) {
+        handleErr(err);
+      }
+    },
+    [handleErr]
+  );
 
   // -------- Derivados (mesma lógica de antes) --------
   const sortedByViews = useMemo(

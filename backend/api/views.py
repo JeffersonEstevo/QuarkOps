@@ -8,6 +8,11 @@ from .permissions import AllowAnyForCreateReadAuth, IsAdminOrReadOnly
 from .serializers import CommentSerializer, PostSerializer
 
 
+from rest_framework.permissions import IsAuthenticated
+
+from .serializers import UserSerializer, PostSerializer, CommentSerializer
+from .models import User
+
 class PostViewSet(viewsets.ModelViewSet):
     """
     CRUD de posts + ações customizadas:
@@ -63,4 +68,20 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [AllowAnyForCreateReadAuth]
     http_method_names = ["delete", "head", "options"]
+
+
+class UserViewSet(viewsets.GenericViewSet):
+    """
+    Apenas `GET /api/users/me/` é exposto — retorna o usuário logado.
+
+    Usado pelo AuthProvider após o login para popular `user` no estado global.
+    """
+
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=["get"])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
     

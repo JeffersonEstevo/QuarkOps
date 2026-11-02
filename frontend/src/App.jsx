@@ -1,5 +1,5 @@
 // frontend/src/App.jsx
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import ReadingProgressBar from './components/layout/ReadingProgressBar';
@@ -52,45 +52,100 @@ export default function App() {
     console.log('🔄 Storage do QuarkOps limpo por atualização de versão.');
   }, []);
 
-  // ── Dados ─────────────────────────────────────────────────────
-  const {
-    articles, featured, filteredArticles,
-    openArticle, createArticle, updateArticle, deleteArticle,
-    postComment, deleteComment, likeArticle,
-  } = useArticles({
-    activeCategory,
-    searchTerm,
-    onOpen: (id) => {
+  // ── Callbacks estáveis (evitam loop infinito de fetch) ───────
+  const handleOpenArticle = useCallback(
+    (id) => {
       setSelectedArticleId(id);
       setCurrentView(VIEWS.ARTICLE);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    onCreated: (art) => {
+    []
+  );
+
+  const handleArticleCreated = useCallback(
+    (art) => {
       setCrmMode(null);
       triggerToast('Artigo publicado com sucesso pelo CRM!');
       setSelectedArticleId(art.id);
       setCurrentView(VIEWS.ARTICLE);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    onUpdated: () => {
-      setCrmMode(null);
-      setEditingArticleId(null);
-      triggerToast('Artigo atualizado com sucesso!');
-    },
-    onDeleted: (id) => {
+    [triggerToast]
+  );
+
+  const handleArticleUpdated = useCallback(() => {
+    setCrmMode(null);
+    setEditingArticleId(null);
+    triggerToast('Artigo atualizado com sucesso!');
+  }, [triggerToast]);
+
+  const handleArticleDeleted = useCallback(
+    (id) => {
       triggerToast('Artigo excluído.');
-      if (selectedArticleId === id) {
-        setSelectedArticleId(null);
-        setCurrentView(VIEWS.HOME);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      setSelectedArticleId((prevSelected) => {
+        if (prevSelected === id) {
+          setCurrentView(VIEWS.HOME);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return null;
+        }
+        return prevSelected;
+      });
     },
-    onComment: () => triggerToast('Comentário postado com sucesso!'),
-    onCommentDeleted: () => triggerToast('Comentário removido pela moderação.'),
+    [triggerToast]
+  );
+
+  const handleCommentAdded = useCallback(() => {
+    triggerToast('Comentário postado com sucesso!');
+  }, [triggerToast]);
+
+  const handleCommentDeletedToast = useCallback(() => {
+    triggerToast('Comentário removido pela moderação.');
+  }, [triggerToast]);
+
+  const handleApiError = useCallback(
+    (msg) => {
+      triggerToast(`Erro: ${msg}`, 'error');
+    },
+    [triggerToast]
+  );
+
+  // ── Dados ─────────────────────────────────────────────────────
+  const {
+    articles,
+    featured,
+    filteredArticles,
+    openArticle,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+    postComment,
+    deleteComment,
+    likeArticle,
+  } = useArticles({
+    activeCategory,
+    searchTerm,
+    onOpen: handleOpenArticle,
+    onCreated: handleArticleCreated,
+    onUpdated: handleArticleUpdated,
+    onDeleted: handleArticleDeleted,
+    onComment: handleCommentAdded,
+    onCommentDeleted: handleCommentDeletedToast,
+    onError: handleApiError,
   });
 
   const readingProgress = useReadingProgress(currentView);
-  //useToc({ currentView, selectedArticleId, content: selectedArticle?.content });
+
+  // ── Derivados ────────────────────────────────────────────────
+  const selectedArticle = articles.find((a) => a.id === selectedArticleId);
+  const editingArticle = editingArticleId
+    ? articles.find((a) => a.id === editingArticleId) || null
+    : null;
+
+  useToc({
+    currentView,
+    selectedArticleId,
+    content: selectedArticle?.content,
+  });
 
   // ── Navegação ────────────────────────────────────────────────
   const navigateHome = () => {
@@ -181,15 +236,7 @@ export default function App() {
     });
   };
 
-  // ── Derivados ────────────────────────────────────────────────
-  const selectedArticle = articles.find((a) => a.id === selectedArticleId);
-  const editingArticle = editingArticleId
-    ? articles.find((a) => a.id === editingArticleId) || null
-    : null;
-
-  // ── TOC (depende de selectedArticle) ─────────────────────────
-  useToc({ currentView, selectedArticleId, content: selectedArticle?.content });
-
+  // ────────────────────────────────────────────────────────────
   return (
     <div className="bg-python-lightbg text-slate-800 dark:bg-python-deep dark:text-slate-100 min-h-screen flex flex-col font-sans selection:bg-python-yellow selection:text-slate-900">
       {currentView === VIEWS.ARTICLE && <ReadingProgressBar progress={readingProgress} />}
@@ -258,8 +305,8 @@ export default function App() {
       {isCrmAuthenticated && (
         <button
           type="button"
-          onClick={() => {
-            logout();
+          onClick={async () => {
+            await logout();
             triggerToast('Sessão do CRM encerrada.');
           }}
           className="fixed bottom-6 left-6 z-40 bg-slate-900 text-python-yellow border-2 border-python-yellow px-3 py-1.5 pixel-border-sm font-mono text-xs hover:opacity-80"

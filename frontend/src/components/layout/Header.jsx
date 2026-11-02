@@ -1,12 +1,13 @@
 // frontend/src/components/layout/Header.jsx
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext'; // 🆕 Importado o useAuth
 
 /**
  * Cabeçalho fixo com:
  *  - logo (leva para home)
  *  - busca em tempo real
  *  - botão de tema (consome useTheme)
- *  - botão do CRM
+ *  - botão do CRM (com suporte a exibição do usuário logado)
  *
  * Props:
  *  - searchTerm, setSearchTerm     → input controlado de busca
@@ -21,6 +22,7 @@ export default function Header({
   onOpenCrm,
 }) {
   const { darkMode, toggleTheme } = useTheme();
+  const { user, isCrmAuthenticated } = useAuth(); // 🆕 Consumindo o contexto de autenticação
 
   return (
     <header className="sticky top-0 z-40 bg-python-lightbg/95 dark:bg-python-deep/95 backdrop-blur border-b border-python-lightborder dark:border-slate-800">
@@ -66,14 +68,26 @@ export default function Header({
             />
           </button>
 
-          <button
-            type="button"
-            onClick={onOpenCrm}
-            className="bg-python-blue text-python-yellow border border-slate-700 px-3 py-1.5 text-xs font-mono font-bold pixel-border-sm hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform"
-          >
-            <i className="fa-solid fa-lock mr-1.5" aria-hidden="true" />
-            CRM
-          </button>
+          {/* Botão do CRM dinâmico (com base na autenticação) */}
+          {isCrmAuthenticated ? (
+            <button
+              type="button"
+              onClick={onOpenCrm}
+              className="bg-python-blue text-python-yellow border border-slate-700 px-3 py-1.5 text-xs font-mono font-bold pixel-border-sm hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform flex items-center"
+            >
+              <i className="fa-solid fa-user-shield mr-1.5" aria-hidden="true" />
+              {user?.display_name || user?.username || 'CRM'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onOpenCrm}
+              className="bg-python-blue text-python-yellow border border-slate-700 px-3 py-1.5 text-xs font-mono font-bold pixel-border-sm hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform flex items-center"
+            >
+              <i className="fa-solid fa-lock mr-1.5" aria-hidden="true" />
+              CRM
+            </button>
+          )}
         </div>
       </div>
     </header>

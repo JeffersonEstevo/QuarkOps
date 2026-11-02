@@ -214,6 +214,21 @@ curl -X POST http://localhost:8000/api/posts/ \
   -d '{"title":"Test","category":"Test","summary":"x","content":"<p>x</p>"}'
 ```
 
+### 7.1 Testar Autenticação JWT (via curl)
+
+O SimpleJWT está configurado no backend. O frontend usa o `httpAdapter` para renovar os tokens automaticamente.
+
+```bash
+# 1. Obter os tokens (substitua por suas credenciais do superusuário)
+curl.exe -X POST http://localhost:8000/api/token/ -H "Content-Type: application/json" -d "{\"username\":\"SEU_USER\",\"password\":\"SUA_SENHA\"}"
+
+# 2. Consultar o perfil do usuário logado
+curl.exe http://localhost:8000/api/users/me/ -H "Authorization: Bearer SEU_ACCESS_TOKEN"
+
+# 3. Testar o refresh de token (simula o que o frontend faz sozinho)
+curl.exe -X POST http://localhost:8000/api/token/refresh/ -H "Content-Type: application/json" -d "{\"refresh\":\"SEU_REFRESH_TOKEN\"}"
+```
+
 ### 8. Resetar banco do zero (⚠️ destrutivo)
 
 Se precisar recriar tudo (ex: após alterar models com dependência forte):

@@ -149,3 +149,16 @@
   - **Validação tripla:** (1) leitura HTTP com backend real; (2) escritas bloqueadas por 401; (3) fallback `localStorage` (switch `VITE_API_ADAPTER=local`).
   - **`login(credentials)`** no `httpAdapter` é stub: lança `Error('Login JWT será implementado no Passo 6...')`. Não é chamado por nenhum componente (o `AuthProvider` ainda usa senha hardcoded).
 - **Consequências:** Backend é consumido em modo leitura. Curtidas, views e comentários anônimos **funcionam** via HTTP (auth público). Escritas de posts (`createArticle`, `updateArticle`, `deleteArticle`) e moderação de comentários (`deleteComment`) retornam `401` — comportamento **correto e esperado** até o Passo 6. O adapter abstrai o shape, então o Passo 6 **não toca em `httpAdapter`** (só adiciona o header `Authorization`). Bug 2 resolvido no frontend via `authorBio` (o backend já tinha o dado desde o Passo 3). **Dívida técnica:** UI de erro (toast genérico + mensagens amigáveis) fica para o Passo 6; paginação infinita para quando houver > 20 posts.
+
+## ADR-015: Autenticação JWT no Frontend com Refresh Automático
+- **Data:** 03/11/2026
+- **Status:** Aceito
+- **Contexto:** O frontend precisava desbloquear as escritas (CRUD de posts e moderação), substituindo a senha hardcoded (`admin123` - ADR-007) por autenticação real no Django.
+- **Decisão:**
+  - **Endpoints:** SimpleJWT padrão (`POST /api/token/`, `POST /api/token/refresh/`) + endpoint customizado `GET /api/users/me/` para retornar os dados do usuário logado.
+  - **Persistência:** Tokens salvos em `localStorage` via `authStorage.js`. (Dívida Técnica: vulnerável a XSS, mitigado pelo `nh3` no Passo 4. Migração para cookie `httpOnly` no Passo 7).
+  - **Refresh Automático:** O `fetchWithAuth` no `httpAdapter.js` intercepta respostas `401`, solicita um novo `access` usando o `refresh` token, e refaz a requisição original de forma transparente (Fila de subscribers evita múltiplos refreshes simultâneos).
+  - **Expiração:** `access` dura 5 minutos, `refresh` dura 1 dia.
+  - **UI de Erro:** O hook `useArticles` recebeu a prop `onError`, conectada ao `triggerToast` no `App.jsx`, para exibir falhas de rede/auth ao usuário.
+  - **LoginGate:** Agora exige `username` e `password`. Validação server-side (o frontend rejeita usuários com `is_staff === false` ou `is_superuser === false`).
+- **Consequências:** O CRM agora é uma área verdadeiramente protegida. O fluxo de expiração de token é invisível para o usuário logado. O `AuthProvider` gerencia o estado do usuário (`user`) e se comunica com a API. **Backlog criado:** O autor dos posts agora é o usuário logado (FK), mas o `CrmModal` ainda não exibe essa informação (campo "Autor" no form foi mantido por compatibilidade visual, mas ignorado pelo backend). Categorias dinâmicas e subcategorias foram movidas para o Passo 7 (ver backlog).

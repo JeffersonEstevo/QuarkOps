@@ -10,6 +10,27 @@ class UserPublicSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "display_name", "avatar_url", "bio", "role")
 
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Usuário completo (apenas para /me/ — requer autenticação).
+    Expõe campos que o frontend precisa para o CRM.
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "display_name",
+            "avatar_url",
+            "bio",
+            "role",
+            "is_staff",
+            "is_superuser",
+        )
+        read_only_fields = fields
+
 
 class CommentSerializer(serializers.ModelSerializer):
     """

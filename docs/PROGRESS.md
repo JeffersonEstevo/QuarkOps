@@ -1,9 +1,9 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase 5 Concluída: Integração Frontend ↔ Backend (leitura) operacional]
-- **Última Atualização:** 02/11/2026
-- **Meta Imediata:** Migrar `AuthProvider` para JWT real (Passo 6).
+- **Fase Atual:** [Fase 6 Concluída: Autenticação JWT e UI de Erros]
+- **Última Atualização:** 03/11/2026
+- **Meta Imediata:** Deploy final e/ou polimento visual (Passo 7).
 
 ## Quadro de Tarefas
 
@@ -24,9 +24,10 @@
 - [x] **Passo 3 (Backend):** Modelados `User` (AbstractUser com display_name/bio/avatar_url/role), `Post` (FK author, tags JSON, views/likes) e `Comment` (híbrido: author_name + author_user opcional). UUIDs em todas as entidades. ViewSets DRF com permissões finas (`IsAdminOrReadOnly`, `AllowAnyForCreateReadAuth`). Ações `like`/`view`/`comments` customizadas. Seed idempotente (`seed_articles`). Comentário anônimo funcional (RF-006) (ADR-012).
 - [x] **Passo 4 (Backend):** Sanitização server-side com `nh3` (ADR-013). `Post.save()` aplica `sanitize_html()` antes de persistir. `highlight.js` mantido no cliente. Comando `sanitize_existing_posts` com `--dry-run` para migração manual. Config preserva `class` (Tailwind/highlight) e `id` de headings (TOC), remove `<script>`/`onerror`/`style`/`javascript:`, adiciona `rel="noopener noreferrer"` em links externos.
 - [x] **Passo 5 (Integração):** `httpAdapter.js` reescrito com mapeamento backend→frontend (`mapPost`, `mapComment`, `formatDate`, `formatRelativeDate`, `getInitials`). `frontend/.env.local` com `VITE_API_ADAPTER=http`. Leitura HTTP funcionando (posts, comentários, curtidas, views). Escritas bloqueadas por `401` (backend protegido). Fallback `localStorage` intacto. Bug 2 resolvido no frontend via `authorBio` (ADR-014).
+- [x] **Passo 6 (Segurança):** JWT implementado. `AuthProvider` gerencia `user`, `access` e `refresh` tokens (ADR-015). `httpAdapter` reescrito com `fetchWithAuth` (refresh automático com fila). `LoginGate` exige usuário/senha. Escritas desbloqueadas. UI de erro genérica implementada via `onError`.
 
 ### 🟨 Em Andamento (Foco Atual)
-- [ ] **Passo 6 (Segurança):** Migrar `AuthProvider` para JWT real (`POST /api/token/`) e adicionar UI de erro mínima (toast) para falhas de escrita.
+- [ ] **Passo 7 (Deploy):** Configurar Docker Compose unificado (Frontend + Backend + Postgres) ou polimento visual.
 
 ### 🟥 A Fazer (Trilha para Produção Backend)
 > Passos ainda **não iniciados**. Ao começar um item, mova-o para 🟨. Ao concluir, mova-o para 🟩.
@@ -35,3 +36,7 @@
 
 ### 📌 Backlog (não bloqueia a trilha de produção)
 - [ ] Migrar `AuthProvider` para `api.login()` (hoje usa senha hardcoded — ADR-007). Previsto no Passo 6.
+- [ ] **Categorias Dinâmicas:** Transformar `category` (CharField) em model `Category` (FK) para permitir criação sem deploy. (Passo 7+)
+- [ ] **Subcategorias:** Hierarquia (`parent` FK) ou usar tags para granularidade. (Passo 7+)
+- [ ] **Autor no CRM:** Substituir o campo `author` de texto livre no `CrmModal` por uma exibição readonly do usuário logado (ou select de usuários).
+- [ ] **Segurança JWT:** Migrar tokens de `localStorage` para cookie `httpOnly` (proteção total contra XSS).
