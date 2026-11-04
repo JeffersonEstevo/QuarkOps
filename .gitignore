@@ -117,3 +117,20 @@ htmlcov/
 # ==========================================
 # Se houver volumes locais mapeados
 docker-compose.override.yml
+
+
+# Docker / Env
+.env
+.env.local
+.env.*.local
+*.env.local
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/staticfiles/
+backend/*.sqlite3
+
+# Frontend
+frontend/node_modules/
+frontend/dist/

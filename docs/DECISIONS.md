@@ -162,3 +162,20 @@
   - **UI de Erro:** O hook `useArticles` recebeu a prop `onError`, conectada ao `triggerToast` no `App.jsx`, para exibir falhas de rede/auth ao usuário.
   - **LoginGate:** Agora exige `username` e `password`. Validação server-side (o frontend rejeita usuários com `is_staff === false` ou `is_superuser === false`).
 - **Consequências:** O CRM agora é uma área verdadeiramente protegida. O fluxo de expiração de token é invisível para o usuário logado. O `AuthProvider` gerencia o estado do usuário (`user`) e se comunica com a API. **Backlog criado:** O autor dos posts agora é o usuário logado (FK), mas o `CrmModal` ainda não exibe essa informação (campo "Autor" no form foi mantido por compatibilidade visual, mas ignorado pelo backend). Categorias dinâmicas e subcategorias foram movidas para o Passo 7 (ver backlog).
+
+## ADR-016: Deploy Unificado com Docker Compose (Nginx + Gunicorn)
+- **Data:** 03/11/2026
+- **Status:** Aceito
+- **Contexto:** O backend e o banco rodavam em Docker (dev), mas o frontend rodava no Vite (fora do Docker). Isso exigia CORS configurado, Vite proxy, e dois comandos separados para subir tudo. Precisávamos de um ambiente de "staging" reproduzível, simulando produção real, que pudesse ser iniciado com um único comando.
+- **Decisão:**
+  - **Docker Compose unificado na raiz** (`docker-compose.yml`): orquestra `db` (Postgres 16), `backend` (Django + Gunicorn), `frontend` (Nginx).
+  - **Backend em Gunicorn** (não `runserver`): imagem `python:3.13-slim`, `entrypoint.sh` roda `migrate` + `collectstatic` + `seed_articles` + `gunicorn core.wsgi:application`.
+  - **Frontend build multi-stage:** Stage 1 (`node:20-alpine`) roda `npm ci` + `npm run build`; Stage 2 (`nginx:1.27-alpine`) serve o `dist/`.
+  - **Nginx como reverse proxy:** serve `/` (React estático), faz `proxy_pass` para `/api/` e `/admin/` (backend Gunicorn), e serve `/static/` do Django via volume compartilhado (`quarkops_static`).
+  - **Variáveis de ambiente via `.env` na raiz:** `DJANGO_SECRET_KEY`, `POSTGRES_PASSWORD`, `CORS_ALLOWED_ORIGINS`, etc. `.env.example` commitado (modelo), `.env` ignorado.
+  - **Ambiente de Staging:** `DJANGO_DEBUG=False`, mas logs detalhados no console do container. HTTPS desabilitado (staging local em `http://localhost`). Linhas de segurança para produção (HTTPS, HSTS, cookies secure) comentadas no `settings.py`, prontas para ativar no Passo 8 (domínio real).
+  - **Coexistência de fluxos:**
+    - **Dev local:** backend `runserver` (pasta `backend/`) + frontend `npm run dev` (pasta `frontend/`) + Postgres no `backend/docker-compose.yml`. Para desenvolvimento rápido com hot reload.
+    - **Deploy unificado:** `docker compose up --build` na raiz. Para simular produção.
+  - **Volumes nomeados:** `quarkops_pgdata` (dados do Postgres) e `quarkops_static` (estáticos compartilhados entre backend e Nginx).
+- **Consequências:** Um único comando sobe todo o QuarkOps. CORS desaparece (mesma origem `localhost:80`). Backend roda em modo de produção (Gunicorn). Estáticos servidos pelo Nginx (performance). **Dívida técnica:** backups automáticos ficam para o Passo 8 (comando manual documentado). HTTPS/domínio real também (Passo 8).

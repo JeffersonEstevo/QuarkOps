@@ -310,3 +310,95 @@ No navegador, abra o DevTools (F12) → Console. Esperado ver:
 | **3. Fallback local** | `VITE_API_ADAPTER=local` | Home lista 6 artigos do `localStorage`. CRM funciona (criar/editar/deletar). |
 
 > **Sobre o `[::1]:8000`:** ver nota na seção Backend. Docker Desktop pode comentar as entradas de `localhost` no `hosts` do Windows; `[::1]` contorna sem precisar editar arquivos do sistema.
+
+## Deploy Unificado (Docker Compose)
+
+### Pré-requisitos
+- **Docker Desktop** aberto (ícone da baleia na bandeja do sistema).
+- Arquivo `.env` na raiz do projeto (copiar de `.env.example` e gerar `DJANGO_SECRET_KEY`).
+
+Gerar `DJANGO_SECRET_KEY`:
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+### Subir tudo (primeira vez)
+
+```bash
+# Na raiz do projeto (onde está docker-compose.yml)
+docker compose up --build
+```
+
+Aguarde o build (2-5 min na primeira vez). Esperado:
+```
+✔ Network 026_quarkops_quarkops_net    Created
+✔ Container quarkops_db                Started
+✔ Container quarkops_backend           Started
+✔ Container quarkops_frontend          Started
+```
+
+O backend roda automaticamente: `migrate`, `collectstatic`, `seed_articles`, `gunicorn`.
+
+### Criar superusuário (primeira vez)
+
+Em outro terminal (o `up` fica travado mostrando logs):
+
+```bash
+docker compose exec backend python manage.py createsuperuser
+```
+
+### Acessar
+
+- **App:** `http://localhost/`
+- **Admin:** `http://localhost/admin/`
+- **API:** `http://localhost/api/posts/`
+
+### Comandos úteis
+
+```bash
+# Ver logs (backend, frontend, banco)
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f db
+
+# Parar tudo (mantém volumes)
+docker compose down
+
+# Parar E apagar dados (⚠️ destrutivo)
+docker compose down -v
+
+# Rebuild após mudança de código
+docker compose up --build
+
+# Rodar comandos no backend
+docker compose exec backend python manage.py shell
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py seed_articles
+
+# Backup do banco
+docker compose exec -T db pg_dump -U quarkops quarkops > backup_$(date +%Y%m%d).sql
+
+# Restore do backup
+docker compose exec -T db psql -U quarkops quarkops < backup_20261103.sql
+```
+
+### Fluxo de desenvolvimento (alternativo ao deploy)
+
+O projeto tem **dois fluxos**:
+
+| Modo | Backend | Frontend | Postgres | Quando usar |
+|---|---|---|---|---|
+| **Dev** | `runserver` | `npm run dev` | `backend/docker-compose.yml` | Desenvolvimento rápido (hot reload) |
+| **Deploy** | Gunicorn (Docker) | Nginx (Docker) | Raiz `docker-compose.yml` | Simular produção |
+
+**Dev local (em dois terminais):**
+```bash
+# Terminal 1 (backend)
+cd backend
+docker compose -f docker-compose.yml up -d   # Postgres
+python manage.py runserver "[::1]:8000"
+
+# Terminal 2 (frontend)
+cd frontend
+npm run dev                                   # http://localhost:5173
+```

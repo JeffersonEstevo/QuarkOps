@@ -44,38 +44,73 @@
 - [RF-017] O administrador deve conseguir visualizar e moderar (excluir) comentários inadequados enviados pelos leitores.
 
 ## 4. Estrutura de Pastas (estado atual)
+
 ```text
 📁 026_QuarkOps
 ├── 📁 docs
-│   ├── 📖 COMMANDS.md
-│   ├── 📖 DECISIONS.md
-│   ├── 📖 PROGRESS.md
-│   ├── 📖 SPEC.md
-│   └── 📖 STRUCTURE.md
-├── 📁 backend                # Django 5.1 + DRF + SimpleJWT + PostgreSQL
-│   ├── 📁 core               # Projeto Django (settings, urls, wsgi, asgi)
-│   ├── 📁 api                # App de domínio (models vazios — Passo 3)
-│   │   └── 📁 migrations
+│   ├── 📖 COMMANDS.md         # Guia de comandos (dev + deploy)
+│   ├── 📖 DECISIONS.md        # ADRs (001 a 016)
+│   ├── 📖 PROGRESS.md         # Quadro de tarefas e backlog
+│   ├── 📖 SPEC.md             # Este arquivo
+│   └── 📖 STRUCTURE.md        # Arquitetura frontend + backend + deploy
+├── 📁 backend                 # Django 5.1 + DRF + SimpleJWT + PostgreSQL
+│   ├── 📁 core                # Projeto Django (settings, urls, wsgi, asgi)
+│   ├── 📁 api                 # App de domínio (User, Post, Comment)
+│   │   ├── 📁 management/commands  # seed_articles, sanitize_existing_posts
+│   │   ├── 📁 migrations
+│   │   ├── 📄 admin.py        # Registro no Django Admin
+│   │   ├── 📄 apps.py
+│   │   ├── 📄 models.py       # User, Post, Comment (UUIDs)
+│   │   ├── 📄 permissions.py  # IsAdminOrReadOnly, AllowAnyForCreateReadAuth
+│   │   ├── 📄 sanitizers.py   # nh3 (sanitização HTML — ADR-013)
+│   │   ├── 📄 serializers.py
+│   │   ├── 📄 urls.py         # DefaultRouter + rotas JWT
+│   │   └── 📄 views.py        # ViewSets + ações customizadas
+│   ├── 📁 venv                # Ambiente virtual (NÃO commitar)
 │   ├── 📄 manage.py
 │   ├── 📄 requirements.txt
-│   ├── 📄 docker-compose.yml # PostgreSQL 16 (container quarkops_db)
-│   ├── 📄 .env.example       # Modelo de variáveis (commitar)
-│   ├── 📄 .env               # Variáveis locais (NÃO commitar)
+│   ├── 📄 Dockerfile          # 🆕 Imagem de produção (Gunicorn)
+│   ├── 📄 entrypoint.sh       # 🆕 migrate + collectstatic + seed + gunicorn
+│   ├── 📄 gunicorn.conf.py    # 🆕 Config do Gunicorn (workers)
+│   ├── 📄 docker-compose.yml  # Postgres (dev local)
+│   ├── 📄 .dockerignore       # 🆕
+│   ├── 📄 .env.example        # Modelo de variáveis (commitar)
+│   ├── 📄 .env                # Variáveis locais (NÃO commitar)
 │   └── 📄 .gitignore
-└── 📁 frontend               # React + Vite + Tailwind CSS v4
+└── 📁 frontend                # React + Vite + Tailwind CSS v4
     ├── 📁 src
-    │   ├── 📁 components     # article/, crm/, home/, layout/, providers/, ui/
-    │   ├── 📁 contexts       # useTheme, useToast, useAuth
-    │   ├── 📁 hooks          # useArticles, useReadingProgress, useToc
-    │   ├── 📁 pages          # HomePage, ArticlePage
-    │   ├── 📁 services       # 🆕 Camada de dados
-    │   │   ├── 📁 adapters   # localStorageAdapter.js, httpAdapter.js
-    │   │   └── 📄 api.js     # Fachada única (VITE_API_ADAPTER)
-    │   ├── 📁 utils          # constants.js, storage.js (legado)
+    │   ├── 📁 components      # article/, crm/, home/, layout/, providers/, ui/
+    │   ├── 📁 contexts        # useTheme, useToast, useAuth
+    │   ├── 📁 hooks           # useArticles, useReadingProgress, useToc
+    │   ├── 📁 pages           # HomePage, ArticlePage
+    │   ├── 📁 services        # Camada de dados
+    │   │   ├── 📁 adapters    # localStorageAdapter.js, httpAdapter.js (JWT)
+    │   │   ├── 📄 api.js      # Fachada única (VITE_API_ADAPTER)
+    │   │   └── 📄 authStorage.js  # 🆕 Persistência de tokens JWT
+    │   ├── 📁 utils           # constants.js, storage.js (legado)
     │   ├── 📄 App.jsx
     │   └── 📄 main.jsx
-    ├── 📄 index.css          # Tailwind v4 (@theme, @custom-variant)
+    ├── 📄 index.css           # Tailwind v4 (@theme, @custom-variant)
     ├── 📄 package.json
-    └── 📄 vite.config.js
+    ├── 📄 vite.config.js
+    ├── 📄 Dockerfile          # 🆕 Build multi-stage (Node → Nginx)
+    ├── 📄 nginx.conf          # 🆕 Reverse proxy + estáticos
+    ├── 📄 .dockerignore       # 🆕
+    └── 📄 .env.local          # VITE_API_ADAPTER + VITE_API_URL (NÃO commitar)
+├── 📄 docker-compose.yml      # 🆕 Deploy unificado (db + backend + frontend)
+├── 📄 .env                    # 🆕 Variáveis de deploy (NÃO commitar)
+├── 📄 .env.example            # 🆕 Modelo público de variáveis de deploy
+└── 📄 .gitignore              # 🆕 Ignora .env, node_modules, venv, etc.
 ```
+
+> **Notas de infraestrutura:**
+> - **`backend/docker-compose.yml`** (dev): sobe **apenas** o Postgres. Usado no fluxo de desenvolvimento local (backend via `runserver`, frontend via `npm run dev`).
+> - **`docker-compose.yml`** (raiz): orquestra **tudo** (Postgres + Gunicorn + Nginx) para simular produção. Usado no deploy unificado (ADR-016).
+> - **Nginx** (`frontend/nginx.conf`): serve o build do React, faz `proxy_pass` para `/api/` e `/admin/` (backend Gunicorn) e serve `/static/` do Django via volume compartilhado.
+> - **`entrypoint.sh`** (backend): ao subir o container, roda automaticamente `migrate`, `collectstatic`, `seed_articles` e inicia o Gunicorn. Não é necessário rodar comandos manuais no primeiro `docker compose up`.
+> - **`venv/`** e **`node_modules/`** são ignorados pelo `.gitignore` (não vão para o repositório).
+> - **`.env`** (raiz e backend) nunca é commitado — apenas `.env.example`.
+> - A configuração do Tailwind v4 vive em `index.css` via `@theme` e `@custom-variant` (não há `tailwind.config.js`).
+> - O `highlight.js` permanece no cliente (ADR-005, ADR-013). O backend apenas sanitiza o HTML via `nh3`.
+> - **Estrutura detalhada** do `src/` e do backend em `docs/STRUCTURE.md`.
 ---

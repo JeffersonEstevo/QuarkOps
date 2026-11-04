@@ -1,9 +1,9 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase 6 Concluída: Autenticação JWT e UI de Erros]
+- **Fase Atual:** [Fase 7 Concluída: Deploy Unificado com Docker Compose]
 - **Última Atualização:** 03/11/2026
-- **Meta Imediata:** Deploy final e/ou polimento visual (Passo 7).
+- **Meta Imediata:** Passo 8 (Opcional) — Produção real (HTTPS + domínio) OU features avançadas (Categorias dinâmicas, subcategorias).
 
 ## Quadro de Tarefas
 
@@ -25,14 +25,17 @@
 - [x] **Passo 4 (Backend):** Sanitização server-side com `nh3` (ADR-013). `Post.save()` aplica `sanitize_html()` antes de persistir. `highlight.js` mantido no cliente. Comando `sanitize_existing_posts` com `--dry-run` para migração manual. Config preserva `class` (Tailwind/highlight) e `id` de headings (TOC), remove `<script>`/`onerror`/`style`/`javascript:`, adiciona `rel="noopener noreferrer"` em links externos.
 - [x] **Passo 5 (Integração):** `httpAdapter.js` reescrito com mapeamento backend→frontend (`mapPost`, `mapComment`, `formatDate`, `formatRelativeDate`, `getInitials`). `frontend/.env.local` com `VITE_API_ADAPTER=http`. Leitura HTTP funcionando (posts, comentários, curtidas, views). Escritas bloqueadas por `401` (backend protegido). Fallback `localStorage` intacto. Bug 2 resolvido no frontend via `authorBio` (ADR-014).
 - [x] **Passo 6 (Segurança):** JWT implementado. `AuthProvider` gerencia `user`, `access` e `refresh` tokens (ADR-015). `httpAdapter` reescrito com `fetchWithAuth` (refresh automático com fila). `LoginGate` exige usuário/senha. Escritas desbloqueadas. UI de erro genérica implementada via `onError`.
+- [x] **Passo 7 (Deploy):** Docker Compose unificado na raiz. Frontend multi-stage (Node build → Nginx). Backend com Gunicorn + `entrypoint.sh` (migrate, collectstatic, seed). Nginx como reverse proxy (`/api/` e `/admin/`) e serving de estáticos. Variáveis de ambiente via `.env` (ADR-016). Staging local em `http://localhost`.
 
 ### 🟨 Em Andamento (Foco Atual)
-- [ ] **Passo 7 (Deploy):** Configurar Docker Compose unificado (Frontend + Backend + Postgres) ou polimento visual.
+- [ ] **Passo 8 (Escolha):** Produção real (HTTPS + domínio) OU features avançadas (categorias dinâmicas). Decisão pendente.
 
-### 🟥 A Fazer (Trilha para Produção Backend)
-> Passos ainda **não iniciados**. Ao começar um item, mova-o para 🟨. Ao concluir, mova-o para 🟩.
-- [ ] **Passo 7 (Deploy):** Docker Compose (PostgreSQL + Django + Frontend) e variáveis de ambiente.
-- [ ] **Passo 8 (Polish):** UI de erro (toast + mensagens amigáveis), paginação infinita (> 20 posts), estados de `loading` com skeletons.
+### 🟥 A Fazer (Backlog de Evolução)
+> Não bloqueiam o projeto. Escolher conforme prioridade.
+- [ ] **Produção Real:** Domínio + HTTPS (Let's Encrypt/Caddy) + cookies `httpOnly` para JWT.
+- [ ] **Categorias Dinâmicas:** Model `Category` (FK) no Django Admin.
+- [ ] **Subcategorias:** Hierarquia (`parent`) ou tags como granularidade.
+- [ ] **Backups Automáticos:** Cronjob `pg_dump` diário.
 
 ### 📌 Backlog (não bloqueia a trilha de produção)
 - [ ] Migrar `AuthProvider` para `api.login()` (hoje usa senha hardcoded — ADR-007). Previsto no Passo 6.

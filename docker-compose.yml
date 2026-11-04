@@ -1,0 +1,68 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: quarkops_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-quarkops}
+      POSTGRES_USER: ${POSTGRES_USER:-quarkops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quarkops_dev}
+    volumes:
+      - quarkops_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quarkops} -d ${POSTGRES_DB:-quarkops}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quarkops_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: quarkops_backend
+    restart: unless-stopped
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      POSTGRES_DB: ${POSTGRES_DB:-quarkops}
+      POSTGRES_USER: ${POSTGRES_USER:-quarkops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quarkops_dev}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - quarkops_static:/app/staticfiles
+    networks:
+      - quarkops_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_ADAPTER: http
+        VITE_API_URL: /api
+    container_name: quarkops_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    volumes:
+      - quarkops_static:/var/www/static:ro
+    networks:
+      - quarkops_net
+
+volumes:
+  quarkops_pgdata:
+  quarkops_static:
+
+networks:
+  quarkops_net:
+    driver: bridge

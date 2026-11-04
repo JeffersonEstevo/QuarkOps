@@ -77,3 +77,62 @@ A fachada já existe. Para plugar o Django:
 | `postComment(articleId, c)` | `POST /api/posts/:id/comments/` | público |
 | `deleteComment(articleId, cId)` | `DELETE /api/comments/:cId/` | staff |
 | `login(creds)` | `POST /api/token/` (Passo 6) | — |
+
+## 6. Deploy (Docker Compose)
+
+### Arquitetura de produção (staging)
+
+```
+┌─────────────┐    porta 80    ┌──────────────┐
+│  Navegador  │ ─────────────> │    Nginx     │
+└─────────────┘                │  (frontend)  │
+                               └──────┬───────┘
+                                      │
+                     ┌────────────────┼────────────────┐
+                     │                │                │
+                     ▼                ▼                ▼
+              / (React SPA)    /api/ (proxy)    /static/ (vol)
+                                 │
+                                 ▼
+                          ┌──────────────┐
+                          │   Gunicorn   │
+                          │  (backend)   │
+                          └──────┬───────┘
+                                 │
+                                 ▼
+                          ┌──────────────┐
+                          │  PostgreSQL  │
+                          │    (db)      │
+                          └──────────────┘
+```
+
+### Containers
+
+| Container | Imagem | Porta externa | Função |
+|---|---|---|---|
+| `quarkops_frontend` | `nginx:1.27-alpine` | `80` | Serve React + reverse proxy |
+| `quarkops_backend` | `python:3.13-slim` (custom) | (interno `8000`) | Gunicorn + Django |
+| `quarkops_db` | `postgres:16-alpine` | (interno `5432`) | Postgres |
+
+### Volumes
+
+| Volume | Uso |
+|---|---|
+| `quarkops_pgdata` | Dados do Postgres |
+| `quarkops_static` | Estáticos do Django (compartilhado backend ↔ Nginx) |
+
+### Arquivos de configuração
+
+- **`docker-compose.yml`** (raiz): orquestração.
+- **`.env`** (raiz): variáveis (não commitado).
+- **`backend/Dockerfile`**: imagem do Django.
+- **`backend/entrypoint.sh`**: migrate + collectstatic + seed + gunicorn.
+- **`backend/gunicorn.conf.py`**: config do Gunicorn.
+- **`frontend/Dockerfile`**: build multi-stage (Node → Nginx).
+- **`frontend/nginx.conf`**: reverse proxy + serving estático.
+
+### Fluxo dev vs. deploy
+
+O projeto mantém **dois fluxos** ativos:
+- **Dev local:** `backend/docker-compose.yml` (só Postgres) + `runserver` + `npm run dev`.
+- **Deploy:** `docker-compose.yml` (raiz) com tudo containerizado.
