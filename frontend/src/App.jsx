@@ -20,6 +20,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState(VIEWS.HOME);
   const [selectedArticleId, setSelectedArticleId] = useState(null);
   const [activeCategory, setActiveCategory] = useState('ALL');
+  const [activeSubcategory, setActiveSubcategory] = useState(null); // 🆕
   const [searchTerm, setSearchTerm] = useState('');
 
   // ── CRM / Auth ────────────────────────────────────────────────
@@ -123,6 +124,7 @@ export default function App() {
     likeArticle,
   } = useArticles({
     activeCategory,
+    activeSubcategory,        // 🆕
     searchTerm,
     onOpen: handleOpenArticle,
     onCreated: handleArticleCreated,
@@ -236,6 +238,22 @@ export default function App() {
     });
   };
 
+  const handleCategoryClickFromArticle = (categorySlug) => {
+    setActiveCategory(categorySlug);
+    setActiveSubcategory(null);
+    setSelectedArticleId(null);
+    setCurrentView(VIEWS.HOME);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSubcategoryClickFromArticle = (categorySlug, subcategorySlug) => {
+    setActiveCategory(categorySlug);
+    setActiveSubcategory(subcategorySlug);
+    setSelectedArticleId(null);
+    setCurrentView(VIEWS.HOME);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // ────────────────────────────────────────────────────────────
   return (
     <div className="bg-python-lightbg text-slate-800 dark:bg-python-deep dark:text-slate-100 min-h-screen flex flex-col font-sans selection:bg-python-yellow selection:text-slate-900">
@@ -256,6 +274,8 @@ export default function App() {
             filteredArticles={filteredArticles}
             activeCategory={activeCategory}
             setActiveCategory={setActiveCategory}
+            activeSubcategory={activeSubcategory}         // 🆕
+            setActiveSubcategory={setActiveSubcategory}   // 🆕
             onOpenArticle={openArticle}
           />
         )}
@@ -270,6 +290,8 @@ export default function App() {
             onEdit={() => handleOpenEdit(selectedArticle.id)}
             onDelete={() => handleDeleteArticle(selectedArticle.id)}
             onDeleteComment={handleDeleteComment}
+            onCategoryClick={handleCategoryClickFromArticle}           // 🆕
+            onSubcategoryClick={handleSubcategoryClickFromArticle}     // 🆕
           />
         )}
       </main>

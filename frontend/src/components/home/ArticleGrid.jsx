@@ -15,6 +15,8 @@ export default function ArticleGrid({
   articles,
   activeCategory,
   onSelectCategory,
+  activeSubcategory,        // 🆕
+  onSelectSubcategory,      // 🆕
   onOpen,
 }) {
   return (
@@ -24,7 +26,12 @@ export default function ArticleGrid({
           <i className="fa-solid fa-terminal text-python-blue" aria-hidden="true" />
           <span>INDEX DE ARTIGOS RECENTES</span>
         </h2>
-        <CategoryFilter activeCategory={activeCategory} onSelect={onSelectCategory} />
+        <CategoryFilter 
+          activeCategory={activeCategory} 
+          onSelect={onSelectCategory} 
+          activeSubcategory={activeSubcategory}       // 🆕
+          onSelectSubcategory={onSelectSubcategory}   // 🆕
+        />
       </div>
 
       {articles.length === 0 ? (

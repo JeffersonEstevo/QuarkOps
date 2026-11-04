@@ -194,3 +194,17 @@
   - **Gestão:** A criação/edição de categorias é feita exclusivamente via Django Admin (ADR-017), mantendo o CRM focado em conteúdo.
   - **Migração (0002):** Script manual em 3 fases: cria tabelas, popula com dados iniciais, adiciona FK temporária, migra posts antigos (CharField → FK) e remove o campo antigo.
 - **Consequências:** Backend preparado para trilhas infinitas (o usuário cria a hierarquia no Admin). Frontend (Passo 8B) consumirá via `/api/categories/` (com subcategorias aninhadas) e `/api/subcategories/`. A migração preservou todos os posts existentes. O seed foi refatorado para ser auto-suficiente (cria categorias/subcategorias se não existirem).
+
+## ADR-018: Hierarquia de Categorias no Frontend (Filtros e CRM)
+- **Data:** 04/11/2026
+- **Status:** Aceito
+- **Contexto:** O backend do Passo 8A entregou a API de categorias dinâmicas. O frontend precisava consumir essa hierarquia sem quebrar o design existente, permitindo filtros na Home e selects no CRM.
+- **Decisão:**
+  - **Adapter e Hooks:** `httpAdapter` (e `localStorageAdapter` como fallback) agora expõem `listCategories()` e `listSubcategories()`. Um novo hook `useCategories` faz o cache em memória (evita requisições repetidas).
+  - **Filtros na Home (`Design A`):** Categorias aparecem em uma linha horizontal. Ao selecionar uma categoria, uma segunda linha expande com as subcategorias dela (ex: `Programação` -> `Python`, `JavaScript`). A opção "Tudo em [Categoria]" reseta o filtro para a categoria pai.
+  - **CRM:** Os selects de categoria e subcategoria agora são dinâmicos (alimentados pelo backend). O campo "Autor" foi mantido como texto livre (dívida técnica registrada, para ser resolvida no Passo 9/10).
+  - **Breadcrumb (`Design A`):** No `ArticleHeader`, a categoria e subcategoria são exibidas como breadcrumb clicável (`Programação › Python`). Clicar redireciona para a Home com o filtro aplicado.
+  - **Remoção de Hardcode:** `CATEGORIES_FOR_FORM` e `DEFAULT_CATEGORY` foram removidos de `constants.js`.
+  - **Payload do CRM:** O `CrmModal` agora envia `category_id` e `subcategory_id` (UUIDs) além dos nomes (para compatibilidade com o modo `localStorage`).
+  - **Unificação de Componentes:** O arquivo `pages/HomePage.jsx` (legado) foi substituído pelo novo componente em `components/home/HomePage.jsx` (que já possuía a lógica correta de filtro por slug).
+- **Consequências:** O QuarkOps agora suporta trilhas de conteúdo reais (Programação -> Python, Linux -> Ubuntu). O frontend é totalmente agnóstico às categorias (o admin pode criar novas no Django Admin e elas aparecerão imediatamente no CRM e na Home). **Bug resolvido:** conflito de importação do `HomePage` (o App importava o arquivo legado que não usava os slugs).

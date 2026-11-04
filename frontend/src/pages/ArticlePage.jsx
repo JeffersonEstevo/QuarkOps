@@ -17,6 +17,8 @@ export default function ArticlePage({
   onEdit,
   onDelete,
   onDeleteComment,
+  onCategoryClick,        // 🆕
+  onSubcategoryClick,     // 🆕
 }) {
   if (!article) return null;
 
@@ -32,6 +34,8 @@ export default function ArticlePage({
             canManage={canManage}
             onEdit={onEdit}
             onDelete={onDelete}
+            onCategoryClick={onCategoryClick}           // 🆕
+            onSubcategoryClick={onSubcategoryClick}     // 🆕
           />
           <ArticleBody content={article.content} />
 

@@ -10,11 +10,13 @@ src/
 │   ├── article/
 │   ├── crm/
 │   ├── home/
+│   │   └── HomePage.jsx     # Filtros hierárquicos (Categoria -> Subcategoria)
 │   ├── layout/
 │   ├── providers/
 │   └── ui/
 ├── contexts/
 ├── hooks/
+│   └── useCategories.js     # 🆕 Carrega categorias do backend (com cache)
 ├── pages/
 ├── services/                # 🆕 Camada de dados (fachada + adapters)
 │   ├── adapters/
@@ -32,7 +34,8 @@ src/
 - **Tratamento de Erros:** O hook `useArticles` recebe um callback `onError` que dispara `triggerToast` no `App.jsx`. Erros de auth, rede ou validação são exibidos ao usuário.
 - **CRUD de Dados (`useArticles` → `services/api.js`):** `useArticles` consome a fachada `api` (não `localStorage` diretamente). O adapter ativo (`local` por padrão, `http` no futuro) é escolhido via `VITE_API_ADAPTER`. No Passo 5, `httpAdapter` reescreve o shape do backend (snake_case, author objeto) para o shape do frontend (camelCase, author string) via `mapPost`/`mapComment` (ADR-014). Trocar de backend não toca em hook nem em componente.
 - **Apresentação:** A maior parte dos componentes (ex: `CommentItem`, `ArticleCard`) são "burros" (recebem props e renderizam), enquanto `App.jsx` e `ArticlePage` fazem a ponte com os hooks e contexts.
-
+- **Categorias (`useCategories` → `api.listCategories`):** Carrega a árvore de categorias no mount. Cache em memória evita refetch. Usado pelo `HomePage` (filtros) e `CrmModal` (selects).
+- **Navegação Hierárquica:** `activeCategory` (slug) e `activeSubcategory` (slug) vivem no `App.jsx` e são passados para `useArticles` (filtro) e `HomePage` (UI).
 
 ## 4. Pontos de Integração com o Backend (Próximos Passos)
 

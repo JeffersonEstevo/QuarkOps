@@ -28,7 +28,7 @@
 - [RF-004] O usuário deve conseguir ler posts e artigos em uma página de leitura limpa, clara e focada em tipografia.
 - [RF-005] O sistema deve exibir um post em destaque (ou o mais lido/relevante) na seção principal da página inicial.
 - [RF-007] O usuário deve visualizar uma listagem de posts recentes na página inicial, ordenados por data de publicação decrescente.
-- [RF-008] O usuário deve conseguir filtrar posts clicando em categorias e subcategorias específicas. A hierarquia (Categoria → Subcategoria) é gerenciada no Django Admin e consumida dinamicamente pelo frontend (ADR-017).
+- [RF-008] O usuário deve conseguir filtrar posts por categoria e subcategoria. A hierarquia (Categoria → Subcategoria) é gerenciada dinamicamente no Django Admin e consumida pelo frontend via selects no CRM e filtros expansíveis na Home (ADR-017, ADR-018).
 - [RF-009] O sistema deve disponibilizar uma barra de busca em tempo real para encontrar posts por título ou palavras-chave.
 - [RF-010] O sistema deve exibir o tempo estimado de leitura em cada card e página de post.
 

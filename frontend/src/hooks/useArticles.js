@@ -4,6 +4,7 @@ import { api } from '../services/api';
 
 export function useArticles({
   activeCategory = 'ALL',
+  activeSubcategory = null,   // 🆕
   searchTerm = '',
   onOpen,
   onCreated,
@@ -174,15 +175,16 @@ export function useArticles({
   const filteredArticles = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     return articles.filter((art) => {
-      const matchesCat = activeCategory === 'ALL' || art.category === activeCategory;
+      const matchesCat = activeCategory === 'ALL' || art.categorySlug === activeCategory;
+      const matchesSub = !activeSubcategory || art.subcategorySlug === activeSubcategory;
       const matchesSearch =
         !term ||
         art.title.toLowerCase().includes(term) ||
         art.summary.toLowerCase().includes(term) ||
         (art.tags || []).some((t) => t.toLowerCase().includes(term));
-      return matchesCat && matchesSearch;
+      return matchesCat && matchesSub && matchesSearch;
     });
-  }, [articles, activeCategory, searchTerm]);
+  }, [articles, activeCategory, activeSubcategory, searchTerm]);
 
   return {
     articles,

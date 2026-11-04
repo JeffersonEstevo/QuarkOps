@@ -1,14 +1,13 @@
 // src/services/adapters/httpAdapter.js
 // Adapter HTTP: consome o backend Django/DRF real.
-// Autenticação JWT via SimpleJWT (ADR-015).
-// Mapeamento backend → frontend (ADR-014) mantido.
+// Autenticação JWT (ADR-015). Hierarquia de categorias (ADR-017/018).
 
 import { authStorage } from '../authStorage';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // ────────────────────────────────────────────────────────────
-// Helpers de formatação (mantidos do Passo 5)
+// Helpers de formatação
 // ────────────────────────────────────────────────────────────
 
 const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -47,8 +46,24 @@ function getInitials(displayName) {
 }
 
 // ────────────────────────────────────────────────────────────
-// Mapeadores backend → frontend (Passo 5, ADR-014)
+// Mapeadores backend → frontend
 // ────────────────────────────────────────────────────────────
+
+function mapCategory(backendCat) {
+  return {
+    id: backendCat.id,
+    name: backendCat.name,
+    slug: backendCat.slug,
+    order: backendCat.order,
+    subcategories: (backendCat.subcategories || []).map((sub) => ({
+      id: sub.id,
+      name: sub.name,
+      slug: sub.slug,
+      order: sub.order,
+      categoryId: sub.category,
+    })),
+  };
+}
 
 function mapComment(backendComment) {
   return {
@@ -65,7 +80,6 @@ function mapPost(backendPost) {
   return {
     id: backendPost.id,
     title: backendPost.title,
-    category: backendPost.category,
     summary: backendPost.summary,
     content: backendPost.content,
     tags: backendPost.tags || [],
@@ -74,6 +88,14 @@ function mapPost(backendPost) {
     avatar: backendPost.author?.avatar_url || getInitials(backendPost.author?.display_name),
     authorBio: backendPost.author?.bio || '',
     authorRole: backendPost.author?.role || '',
+    // Categoria: string (compat com componentes) + objeto completo (para breadcrumb)
+    category: backendPost.category?.name || 'Sem categoria',
+    categorySlug: backendPost.category?.slug || '',
+    categoryObj: backendPost.category ? mapCategory({ ...backendPost.category, subcategories: [] }) : null,
+    // Subcategoria: idem
+    subcategory: backendPost.subcategory?.name || null,
+    subcategorySlug: backendPost.subcategory?.slug || null,
+    subcategoryObj: backendPost.subcategory || null,
     views: backendPost.views || 0,
     likes: backendPost.likes || 0,
     date: formatDate(backendPost.created_at),
@@ -82,7 +104,7 @@ function mapPost(backendPost) {
 }
 
 // ────────────────────────────────────────────────────────────
-// Fetch base (sem auth)
+// Fetch base e fetch autenticado
 // ────────────────────────────────────────────────────────────
 
 async function request(path, { method = 'GET', body } = {}) {
@@ -98,10 +120,6 @@ async function request(path, { method = 'GET', body } = {}) {
   return res.status === 204 ? null : res.json();
 }
 
-// ────────────────────────────────────────────────────────────
-// Fetch com autenticação (injeção de token + refresh automático)
-// ────────────────────────────────────────────────────────────
-
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -110,11 +128,6 @@ function onRefreshed(newAccess) {
   refreshSubscribers = [];
 }
 
-/**
- * Executa uma requisição autenticada.
- * Se retornar 401 (token expirado), tenta refresh e refaz a requisição uma vez.
- * Se o refresh falhar, limpa os tokens e propaga o erro (AuthProvider deve deslogar).
- */
 async function fetchWithAuth(path, options = {}) {
   const access = authStorage.getAccess();
   const headers = {
@@ -133,9 +146,7 @@ async function fetchWithAuth(path, options = {}) {
     return res.status === 204 ? null : res.json();
   }
 
-  // 401 — tenta refresh
   if (isRefreshing) {
-    // Já tem um refresh em andamento: aguarda
     return new Promise((resolve, reject) => {
       refreshSubscribers.push(async (newAccess) => {
         try {
@@ -173,10 +184,8 @@ async function fetchWithAuth(path, options = {}) {
 
     const { access: newAccess } = await refreshRes.json();
     authStorage.setTokens({ access: newAccess });
-
     onRefreshed(newAccess);
 
-    // Refaz a requisição original
     const retryRes = await fetch(`${BASE_URL}${path}`, {
       ...options,
       headers: { ...headers, Authorization: `Bearer ${newAccess}` },
@@ -196,6 +205,27 @@ async function fetchWithAuth(path, options = {}) {
 // ────────────────────────────────────────────────────────────
 
 export const httpAdapter = {
+  // ---------- Categories ----------
+  async listCategories() {
+    const data = await request('/categories/');
+    const cats = Array.isArray(data) ? data : data.results || [];
+    return cats.map(mapCategory);
+  },
+
+  async listSubcategories(categorySlug = null) {
+    const query = categorySlug ? `?category_slug=${encodeURIComponent(categorySlug)}` : '';
+    const data = await request(`/subcategories/${query}`);
+    const subs = Array.isArray(data) ? data : data.results || [];
+    return subs.map((sub) => ({
+      id: sub.id,
+      name: sub.name,
+      slug: sub.slug,
+      order: sub.order,
+      categoryId: sub.category,
+      categorySlug: sub.category_slug,
+    }));
+  },
+
   // ---------- Articles ----------
   async listArticles() {
     const data = await request('/posts/');
@@ -208,12 +238,18 @@ export const httpAdapter = {
   },
 
   async createArticle(payload) {
-    const data = await fetchWithAuth('/posts/', { method: 'POST', body: JSON.stringify(payload) });
+    const data = await fetchWithAuth('/posts/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
     return mapPost(data);
   },
 
   async updateArticle(id, payload) {
-    const data = await fetchWithAuth(`/posts/${id}/`, { method: 'PUT', body: JSON.stringify(payload) });
+    const data = await fetchWithAuth(`/posts/${id}/`, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
     return mapPost(data);
   },
 
@@ -253,14 +289,13 @@ export const httpAdapter = {
     return { ok: true };
   },
 
-  // ---------- Auth (JWT) ----------
+  // ---------- Auth ----------
   async login({ username, password }) {
     const tokens = await request('/token/', {
       method: 'POST',
       body: { username, password },
     });
     authStorage.setTokens(tokens);
-
     const user = await this.getCurrentUser();
     authStorage.setUser(user);
     return { tokens, user };

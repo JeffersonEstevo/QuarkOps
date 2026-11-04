@@ -1,21 +1,85 @@
 // src/services/adapters/localStorageAdapter.js
-// Adapter MVP: implementa o contrato da API usando localStorage.
-// Reutiliza storage.js (legado) como camada de persistência bruta.
-// Será substituído por httpAdapter na integração com Django (Passo 5).
-//
-// Observação de modelagem: comentários vivem DENTRO de cada artigo
-// (article.comments[]), refletindo o shape atual do MVP. Não há storage
-// separado de comentários — preservado intencionalmente para não quebrar
-// ArticleHeader / ArticlePage que leem `article.comments`.
+// Adapter MVP (localStorage). Fallback de desenvolvimento.
+// Emula o shape novo do backend (categoria/subcategoria como objetos).
 
 import { getStoredArticles, saveArticles } from '../../utils/storage';
 
 const delay = (ms = 80) => new Promise((r) => setTimeout(r, ms));
-
 const readAll = () => getStoredArticles();
 const writeAll = (articles) => saveArticles(articles);
 
+// Espelho do seed do backend (Passo 8A)
+const LOCAL_CATEGORIES = [
+  {
+    id: 'cat-programacao',
+    name: 'Programação',
+    slug: 'programacao',
+    order: 1,
+    subcategories: [
+      { id: 'sub-python', name: 'Python', slug: 'python', order: 1, categoryId: 'cat-programacao' },
+      { id: 'sub-javascript', name: 'JavaScript', slug: 'javascript', order: 2, categoryId: 'cat-programacao' },
+      { id: 'sub-typescript', name: 'TypeScript', slug: 'typescript', order: 3, categoryId: 'cat-programacao' },
+    ],
+  },
+  {
+    id: 'cat-devops',
+    name: 'DevOps',
+    slug: 'devops',
+    order: 2,
+    subcategories: [
+      { id: 'sub-docker', name: 'Docker', slug: 'docker', order: 1, categoryId: 'cat-devops' },
+      { id: 'sub-kubernetes', name: 'Kubernetes', slug: 'kubernetes', order: 2, categoryId: 'cat-devops' },
+    ],
+  },
+  {
+    id: 'cat-ia',
+    name: 'IA',
+    slug: 'ia',
+    order: 3,
+    subcategories: [],
+  },
+  {
+    id: 'cat-linux',
+    name: 'Linux',
+    slug: 'linux',
+    order: 4,
+    subcategories: [
+      { id: 'sub-ubuntu', name: 'Ubuntu', slug: 'ubuntu', order: 1, categoryId: 'cat-linux' },
+      { id: 'sub-debian', name: 'Debian', slug: 'debian', order: 2, categoryId: 'cat-linux' },
+    ],
+  },
+  {
+    id: 'cat-infraestrutura',
+    name: 'Infraestrutura',
+    slug: 'infraestrutura',
+    order: 5,
+    subcategories: [],
+  },
+];
+
+const getInitials = (displayName) => {
+  if (!displayName) return '??';
+  const parts = displayName.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
 export const localStorageAdapter = {
+  // ---------- Categories ----------
+  async listCategories() {
+    await delay();
+    return LOCAL_CATEGORIES;
+  },
+
+  async listSubcategories(categorySlug = null) {
+    await delay();
+    if (!categorySlug) {
+      return LOCAL_CATEGORIES.flatMap((c) => c.subcategories);
+    }
+    const cat = LOCAL_CATEGORIES.find((c) => c.slug === categorySlug);
+    return cat ? cat.subcategories : [];
+  },
+
   // ---------- Articles ----------
   async listArticles() {
     await delay();
@@ -31,16 +95,26 @@ export const localStorageAdapter = {
 
   async createArticle(payload) {
     await delay();
-    // Hidratação equivalente à que o hook fazia antes (e que o Django fará no POST).
+    // Aceita tanto payload antigo (category string) quanto novo (category_id UUID).
+    const cat = payload.category_id
+      ? LOCAL_CATEGORIES.find((c) => c.id === payload.category_id)
+      : LOCAL_CATEGORIES.find((c) => c.name === payload.category);
+    const sub = payload.subcategory_id
+      ? cat?.subcategories.find((s) => s.id === payload.subcategory_id)
+      : null;
+
     const newArt = {
       id: `art-${Date.now()}`,
       title: payload.title,
-      category: payload.category,
+      category: cat?.name || payload.category || 'Sem categoria',
+      categorySlug: cat?.slug || '',
+      subcategory: sub?.name || null,
+      subcategorySlug: sub?.slug || null,
       date: 'Hoje',
-      readTime: payload.readTime,
+      readTime: payload.readTime || payload.read_time || '5 min de leitura',
       views: 1,
-      author: payload.author,
-      avatar: payload.author.substring(0, 2).toUpperCase(),
+      author: payload.author || 'Desconhecido',
+      avatar: getInitials(payload.author),
       summary: payload.summary,
       tags: payload.tags,
       content: payload.content,
@@ -53,23 +127,32 @@ export const localStorageAdapter = {
 
   async updateArticle(id, payload) {
     await delay();
+    const cat = payload.category_id
+      ? LOCAL_CATEGORIES.find((c) => c.id === payload.category_id)
+      : LOCAL_CATEGORIES.find((c) => c.name === payload.category);
+    const sub = payload.subcategory_id
+      ? cat?.subcategories.find((s) => s.id === payload.subcategory_id)
+      : null;
+
     let updated = null;
     const next = readAll().map((art) => {
       if (art.id !== id) return art;
       updated = {
         ...art,
         title: payload.title,
-        category: payload.category,
-        readTime: payload.readTime,
-        author: payload.author,
-        avatar: payload.author.substring(0, 2).toUpperCase(),
+        category: cat?.name || payload.category || art.category,
+        categorySlug: cat?.slug || art.categorySlug || '',
+        subcategory: sub?.name || null,
+        subcategorySlug: sub?.slug || null,
+        readTime: payload.readTime || payload.read_time || art.readTime,
+        author: payload.author || art.author,
+        avatar: getInitials(payload.author || art.author),
         summary: payload.summary,
         tags: payload.tags,
         content: payload.content,
       };
       return updated;
     });
-    if (!updated) throw new Error(`Article ${id} not found`);
     writeAll(next);
     return updated;
   },
@@ -88,7 +171,6 @@ export const localStorageAdapter = {
       updated = { ...art, likes: (art.likes || 0) + 1 };
       return updated;
     });
-    if (!updated) throw new Error(`Article ${id} not found`);
     writeAll(next);
     return updated;
   },
@@ -101,12 +183,11 @@ export const localStorageAdapter = {
       updated = { ...art, views: (art.views || 0) + 1 };
       return updated;
     });
-    if (!updated) throw new Error(`Article ${id} not found`);
     writeAll(next);
     return updated;
   },
 
-  // ---------- Comments (aninhados no artigo) ----------
+  // ---------- Comments ----------
   async postComment(articleId, comment) {
     await delay();
     const newComment = {
@@ -139,10 +220,21 @@ export const localStorageAdapter = {
     return { ok: true };
   },
 
-  // ---------- Auth (placeholder MVP, ADR-007) ----------
-  async login({ password }) {
+  // ---------- Auth (MVP local) ----------
+  async login({ username, password }) {
     await delay(200);
     if (password !== 'admin123') throw new Error('Invalid credentials');
-    return { token: 'local-fake-token', user: { role: 'admin' } };
+    return {
+      tokens: { access: 'local-fake-token', refresh: 'local-fake-refresh' },
+      user: { username: username || 'admin', display_name: 'Admin', is_staff: true },
+    };
+  },
+
+  async getCurrentUser() {
+    throw new Error('getCurrentUser não disponível no adapter local.');
+  },
+
+  async logout() {
+    return;
   },
 };

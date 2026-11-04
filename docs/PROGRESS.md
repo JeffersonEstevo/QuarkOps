@@ -1,9 +1,9 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase 8A Concluída: Hierarquia de Categorias no Backend]
+- **Fase Atual:** [Fase 8 Concluída: Hierarquia de Categorias (Back + Front)]
 - **Última Atualização:** 04/11/2026
-- **Meta Imediata:** Conectar o frontend ao novo sistema de categorias (Passo 8B).
+- **Meta Imediata:** Passo 9 (Produção) — HTTPS, domínio e hardening.
 
 ## Quadro de Tarefas
 
@@ -27,14 +27,13 @@
 - [x] **Passo 6 (Segurança):** JWT implementado. `AuthProvider` gerencia `user`, `access` e `refresh` tokens (ADR-015). `httpAdapter` reescrito com `fetchWithAuth` (refresh automático com fila). `LoginGate` exige usuário/senha. Escritas desbloqueadas. UI de erro genérica implementada via `onError`.
 - [x] **Passo 7 (Deploy):** Docker Compose unificado na raiz. Frontend multi-stage (Node build → Nginx). Backend com Gunicorn + `entrypoint.sh` (migrate, collectstatic, seed). Nginx como reverse proxy (`/api/` e `/admin/`) e serving de estáticos. Variáveis de ambiente via `.env` (ADR-016). Staging local em `http://localhost`.
 - [x] **Passo 8A (Backend):** Modelagem de `Category` e `Subcategory` com slugs e ordenação. `Post` migrado de `CharField` para FKs (migração 0002). Serializers e ViewSets read-only (`/api/categories/`, `/api/subcategories/`). Validação de categoria↔subcategoria. Admin configurado com inline e autocomplete. Seed refatorado (ADR-017).
-
+- [x] **Passo 8B (Frontend):** Adapters e `useCategories` implementados. CRM com selects dinâmicos (categoria -> subcategoria). Filtros hierárquicos na Home (Design A: categoria + subcategorias expansíveis). Breadcrumb clicável no `ArticleHeader`. Remoção de hardcode (`CATEGORIES_FOR_FORM`). Unificação do `HomePage` (ADR-018).
 
 ### 🟨 Em Andamento (Foco Atual)
-- [ ] **Passo 8B (Frontend):** Integrar seleção dinâmica de categorias/subcategorias no CRM e filtros hierárquicos na Home.
+- [ ] **Passo 9 (Produção):** Configurar domínio, HTTPS (Let's Encrypt), cookies `httpOnly` para JWT e backups.
 
 ### 🟥 A Fazer (Backlog de Evolução)
 > Passos ainda **não iniciados**. Ao começar um item, mova-o para 🟨.
-- [ ] **Passo 9 (Produção):** Deploy real (HTTPS, domínio, cookies httpOnly, backups).
 - [ ] **Passo 10 (Polish):** Skeletons, paginação infinita, WYSIWYG no CRM.
 
 ### 📌 Backlog (não bloqueia a trilha de produção)

@@ -216,6 +216,27 @@ curl.exe "http://localhost:8000/api/subcategories/?category=<uuid>"
 curl.exe http://localhost:8000/api/posts/
 ```
 
+### 6.2 Testar Hierarquia no Frontend (Passo 8B)
+
+A Home e o CRM agora consomem as categorias dinamicamente.
+
+1. **Criar uma categoria nova:**
+   - No Django Admin (`http://localhost:8000/admin/api/category/`), crie `Matemática` (order: 6).
+   - Na Home, o filtro deve mostrar `Matemática` automaticamente (recarregar a página).
+
+2. **Criar subcategoria:**
+   - No Admin, adicione `Cálculo` dentro de `Matemática`.
+   - Na Home, clique em `Matemática` -> `Cálculo` deve aparecer na segunda linha.
+
+3. **Criar post no CRM:**
+   - Abra o CRM, clique em "Novo artigo".
+   - O select de categoria deve listar todas (incluindo as novas).
+   - Ao escolher `Matemática`, o select de subcategoria deve listar `Cálculo`.
+
+4. **Filtrar:**
+   - Clicar na categoria filtra os posts.
+   - Clicar na subcategoria filtra ainda mais.
+
 ### 7. Testar endpoints da API (via curl)
 
 Com `runserver` ativo em outro terminal:

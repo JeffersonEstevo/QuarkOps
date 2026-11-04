@@ -23,11 +23,8 @@ export const CATEGORIES = [
   'Infraestrutura',
 ];
 
-export const CATEGORIES_FOR_FORM = CATEGORIES.filter((c) => c !== 'ALL');
-
 export const DEFAULT_AUTHOR = 'Guido Dev';
 export const DEFAULT_READ_TIME = '5 min de leitura';
-export const DEFAULT_CATEGORY = 'Programação';
 
 export const TOAST_DURATION_MS = 3000;
 
