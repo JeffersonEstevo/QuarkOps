@@ -1,9 +1,9 @@
 # Progresso da Aplicação (Progress Log)
 
 ## Status Atual
-- **Fase Atual:** [Fase 7 Concluída: Deploy Unificado com Docker Compose]
-- **Última Atualização:** 03/11/2026
-- **Meta Imediata:** Passo 8 (Opcional) — Produção real (HTTPS + domínio) OU features avançadas (Categorias dinâmicas, subcategorias).
+- **Fase Atual:** [Fase 8A Concluída: Hierarquia de Categorias no Backend]
+- **Última Atualização:** 04/11/2026
+- **Meta Imediata:** Conectar o frontend ao novo sistema de categorias (Passo 8B).
 
 ## Quadro de Tarefas
 
@@ -26,20 +26,22 @@
 - [x] **Passo 5 (Integração):** `httpAdapter.js` reescrito com mapeamento backend→frontend (`mapPost`, `mapComment`, `formatDate`, `formatRelativeDate`, `getInitials`). `frontend/.env.local` com `VITE_API_ADAPTER=http`. Leitura HTTP funcionando (posts, comentários, curtidas, views). Escritas bloqueadas por `401` (backend protegido). Fallback `localStorage` intacto. Bug 2 resolvido no frontend via `authorBio` (ADR-014).
 - [x] **Passo 6 (Segurança):** JWT implementado. `AuthProvider` gerencia `user`, `access` e `refresh` tokens (ADR-015). `httpAdapter` reescrito com `fetchWithAuth` (refresh automático com fila). `LoginGate` exige usuário/senha. Escritas desbloqueadas. UI de erro genérica implementada via `onError`.
 - [x] **Passo 7 (Deploy):** Docker Compose unificado na raiz. Frontend multi-stage (Node build → Nginx). Backend com Gunicorn + `entrypoint.sh` (migrate, collectstatic, seed). Nginx como reverse proxy (`/api/` e `/admin/`) e serving de estáticos. Variáveis de ambiente via `.env` (ADR-016). Staging local em `http://localhost`.
+- [x] **Passo 8A (Backend):** Modelagem de `Category` e `Subcategory` com slugs e ordenação. `Post` migrado de `CharField` para FKs (migração 0002). Serializers e ViewSets read-only (`/api/categories/`, `/api/subcategories/`). Validação de categoria↔subcategoria. Admin configurado com inline e autocomplete. Seed refatorado (ADR-017).
+
 
 ### 🟨 Em Andamento (Foco Atual)
-- [ ] **Passo 8 (Escolha):** Produção real (HTTPS + domínio) OU features avançadas (categorias dinâmicas). Decisão pendente.
+- [ ] **Passo 8B (Frontend):** Integrar seleção dinâmica de categorias/subcategorias no CRM e filtros hierárquicos na Home.
 
 ### 🟥 A Fazer (Backlog de Evolução)
-> Não bloqueiam o projeto. Escolher conforme prioridade.
-- [ ] **Produção Real:** Domínio + HTTPS (Let's Encrypt/Caddy) + cookies `httpOnly` para JWT.
-- [ ] **Categorias Dinâmicas:** Model `Category` (FK) no Django Admin.
-- [ ] **Subcategorias:** Hierarquia (`parent`) ou tags como granularidade.
-- [ ] **Backups Automáticos:** Cronjob `pg_dump` diário.
+> Passos ainda **não iniciados**. Ao começar um item, mova-o para 🟨.
+- [ ] **Passo 9 (Produção):** Deploy real (HTTPS, domínio, cookies httpOnly, backups).
+- [ ] **Passo 10 (Polish):** Skeletons, paginação infinita, WYSIWYG no CRM.
 
 ### 📌 Backlog (não bloqueia a trilha de produção)
-- [ ] Migrar `AuthProvider` para `api.login()` (hoje usa senha hardcoded — ADR-007). Previsto no Passo 6.
-- [ ] **Categorias Dinâmicas:** Transformar `category` (CharField) em model `Category` (FK) para permitir criação sem deploy. (Passo 7+)
-- [ ] **Subcategorias:** Hierarquia (`parent` FK) ou usar tags para granularidade. (Passo 7+)
-- [ ] **Autor no CRM:** Substituir o campo `author` de texto livre no `CrmModal` por uma exibição readonly do usuário logado (ou select de usuários).
-- [ ] **Segurança JWT:** Migrar tokens de `localStorage` para cookie `httpOnly` (proteção total contra XSS).
+- [ ] **Autor no CRM:** Substituir o campo `author` de texto livre no `CrmModal` por uma exibição readonly do usuário logado (ou select de usuários). *(Previsto no Passo 8B ou 10)*
+- [ ] **Segurança JWT:** Migrar tokens de `localStorage` para cookie `httpOnly` (proteção total contra XSS). *(Previsto no Passo 9 — Produção)*
+- [ ] **Skeletons de Loading:** Adicionar UI de loading (hoje o estado `loading` do `useArticles` existe mas não é exibido). *(Previsto no Passo 10 — Polish)*
+- [ ] **Paginação Infinita:** Suportar mais de 20 posts na Home (hoje o DRF pagina em `PAGE_SIZE=20`). *(Previsto no Passo 10 — Polish)*
+- [ ] **WYSIWYG no CRM:** Substituir o textarea de HTML puro por um editor rico (TipTap, Quill). *(Previsto no Passo 10 — Polish)*
+- [ ] **Backups Automáticos:** Cronjob diário de `pg_dump` com retenção (7/30 dias). *(Previsto no Passo 9 — Produção)*
+- [ ] **Produção Real:** Domínio + HTTPS (Let's Encrypt/Caddy) + hardening (`SECURE_*`). *(Previsto no Passo 9 — Produção)*

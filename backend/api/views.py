@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Comment, Post
 from .permissions import AllowAnyForCreateReadAuth, IsAdminOrReadOnly
@@ -84,4 +85,47 @@ class UserViewSet(viewsets.GenericViewSet):
     def me(self, request):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
+
+
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    PostSerializer,
+    SubcategorySerializer,
+    UserSerializer,
+)
+from .models import Category, Subcategory, User
+
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listagem e detalhe de categorias (público, read-only).
+
+    Admin gerencia via Django Admin (ADR-017).
+    """
+    queryset = Category.objects.prefetch_related("subcategories").all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
+    lookup_field = "slug"  # /api/categories/programacao/
+
+
+class SubcategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Listagem de subcategorias. Filtra por categoria via query param:
+    /api/subcategories/?category=<uuid> ou ?category_slug=programacao
+    """
+    queryset = Subcategory.objects.select_related("category").all()
+    serializer_class = SubcategorySerializer
+    permission_classes = [AllowAny]
+    lookup_field = "slug"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        category_slug = self.request.query_params.get("category_slug")
+        category_id = self.request.query_params.get("category")
+        if category_slug:
+            qs = qs.filter(category__slug=category_slug)
+        elif category_id:
+            qs = qs.filter(category_id=category_id)
+        return qs
     

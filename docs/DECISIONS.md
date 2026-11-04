@@ -179,3 +179,18 @@
     - **Deploy unificado:** `docker compose up --build` na raiz. Para simular produção.
   - **Volumes nomeados:** `quarkops_pgdata` (dados do Postgres) e `quarkops_static` (estáticos compartilhados entre backend e Nginx).
 - **Consequências:** Um único comando sobe todo o QuarkOps. CORS desaparece (mesma origem `localhost:80`). Backend roda em modo de produção (Gunicorn). Estáticos servidos pelo Nginx (performance). **Dívida técnica:** backups automáticos ficam para o Passo 8 (comando manual documentado). HTTPS/domínio real também (Passo 8).
+
+## ADR-017: Hierarquia de Categorias (2 níveis)
+- **Data:** 04/11/2026
+- **Status:** Aceito
+- **Contexto:** O `Post.category` era `CharField` (texto livre), limitando a organização a categorias hardcoded no frontend. O objetivo é criar tutoriais estruturados (ex: `Programação > Python`), permitindo que o admin crie categorias e subcategorias dinamicamente sem deploy. Categorias podem existir sem subcategorias (ex: `Matemática`).
+- **Decisão:**
+  - **Modelagem em 2 níveis:** `Category` (nível 1) e `Subcategory` (nível 2, FK para `Category`).
+  - **Post:** FK obrigatória para `Category` e FK opcional para `Subcategory` (`null=True`). Um post pode ir direto na categoria.
+  - **Validação:** O model `Post.clean()` e o `PostSerializer` validam que a `Subcategory` pertence à `Category` escolhida.
+  - **Slugs e Ordenação:** Adicionado `slug` (auto-gerado) para URLs futuras e `order` para ordenar o menu manualmente no Admin.
+  - **Proteção:** `on_delete=PROTECT` na FK do Post impede deletar categorias com posts. `CASCADE` nas subcategorias (se categoria for deletada, subcategorias somem, mas o Admin exige esvaziar posts antes).
+  - **Tags:** Permanecem como `JSONField` (texto livre) para granularidade fina e busca, separadas da hierarquia.
+  - **Gestão:** A criação/edição de categorias é feita exclusivamente via Django Admin (ADR-017), mantendo o CRM focado em conteúdo.
+  - **Migração (0002):** Script manual em 3 fases: cria tabelas, popula com dados iniciais, adiciona FK temporária, migra posts antigos (CharField → FK) e remove o campo antigo.
+- **Consequências:** Backend preparado para trilhas infinitas (o usuário cria a hierarquia no Admin). Frontend (Passo 8B) consumirá via `/api/categories/` (com subcategorias aninhadas) e `/api/subcategories/`. A migração preservou todos os posts existentes. O seed foi refatorado para ser auto-suficiente (cria categorias/subcategorias se não existirem).

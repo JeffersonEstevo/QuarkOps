@@ -183,6 +183,39 @@ python manage.py seed_articles
 
 Esperado: `Seed concluído: 3 novos posts criados, 3 posts no total.`
 
+### 6.1 Gerenciar Categorias e Subcategorias (Passo 8A)
+
+Categorias e subcategorias são gerenciadas **exclusivamente** via Django Admin.
+
+1. Acesse `http://localhost:8000/admin/api/category/`.
+2. Clique em **Adicionar Category**.
+3. Preencha:
+   - **Name:** Nome exibido (ex: `Matemática`).
+   - **Slug:** Gerado automaticamente (pode editar, mas evite).
+   - **Description:** Opcional.
+   - **Order:** Ordenação manual (menor primeiro). Ex: `Programação` = 1, `Matemática` = 10.
+   - **Subcategories:** Adicione inline (ex: `Álgebra`, `Cálculo`).
+4. **Salvar**.
+
+**Regras:**
+- Uma categoria pode **não ter** subcategorias (posts ficam direto nela).
+- Um post pertence a **uma** categoria e, opcionalmente, a **uma** subcategoria.
+- Deletar categoria com posts é **bloqueado** (PROTECT). Mova/remova os posts primeiro.
+
+**Testar via API:**
+
+```bash
+# Categorias com subcategorias aninhadas
+curl.exe http://localhost:8000/api/categories/
+
+# Filtrar subcategorias por categoria (slug ou UUID)
+curl.exe "http://localhost:8000/api/subcategories/?category_slug=programacao"
+curl.exe "http://localhost:8000/api/subcategories/?category=<uuid>"
+
+# Posts (cada um com category e subcategory aninhadas)
+curl.exe http://localhost:8000/api/posts/
+```
+
 ### 7. Testar endpoints da API (via curl)
 
 Com `runserver` ativo em outro terminal:

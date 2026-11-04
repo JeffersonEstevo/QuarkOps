@@ -22,12 +22,13 @@
 - [RNF-004] A aplicação deve ser totalmente responsiva, adaptando-se a dispositivos móveis, tablets e desktops.
 - [RNF-005] O HTML dos posts deve ser sanitizado no servidor (via `nh3`) antes de ser persistido, removendo scripts, event handlers inline (`on*`), `style` e URLs perigosas (`javascript:`, `data:`). Classes CSS (Tailwind/highlight.js) e IDs de headings (TOC) são preservados (ADR-013).
 - [RNF-006] A conversão de shape entre backend e frontend (snake_case ↔ camelCase, author objeto ↔ string, ISO date ↔ string formatada) deve ser centralizada no `httpAdapter` (`frontend/src/services/adapters/httpAdapter.js`), mantendo `useArticles` e componentes agnósticos ao backend (ADR-014).
+- [RNF-007] O sistema deve suportar hierarquia de categorias em 2 níveis (`Category` → `Subcategory`). Categorias e subcategorias são entidades dinâmicas (gerenciadas no Admin), não valores hardcoded no frontend (ADR-017).
 
 ### Requisitos Funcionais (RF) — Módulo 1: Leitura e Navegação (Público)
 - [RF-004] O usuário deve conseguir ler posts e artigos em uma página de leitura limpa, clara e focada em tipografia.
 - [RF-005] O sistema deve exibir um post em destaque (ou o mais lido/relevante) na seção principal da página inicial.
 - [RF-007] O usuário deve visualizar uma listagem de posts recentes na página inicial, ordenados por data de publicação decrescente.
-- [RF-008] O usuário deve conseguir filtrar posts clicando em categorias ou tags específicas.
+- [RF-008] O usuário deve conseguir filtrar posts clicando em categorias e subcategorias específicas. A hierarquia (Categoria → Subcategoria) é gerenciada no Django Admin e consumida dinamicamente pelo frontend (ADR-017).
 - [RF-009] O sistema deve disponibilizar uma barra de busca em tempo real para encontrar posts por título ou palavras-chave.
 - [RF-010] O sistema deve exibir o tempo estimado de leitura em cada card e página de post.
 
@@ -55,9 +56,9 @@
 │   └── 📖 STRUCTURE.md        # Arquitetura frontend + backend + deploy
 ├── 📁 backend                 # Django 5.1 + DRF + SimpleJWT + PostgreSQL
 │   ├── 📁 core                # Projeto Django (settings, urls, wsgi, asgi)
-│   ├── 📁 api                 # App de domínio (User, Post, Comment)
+│   ├── 📁 api                 # App de domínio (User, Category, Subcategory, Post, Comment)
 │   │   ├── 📁 management/commands  # seed_articles, sanitize_existing_posts
-│   │   ├── 📁 migrations
+│   │   ├── 📁 migrations      # 0001_initial, 0002_category_subcategory_and_more
 │   │   ├── 📄 admin.py        # Registro no Django Admin
 │   │   ├── 📄 apps.py
 │   │   ├── 📄 models.py       # User, Post, Comment (UUIDs)

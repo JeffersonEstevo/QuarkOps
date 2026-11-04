@@ -45,15 +45,16 @@ A fachada já existe. Para plugar o Django:
 
 ## 5. Backend (Django + PostgreSQL)
 
-### Arquitetura atual (após Passo 3)
+### Arquitetura atual (após Passo 8A)
 
 - **Projeto Django:** `core/` (settings, urls, wsgi, asgi).
-- **App de domínio:** `api/` com **models** (`User`, `Post`, `Comment`), **serializers**, **views** (ViewSets + ações customizadas), **urls** (DefaultRouter), **permissions** (`IsAdminOrReadOnly`, `AllowAnyForCreateReadAuth`) e **sanitizers** (`nh3` com config permissiva — ADR-013).
-- **Comando de seed:** `python manage.py seed_articles` (idempotente — popula autores e 3 artigos iniciais).
-- **Comando de migração de sanitização:** `python manage.py sanitize_existing_posts [--dry-run]` (aplica `nh3` em posts antigos — ADR-013).
-- **Banco:** PostgreSQL 16 via Docker Compose (`quarkops_db`, porta 5432, volume `quarkops_pgdata`).
-- **Autenticação:** SimpleJWT instalado e configurado. O endpoint `/api/token/` será criado no Passo 6.
-- **CORS:** `localhost:5173` (Vite dev) liberado via `django-cors-headers`.
+- **App de domínio:** `api/` com **models** (`User`, `Category`, `Subcategory`, `Post`, `Comment`), **serializers**, **views** (ViewSets), **permissions**, **sanitizers** (`nh3`).
+- **Hierarquia de categorias:** `Category` (nível 1) + `Subcategory` (nível 2, FK). Posts têm `category` (FK obrigatória) e `subcategory` (FK opcional). Validação de pertencimento via `clean()` e serializer (ADR-017).
+- **Endpoints adicionais:** `GET /api/categories/` (com subcategorias aninhadas) e `GET /api/subcategories/?category_slug=...` (read-only público).
+- **Admin:** gestão de categorias/subcategorias via inline, autocomplete no `PostAdmin`.
+- **Banco:** PostgreSQL 16 via Docker Compose.
+- **Autenticação:** JWT (SimpleJWT). `/api/users/me/` disponível.
+- **CORS:** liberado para `localhost` (dev) e mesma origem no deploy (Nginx).
 
 ### Integração com o frontend (Passo 5)
 
@@ -78,6 +79,31 @@ A fachada já existe. Para plugar o Django:
 | `deleteComment(articleId, cId)` | `DELETE /api/comments/:cId/` | staff |
 | `login(creds)` | `POST /api/token/` (Passo 6) | — |
 
+### Endpoints de categorias (Passo 8A)
+
+| Método | Endpoint | Auth |
+|---|---|---|
+| `GET` | `/api/categories/` | público |
+| `GET` | `/api/categories/:slug/` | público |
+| `GET` | `/api/subcategories/` | público |
+| `GET` | `/api/subcategories/?category_slug=:slug` | público |
+| `GET` | `/api/subcategories/:slug/` | público |
+
+**Shape de resposta (`/api/categories/`):**
+```json
+[
+  {
+    "id": "uuid",
+    "name": "Programação",
+    "slug": "programacao",
+    "order": 1,
+    "subcategories": [
+      {"id": "uuid", "name": "Python", "slug": "python", "category": "uuid", "order": 1}
+    ]
+  }
+]
+```
+---
 ## 6. Deploy (Docker Compose)
 
 ### Arquitetura de produção (staging)

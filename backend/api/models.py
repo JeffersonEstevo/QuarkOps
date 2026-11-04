@@ -1,17 +1,20 @@
 """
 Modelos de domínio do QuarkOps.
 
-- User: AbstractUser customizado com campos de perfil (display_name, bio, avatar_url, role).
-- Post: artigo do blog, com autor (FK User), conteúdo HTML e métricas (views, likes).
-- Comment: comentário aninhado no post. Suporta autor anônimo (author_name) ou
-  autenticado (author_user, FK opcional). Ver ADR-012.
+- User: AbstractUser customizado (display_name, bio, avatar_url, role).
+- Category: categoria de primeiro nível (ex: Programação, Linux, Matemática).
+- Subcategory: subcategoria (ex: Python dentro de Programação). Opcional.
+- Post: artigo do blog, com FK para Category e Subcategory (opcional).
+- Comment: comentário aninhado no post (autor anônimo ou autenticado).
 
-IDs: todos os modelos usam UUID (ADR-012).
+IDs: UUID em todos os modelos (ADR-012).
+Hierarquia de categorias: 2 níveis (ADR-017).
 """
 import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.text import slugify
 
 
 class User(AbstractUser):
@@ -24,28 +27,97 @@ class User(AbstractUser):
 
     display_name = models.CharField(
         max_length=120,
-        help_text="Nome público exibido em posts e comentários (ex: 'Guido Dev').",
+        help_text="Nome público exibido em posts e comentários.",
     )
     bio = models.CharField(
         max_length=200,
         blank=True,
         default="",
-        help_text="Descrição curta exibida abaixo do nome (ex: 'Engenheiro de Software & Maintainer').",
+        help_text="Descrição curta exibida abaixo do nome.",
     )
     avatar_url = models.URLField(
         blank=True,
         default="",
-        help_text="URL da imagem de perfil. Se vazio, o frontend deriva iniciais do display_name.",
+        help_text="URL da imagem de perfil. Se vazio, o frontend deriva iniciais.",
     )
     role = models.CharField(
         max_length=60,
         blank=True,
         default="",
-        help_text="Cargo/função pública (ex: 'Backend Lead', 'SRE Specialist').",
+        help_text="Cargo/função pública (ex: 'Backend Lead').",
     )
 
     def __str__(self):
         return self.display_name or self.username
+
+
+# ────────────────────────────────────────────────────────────
+# Hierarquia de categorias (ADR-017)
+# ────────────────────────────────────────────────────────────
+
+
+class Category(models.Model):
+    """
+    Categoria de primeiro nível.
+
+    Pode ter ou não subcategorias. Posts podem ficar diretamente na
+    categoria (sem subcategoria) quando ela não tem subcategorias.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=60, unique=True)
+    slug = models.SlugField(max_length=60, unique=True, blank=True)
+    description = models.TextField(blank=True, default="")
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Ordenação manual (menor primeiro). Ex: Programação antes de Matemática.",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name_plural = "Categories"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class Subcategory(models.Model):
+    """
+    Subcategoria. Sempre pertence a uma Category.
+
+    Post pode referenciar uma subcategoria ou ir direto na categoria.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name="subcategories",
+    )
+    name = models.CharField(max_length=60)
+    slug = models.SlugField(max_length=60, blank=True)
+    description = models.TextField(blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "name"]
+        unique_together = [("category", "slug")]  # Python em Programação ≠ Python em IA
+        verbose_name_plural = "Subcategories"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.category.name} › {self.name}"
 
 
 class Post(models.Model):
@@ -54,13 +126,29 @@ class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     title = models.CharField(max_length=200)
-    category = models.CharField(max_length=60)
     summary = models.TextField(help_text="Resumo exibido nos cards da home.")
     content = models.TextField(help_text="HTML completo do artigo (sanitizado no save).")
+
+    # Hierarquia (ADR-017)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.PROTECT,
+        related_name="posts",
+        help_text="Categoria principal (obrigatória).",
+    )
+    subcategory = models.ForeignKey(
+        Subcategory,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="posts",
+        help_text="Subcategoria (opcional). Deve pertencer à categoria escolhida.",
+    )
+
     tags = models.JSONField(
         default=list,
         blank=True,
-        help_text="Lista de tags (ex: ['python', 'concurrency']).",
+        help_text="Lista de tags livres (ex: ['python', 'concurrency']).",
     )
     read_time = models.CharField(
         max_length=40,
@@ -74,7 +162,6 @@ class Post(models.Model):
         related_name="posts",
     )
 
-    # Métricas
     views = models.PositiveIntegerField(default=0)
     likes = models.PositiveIntegerField(default=0)
 
@@ -86,11 +173,21 @@ class Post(models.Model):
         indexes = [
             models.Index(fields=["-created_at"]),
             models.Index(fields=["category"]),
+            models.Index(fields=["subcategory"]),
         ]
 
+    def clean(self):
+        """Valida que subcategoria pertence à categoria (ADR-017)."""
+        from django.core.exceptions import ValidationError
+
+        if self.subcategory and self.category_id:
+            if self.subcategory.category_id != self.category_id:
+                raise ValidationError(
+                    "A subcategoria selecionada não pertence à categoria escolhida."
+                )
+
     def save(self, *args, **kwargs):
-        """Sanitiza o HTML antes de persistir (ADR-013)."""
-        # Import local evita import circular em tempo de app-loading.
+        """Sanitiza HTML antes de persistir (ADR-013)."""
         from .sanitizers import sanitize_html
 
         if self.content:
@@ -105,9 +202,8 @@ class Comment(models.Model):
     """
     Comentário aninhado em um Post.
 
-    Suporta dois cenários (ADR-012):
-    - Anônimo (MVP atual, RF-006): apenas `author_name` preenchido, `author_user` NULL.
-    - Autenticado (futuro, Passo 6): `author_name` E `author_user` preenchidos.
+    - Anônimo (RF-006): author_name preenchido, author_user NULL.
+    - Autenticado (Passo 6): author_name E author_user preenchidos.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -118,24 +214,15 @@ class Comment(models.Model):
         related_name="comments",
     )
 
-    author_name = models.CharField(
-        max_length=120,
-        help_text="Nome livre (sempre preenchido, mesmo em comentários autenticados).",
-    )
+    author_name = models.CharField(max_length=120)
     author_user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="comments",
-        help_text="Preenchido apenas quando o autor está autenticado (futuro).",
     )
-    role = models.CharField(
-        max_length=60,
-        blank=True,
-        default="Leitor",
-        help_text="Cargo exibido ao lado do nome (ex: 'Leitor', 'Backend Lead').",
-    )
+    role = models.CharField(max_length=60, blank=True, default="Leitor")
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
