@@ -12,8 +12,9 @@ python manage.py migrate --noinput
 echo "📦 Coletando arquivos estáticos..."
 python manage.py collectstatic --noinput
 
-echo "🌱 Populando banco com seed (idempotente)..."
-python manage.py seed_articles || true
+# Comentado para não popular o banco em produção
+# echo "🌱 Populando banco com seed (idempotente)..."
+# python manage.py seed_articles || true
 
 echo "🚀 Iniciando Gunicorn..."
 exec gunicorn core.wsgi:application \
