@@ -21,5 +21,6 @@ exec gunicorn core.wsgi:application \
     --config gunicorn.conf.py \
     --bind 0.0.0.0:8000 \
     --workers 3 \
+    --timeout 120 \
     --access-logfile - \
     --error-logfile -
