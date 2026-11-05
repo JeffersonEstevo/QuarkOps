@@ -17,11 +17,15 @@ load_dotenv(BASE_DIR / ".env")
 # ────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "insecure-dev-fallback")
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-    if h.strip()
-]
+
+# Pega o domínio do Railway dinamicamente
+RAILWAY_DOMAIN = os.getenv("DJANGO_ALLOWED_HOSTS", "")
+ALLOWED_HOSTS = [h.strip() for h in RAILWAY_DOMAIN.split(",") if h.strip()]
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend"]
+
+# Necessário para o Django Admin e requisições POST via HTTPS no Railway
+CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if host != "backend"]
 
 # ────────────────────────────────────────────────────────────
 # Apps
@@ -169,8 +173,14 @@ CORS_ALLOWED_ORIGINS = [
 # ────────────────────────────────────────────────────────────
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Força HTTPS em produção (comentado para staging local)
-# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# ────────────────────────────────────────────────────────────
+# Produção (Docker / Nginx Reverse Proxy)
+# ────────────────────────────────────────────────────────────
+# Força HTTPS em produção
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Se você for usar cookies seguros (quando migrar o JWT no futuro)
 # SECURE_SSL_REDIRECT = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True

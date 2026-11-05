@@ -1,8 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: quarkops_db
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-quarkops}
       POSTGRES_USER: ${POSTGRES_USER:-quarkops}
@@ -14,32 +13,28 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - quarkops_net
+    # Sem "ports", pois na nuvem a comunicação é interna
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: quarkops_backend
-    restart: unless-stopped
+    restart: always
     environment:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
-      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
-      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: ${RAILWAY_PUBLIC_DOMAIN:-localhost,127.0.0.1,backend}
       POSTGRES_DB: ${POSTGRES_DB:-quarkops}
       POSTGRES_USER: ${POSTGRES_USER:-quarkops}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quarkops_dev}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost}
+      CORS_ALLOWED_ORIGINS: https://${RAILWAY_PUBLIC_DOMAIN:-localhost}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - quarkops_static:/app/staticfiles
-    networks:
-      - quarkops_net
 
   frontend:
     build:
@@ -48,21 +43,20 @@ services:
       args:
         VITE_API_ADAPTER: http
         VITE_API_URL: /api
-    container_name: quarkops_frontend
-    restart: unless-stopped
-    ports:
-      - "80:80"
+    restart: always
+    environment:
+      # O Nginx precisa saber o domínio para configurar o CORS e os cookies corretamente
+      - BACKEND_HOST=backend:8000
+      - SERVER_NAME=${RAILWAY_PUBLIC_DOMAIN:-localhost}
     depends_on:
       - backend
     volumes:
       - quarkops_static:/var/www/static:ro
-    networks:
-      - quarkops_net
+    # O Railway usa a variável $PORT para rotear o tráfego
+    # O Nginx do frontend vai escutar nela.
+    ports:
+      - "${PORT:-80}:80"
 
 volumes:
   quarkops_pgdata:
   quarkops_static:
-
-networks:
-  quarkops_net:
-    driver: bridge
