@@ -2,25 +2,27 @@
 
 Aqui estão os comandos essenciais executados durante o desenvolvimento da aplicação para configurar o ambiente do frontend:
 
-## 1. Criação do projeto
+## 1. Frontend — Setup Inicial
+
+### 1.1 Criação do projeto
 Cria a pasta do frontend utilizando o Vite com o template do React (em JavaScript):
 ```bash 
 npm create vite@latest frontend -- --template react 
 ```
 
-## 2. Instalação de dependências
+### 1.2 Instalação de dependências
 Acesse a pasta do projeto recém-criada e instale os pacotes necessários:
 ```bash 
 cd frontend; npm install 
 ```
 
-## 3. Instalação do Tailwind CSS (v4)
+### 1.3 Instalação do Tailwind CSS (v4)
 Instale o Tailwind CSS e o plugin oficial para o Vite:
 ```bash 
 npm install tailwindcss @tailwindcss/vite 
 ```
 
-## 4. Configuração do Tailwind no Vite
+### 1.4 Configuração do Tailwind no Vite
 Certifique-se de que o plugin está registrado no arquivo `vite.config.js`:
 ```javascript 
 import { defineConfig } from 'vite'
@@ -34,24 +36,20 @@ export default defineConfig({
   ],
 }) 
 ```
-
 *(E importe `@import "tailwindcss";` no topo do seu arquivo CSS principal).*
 
-## 5. Instalar o plugin de tipografia para o Tailwind CSS
+### 1.5 Instalar o plugin de tipografia para o Tailwind CSS
 ```bash 
 npm i -D @tailwindcss/typography
 ```
 
-## 6. Instalar o plugin de destaque de código
-
+### 1.6 Instalar o plugin de destaque de código
 Para habilitar o destaque de sintaxe dos códigos nos posts, instale o pacote `highlight.js`:
-
 ```bash
 npm i highlight.js
 ```
 
-## Variáveis de Ambiente (Frontend — Vite)
-
+### 1.7 Variáveis de Ambiente (Frontend — Vite)
 Criar `.env.local` na raiz de `frontend/` para sobrescrever defaults:
 
 | Variável | Valores | Default | Descrição |
@@ -68,21 +66,19 @@ VITE_API_URL=http://localhost:8000/api
 
 No console (modo dev), o adapter ativo é logado: `[QuarkOps] API adapter ativo: local`.
 
+---
 
-## Backend (Django + PostgreSQL)
+## 2. Backend — Setup Inicial (Django + PostgreSQL)
 
 ### Pré-requisitos (instalação única, em qualquer máquina)
-
 Instale, caso ainda não tenha:
-
 - **Python 3.11+** — https://www.python.org/downloads/ (marque *"Add Python to PATH"* no Windows)
 - **Docker Desktop** — https://www.docker.com/products/docker-desktop/
   - No Windows, requer WSL2 habilitado (instalador já oferece).
 
 > Não é necessário instalar PostgreSQL localmente — ele roda em container Docker.
 
-### 1. Criar ambiente virtual e instalar dependências
-
+### 2.1 Criar ambiente virtual e instalar dependências
 ```bash
 cd backend
 
@@ -108,21 +104,18 @@ pip install -r requirements.txt
 > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 > ```
 
-### 2. Configurar variáveis de ambiente
-
+### 2.2 Configurar variáveis de ambiente
 ```bash
 # Copiar o modelo
 cp .env.example .env
 ```
 
 Editar `backend/.env` e substituir `DJANGO_SECRET_KEY` por uma chave real:
-
 ```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### 3. Subir o PostgreSQL (Docker)
-
+### 2.3 Subir o PostgreSQL (Docker — dev local)
 ```bash
 # Na pasta backend/
 docker compose -f docker-compose.yml up -d
@@ -135,56 +128,28 @@ docker compose -f docker-compose.yml ps
 docker compose -f docker-compose.yml logs db
 ```
 
-### 4. Aplicar migrations e subir o servidor
-
+### 2.4 Aplicar migrations e subir o servidor
 ```bash
 python manage.py check           # deve retornar "no issues"
 python manage.py migrate         # aplica migrations default do Django no Postgres
 python manage.py runserver       # sobe em http://127.0.0.1:8000/
 ```
-
 Acesse **`http://localhost:8000/admin/`** — tela de login do Django Admin.
 
-### 5. (Opcional) Criar superusuário do Admin
-
+### 2.5 (Opcional) Criar superusuário do Admin
 ```bash
 python manage.py createsuperuser
 ```
-
 Guarde as credenciais — serão usadas para testar login real no Passo 6.
 
-### Comandos úteis do dia a dia
-
-```bash
-# Ver logs do Postgres
-docker compose -f docker-compose.yml logs -f db
-
-# Parar Postgres (mantém dados no volume)
-docker compose -f docker-compose.yml down
-
-# Parar Postgres E apagar dados (⚠️ destrutivo)
-docker compose -f docker-compose.yml down -v
-
-# Criar novas migrations (após editar models.py)
-python manage.py makemigrations
-python manage.py migrate
-
-# Abrir shell interativo do Django
-python manage.py shell
-```
-
-### 6. Popular banco com dados iniciais (seed)
-
+### 2.6 Popular banco com dados iniciais (seed)
 Após rodar `migrate` pela primeira vez, popule o banco com autores e artigos iniciais (idempotente — pode rodar várias vezes):
-
 ```bash
 python manage.py seed_articles
 ```
-
 Esperado: `Seed concluído: 3 novos posts criados, 3 posts no total.`
 
-### 6.1 Gerenciar Categorias e Subcategorias (Passo 8A)
-
+### 2.7 Gerenciar Categorias e Subcategorias (Passo 8A)
 Categorias e subcategorias são gerenciadas **exclusivamente** via Django Admin.
 
 1. Acesse `http://localhost:8000/admin/api/category/`.
@@ -203,7 +168,6 @@ Categorias e subcategorias são gerenciadas **exclusivamente** via Django Admin.
 - Deletar categoria com posts é **bloqueado** (PROTECT). Mova/remova os posts primeiro.
 
 **Testar via API:**
-
 ```bash
 # Categorias com subcategorias aninhadas
 curl.exe http://localhost:8000/api/categories/
@@ -216,8 +180,163 @@ curl.exe "http://localhost:8000/api/subcategories/?category=<uuid>"
 curl.exe http://localhost:8000/api/posts/
 ```
 
-### 6.2 Testar Hierarquia no Frontend (Passo 8B)
+### 2.8 Comandos úteis do dia a dia (Backend)
+```bash
+# Ver logs do Postgres
+docker compose -f docker-compose.yml logs -f db
 
+# Parar Postgres (mantém dados no volume)
+docker compose -f docker-compose.yml down
+
+# Parar Postgres E apagar dados (⚠️ destrutivo)
+docker compose -f docker-compose.yml down -v
+
+# Criar novas migrations (após editar models.py)
+python manage.py makemigrations
+python manage.py migrate
+
+# Abrir shell interativo do Django
+python manage.py shell
+```
+
+### 2.9 Resetar banco do zero (⚠️ destrutivo)
+Se precisar recriar tudo (ex: após alterar models com dependência forte):
+```bash
+docker compose -f docker-compose.yml down -v
+docker compose -f docker-compose.yml up -d
+python manage.py migrate
+python manage.py seed_articles
+```
+
+### 2.10 Sanitizar posts existentes (após ADR-013)
+Se houver posts criados **antes** do Passo 4 (sem sanitização), re-salve-os para aplicar `sanitize_html`:
+```bash
+# Modo seguro — apenas lista o que seria alterado
+python manage.py sanitize_existing_posts --dry-run
+
+# Aplicar as mudanças
+python manage.py sanitize_existing_posts
+```
+Esperado: `Resumo: N post(s) alterado(s), M sem mudanças.`
+> ⚠️ Sempre rode `--dry-run` primeiro. Posts com tags/atributos não permitidos terão esses trechos removidos.
+
+---
+
+## 3. Banco de Dados (PostgreSQL no Docker)
+
+### 3.1 Acessar o banco via terminal (psql)
+Para rodar comandos SQL diretamente no banco de dados dentro do container:
+```bash
+docker exec -it quarkops_db psql -U quarkops -d quarkops
+```
+*(Para sair do terminal do psql, digite `\q` e aperte Enter).*
+
+### 3.2 Comandos SQL mais usados no dia a dia
+
+**Listar todas as tabelas do projeto:**
+```sql
+\dt
+```
+*(As principais tabelas são: `api_category`, `api_subcategory`, `api_post`, `api_comment`, `api_user`).*
+
+**Ver a estrutura de uma tabela (ex: posts):**
+```sql
+\d api_post
+```
+
+**Listar todos os posts (título e data):**
+```sql
+SELECT id, title, created_at FROM api_post;
+```
+
+**Contar quantos posts existem:**
+```sql
+SELECT COUNT(*) FROM api_post;
+```
+
+**Ver categorias e suas subcategorias juntas:**
+```sql
+SELECT c.name AS categoria, s.name AS subcategoria 
+FROM api_category c
+LEFT JOIN api_subcategory s ON s.category_id = c.id;
+```
+
+**Ver os 5 comentários mais recentes:**
+```sql
+SELECT author_name, text, created_at 
+FROM api_comment 
+ORDER BY created_at DESC 
+LIMIT 5;
+```
+
+**Verificar usuários cadastrados (sem mostrar a senha):**
+```sql
+SELECT username, display_name, is_staff, is_superuser FROM api_user;
+```
+
+**Verificar quantos likes/views um post tem:**
+```sql
+SELECT title, views, likes FROM api_post ORDER BY views DESC;
+```
+
+### 3.3 Fazer Backup do Banco (Salvar em arquivo .sql)
+Com o container rodando, execute na raiz do projeto:
+```bash
+docker exec -t quarkops_db pg_dump -U quarkops quarkops > backup_quarkops.sql
+```
+Isso criará um arquivo `backup_quarkops.sql` na pasta onde você rodou o comando.
+
+### 3.4 Restaurar um Backup (.sql)
+Se precisar jogar o backup de volta para o banco (⚠️ isso sobrescreve os dados atuais):
+```bash
+Get-Content backup_quarkops.sql | docker exec -i quarkops_db psql -U quarkops -d quarkops
+```
+
+---
+
+## 4. Integração Frontend ↔ Backend (Passo 5)
+
+### 4.1 Alternar entre adapters (localStorage ↔ HTTP)
+O frontend pode operar em **modo offline** (MVP, `localStorage`) ou **modo integrado** (backend Django). A troca é feita em `frontend/.env.local`.
+
+**Modo HTTP (backend real):**
+```env
+# frontend/.env.local
+VITE_API_ADAPTER=http
+VITE_API_URL=http://localhost:8000/api
+```
+
+**Modo Local (fallback MVP):**
+```env
+# frontend/.env.local
+VITE_API_ADAPTER=local
+# VITE_API_URL=http://localhost:8000/api  ← pode deixar comentado
+```
+
+> ⚠️ **Vite só recarrega variáveis de ambiente na inicialização.** Após editar `.env.local`, é obrigatório reiniciar o Vite (`Ctrl+C` + `npm run dev`).
+
+### 4.2 Ordem de inicialização completa (dev)
+Backend e frontend rodam em terminais separados.
+
+**Terminal 1 — Backend:**
+```bash
+cd backend
+# Docker Desktop aberto (ícone da baleia na bandeja)
+docker compose -f docker-compose.yml ps         # confirmar 'healthy'
+python manage.py runserver "[::1]:8000"
+```
+
+**Terminal 2 — Frontend:**
+```bash
+cd frontend
+npm run dev                                     # http://localhost:5173/
+```
+No navegador, abra o DevTools (F12) → Console. Esperado ver:
+```
+[QuarkOps] API adapter ativo: http
+```
+
+### 4.3 Testar Hierarquia no Frontend (Passo 8B)
 A Home e o CRM agora consomem as categorias dinamicamente.
 
 1. **Criar uma categoria nova:**
@@ -237,7 +356,18 @@ A Home e o CRM agora consomem as categorias dinamicamente.
    - Clicar na categoria filtra os posts.
    - Clicar na subcategoria filtra ainda mais.
 
-### 7. Testar endpoints da API (via curl)
+### 4.4 Validação rápida dos 3 cenários
+| Cenário | Configuração | Esperado |
+|---|---|---|
+| **1. Leitura HTTP** | `VITE_API_ADAPTER=http` + backend up | Home lista posts do Postgres (3 do seed). Curtidas/comentários anônimos funcionam. |
+| **2. Escrita bloqueada** | Idem, tentar CRM "Publicar" | Backend responde `401 Unauthorized` (staff exigido). UI silenciosa (erro fica no estado `error` do hook, sem toast — Passo 6). |
+| **3. Fallback local** | `VITE_API_ADAPTER=local` | Home lista 6 artigos do `localStorage`. CRM funciona (criar/editar/deletar). |
+
+> **Sobre o `[::1]:8000`:** ver nota na seção Backend. Docker Desktop pode comentar as entradas de `localhost` no `hosts` do Windows; `[::1]` contorna sem precisar editar arquivos do sistema.
+
+---
+
+## 5. API (Testes via curl)
 
 Com `runserver` ativo em outro terminal:
 
@@ -268,8 +398,7 @@ curl -X POST http://localhost:8000/api/posts/ \
   -d '{"title":"Test","category":"Test","summary":"x","content":"<p>x</p>"}'
 ```
 
-### 7.1 Testar Autenticação JWT (via curl)
-
+### 5.1 Testar Autenticação JWT (via curl)
 O SimpleJWT está configurado no backend. O frontend usa o `httpAdapter` para renovar os tokens automaticamente.
 
 ```bash
@@ -283,89 +412,9 @@ curl.exe http://localhost:8000/api/users/me/ -H "Authorization: Bearer SEU_ACCES
 curl.exe -X POST http://localhost:8000/api/token/refresh/ -H "Content-Type: application/json" -d "{\"refresh\":\"SEU_REFRESH_TOKEN\"}"
 ```
 
-### 8. Resetar banco do zero (⚠️ destrutivo)
+---
 
-Se precisar recriar tudo (ex: após alterar models com dependência forte):
-
-```bash
-docker compose -f docker-compose.yml down -v
-docker compose -f docker-compose.yml up -d
-python manage.py migrate
-python manage.py seed_articles
-```
-
-### 9. Sanitizar posts existentes (após ADR-013)
-
-Se houver posts criados **antes** do Passo 4 (sem sanitização), re-salve-os para aplicar `sanitize_html`:
-
-```bash
-# Modo seguro — apenas lista o que seria alterado
-python manage.py sanitize_existing_posts --dry-run
-
-# Aplicar as mudanças
-python manage.py sanitize_existing_posts
-```
-
-Esperado: `Resumo: N post(s) alterado(s), M sem mudanças.`
-
-> ⚠️ Sempre rode `--dry-run` primeiro. Posts com tags/atributos não permitidos terão esses trechos removidos.
-
-## Integração Frontend ↔ Backend (Passo 5)
-
-### Alternar entre adapters (localStorage ↔ HTTP)
-
-O frontend pode operar em **modo offline** (MVP, `localStorage`) ou **modo integrado** (backend Django). A troca é feita em `frontend/.env.local`.
-
-**Modo HTTP (backend real):**
-```env
-# frontend/.env.local
-VITE_API_ADAPTER=http
-VITE_API_URL=http://localhost:8000/api
-```
-
-**Modo Local (fallback MVP):**
-```env
-# frontend/.env.local
-VITE_API_ADAPTER=local
-# VITE_API_URL=http://localhost:8000/api  ← pode deixar comentado
-```
-
-> ⚠️ **Vite só recarrega variáveis de ambiente na inicialização.** Após editar `.env.local`, é obrigatório reiniciar o Vite (`Ctrl+C` + `npm run dev`).
-
-### Ordem de inicialização completa (dev)
-
-Backend e frontend rodam em terminais separados.
-
-**Terminal 1 — Backend:**
-```bash
-cd backend
-# Docker Desktop aberto (ícone da baleia na bandeja)
-docker compose -f docker-compose.yml ps         # confirmar 'healthy'
-python manage.py runserver "[::1]:8000"
-```
-
-**Terminal 2 — Frontend:**
-```bash
-cd frontend
-npm run dev                                     # http://localhost:5173/
-```
-
-No navegador, abra o DevTools (F12) → Console. Esperado ver:
-```
-[QuarkOps] API adapter ativo: http
-```
-
-### Validação rápida dos 3 cenários
-
-| Cenário | Configuração | Esperado |
-|---|---|---|
-| **1. Leitura HTTP** | `VITE_API_ADAPTER=http` + backend up | Home lista posts do Postgres (3 do seed). Curtidas/comentários anônimos funcionam. |
-| **2. Escrita bloqueada** | Idem, tentar CRM "Publicar" | Backend responde `401 Unauthorized` (staff exigido). UI silenciosa (erro fica no estado `error` do hook, sem toast — Passo 6). |
-| **3. Fallback local** | `VITE_API_ADAPTER=local` | Home lista 6 artigos do `localStorage`. CRM funciona (criar/editar/deletar). |
-
-> **Sobre o `[::1]:8000`:** ver nota na seção Backend. Docker Desktop pode comentar as entradas de `localhost` no `hosts` do Windows; `[::1]` contorna sem precisar editar arquivos do sistema.
-
-## Deploy Unificado (Docker Compose)
+## 6. Deploy Unificado (Docker Compose — Produção Simulada)
 
 ### Pré-requisitos
 - **Docker Desktop** aberto (ícone da baleia na bandeja do sistema).
@@ -376,13 +425,11 @@ Gerar `DJANGO_SECRET_KEY`:
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### Subir tudo (primeira vez)
-
+### 6.1 Subir tudo (primeira vez)
 ```bash
 # Na raiz do projeto (onde está docker-compose.yml)
 docker compose up --build
 ```
-
 Aguarde o build (2-5 min na primeira vez). Esperado:
 ```
 ✔ Network 026_quarkops_quarkops_net    Created
@@ -390,25 +437,20 @@ Aguarde o build (2-5 min na primeira vez). Esperado:
 ✔ Container quarkops_backend           Started
 ✔ Container quarkops_frontend          Started
 ```
-
 O backend roda automaticamente: `migrate`, `collectstatic`, `seed_articles`, `gunicorn`.
 
-### Criar superusuário (primeira vez)
-
+### 6.2 Criar superusuário (primeira vez)
 Em outro terminal (o `up` fica travado mostrando logs):
-
 ```bash
 docker compose exec backend python manage.py createsuperuser
 ```
 
-### Acessar
-
+### 6.3 Acessar
 - **App:** `http://localhost/`
 - **Admin:** `http://localhost/admin/`
 - **API:** `http://localhost/api/posts/`
 
-### Comandos úteis
-
+### 6.4 Comandos úteis (Deploy)
 ```bash
 # Ver logs (backend, frontend, banco)
 docker compose logs -f backend
@@ -436,8 +478,7 @@ docker compose exec -T db pg_dump -U quarkops quarkops > backup_$(date +%Y%m%d).
 docker compose exec -T db psql -U quarkops quarkops < backup_20261103.sql
 ```
 
-### Fluxo de desenvolvimento (alternativo ao deploy)
-
+### 6.5 Fluxo de desenvolvimento (alternativo ao deploy)
 O projeto tem **dois fluxos**:
 
 | Modo | Backend | Frontend | Postgres | Quando usar |
