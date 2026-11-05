@@ -25,7 +25,11 @@ if not ALLOWED_HOSTS:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "backend"]
 
 # Necessário para o Django Admin e requisições POST via HTTPS no Railway
-CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if host != "backend"]
+# CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS if host != "backend"]
+# ────────────────────────────────────────────────────────────
+# CSRF e Proxy (Produção)
+# ────────────────────────────────────────────────────────────
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
 
 # ────────────────────────────────────────────────────────────
 # Apps
