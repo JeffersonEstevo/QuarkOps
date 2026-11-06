@@ -99,10 +99,10 @@ html {
 /* ────────────────────────────────────────────────────────────
    8. BLOCO DE CÓDIGO INJETADO (O SEGREDO DO BOTÃO)
    ──────────────────────────────────────────────────────────── */
-/* Container do bloco de código gerado pelo CRM */
+/* Container do bloco de código */
 .code-block {
   position: relative !important;
-  background-color: #0f172a !important; /* Fundo escuro */
+  background-color: #0f172a !important;
   border: 1px solid #334155 !important;
   border-radius: 0.5rem !important;
   margin: 1.5rem 0 !important;
@@ -110,13 +110,14 @@ html {
   overflow-x: auto;
 }
 
-/* O botão de copiar */
-.code-block .copy-code-btn {
+/* O botão de copiar (Forçado a achar o botão, mesmo sem a classe code-block) */
+button[class*="copy-code-btn"], 
+button.copy-code-btn {
   position: absolute !important;
   top: 0.5rem !important;
-  right: 0.5rem !important; /* Força ir para a direita */
+  right: 0.5rem !important;
   background-color: #1e293b !important;
-  color: #fcd34d !important; /* Amarelo */
+  color: #fcd34d !important;
   border: 1px solid #475569 !important;
   padding: 0.25rem 0.75rem !important;
   border-radius: 0.25rem !important;
@@ -130,7 +131,8 @@ html {
   transition: all 0.2s ease !important;
 }
 
-.code-block .copy-code-btn:hover {
-  background-color: #0ea5e9 !important; /* Azul */
+button[class*="copy-code-btn"]:hover, 
+button.copy-code-btn:hover {
+  background-color: #0ea5e9 !important;
   color: #ffffff !important;
 }
