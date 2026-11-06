@@ -2,11 +2,9 @@
    QUARKOPS - FOLHA DE ESTILO GLOBAL
    ========================================================================== */
 
-/* 1. IMPORTS E CONFIGURAÇÃO DO TAILWIND (Devem ficar no topo) */
+/* 1. IMPORTS E CONFIGURAÇÃO DO TAILWIND */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-
-/* Importa o tema padrão do Highlight.js para os blocos de código */
 @import "highlight.js/styles/atom-one-dark.css";
 
 /* Habilita o modo escuro baseado na classe .dark */
@@ -29,7 +27,7 @@
 }
 
 
-/* 3. ESTILOS BASE (Reset e tipografia global) */
+/* 3. ESTILOS BASE */
 body {
   font-family: 'Inter', sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -39,57 +37,29 @@ button {
   cursor: pointer;
 }
 
-/* Rolagem suave global (útil para o TOC) */
 html {
   scroll-behavior: smooth;
-  /* Margem de segurança no topo para o Header fixo */
   scroll-padding-top: 2.5rem; 
 }
 
 
 /* 4. SCROLLBAR CUSTOMIZADA */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #fbfaf5;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border: 1px solid #e2e8f0;
-}
-.dark ::-webkit-scrollbar-track {
-  background: #0f1724;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #387eb8;
-  border: 1px solid #1e3048;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #fbfaf5; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border: 1px solid #e2e8f0; }
+.dark ::-webkit-scrollbar-track { background: #0f1724; }
+.dark ::-webkit-scrollbar-thumb { background: #387eb8; border: 1px solid #1e3048; }
 
 
 /* 5. UTILITÁRIOS CUSTOMIZADOS (Retrô / Pixel) */
-.pixel-border {
-  box-shadow: 4px 4px 0px 0px currentColor;
-}
-.pixel-border-sm {
-  box-shadow: 2px 2px 0px 0px currentColor;
-}
-.pixel-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px currentColor;
-}
-.retro-title {
-  font-family: 'VT323', monospace;
-  letter-spacing: 1px;
-}
-.code-block {
-  font-family: 'Courier New', Courier, monospace;
-}
+.pixel-border { box-shadow: 4px 4px 0px 0px currentColor; }
+.pixel-border-sm { box-shadow: 2px 2px 0px 0px currentColor; }
+.pixel-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px 0px currentColor; }
+.retro-title { font-family: 'VT323', monospace; letter-spacing: 1px; }
 
 
-/* 6. ESTILOS DE LEITURA (Plugin Prose + Overrides) */
-/* Reseta o fundo e padding que o Prose coloca em blocos de código */
+/* 6. ESTILOS DE LEITURA (Plugin Prose) */
+/* Remove o fundo e padding que o Prose coloca no pre, pois nosso container já tem */
 .prose pre {
   background-color: transparent !important;
   padding: 0 !important;
@@ -109,78 +79,49 @@ html {
   content: none !important;
 }
 
-
-/* 7. CORREÇÕES DE NAVEGAÇÃO (TOC) */
 /* Impede que o título fique escondido atrás do menu fixo ao clicar no TOC */
 #art-detail-body [id] {
   scroll-margin-top: 2.5rem !important;
 }
 
 
-/* 8. HIGHLIGHT.JS (Força as cores por cima do Prose) */
-/* O !important é necessário porque o Prose do Tailwind tem regras de especificidade alta */
-#art-detail-body pre code.hljs {
-  color: #abb2bf !important;
-  background: transparent !important;
-}
+/* 7. HIGHLIGHT.JS */
+#art-detail-body pre code.hljs { color: #abb2bf !important; background: transparent !important; }
+#art-detail-body pre code .hljs-keyword, #art-detail-body pre code .hljs-built_in, #art-detail-body pre code .hljs-type { color: #c678dd !important; }
+#art-detail-body pre code .hljs-string, #art-detail-body pre code .hljs-meta .hljs-string { color: #98c379 !important; }
+#art-detail-body pre code .hljs-title, #art-detail-body pre code .hljs-title.function_ { color: #61afef !important; }
+#art-detail-body pre code .hljs-params, #art-detail-body pre code .hljs-variable { color: #e06c75 !important; }
+#art-detail-body pre code .hljs-number, #art-detail-body pre code .hljs-literal { color: #d19a66 !important; }
+#art-detail-body pre code .hljs-comment { color: #5c6370 !important; font-style: italic !important; }
+#art-detail-body pre code .hljs-subst { color: #abb2bf !important; }
 
-#art-detail-body pre code .hljs-keyword,
-#art-detail-body pre code .hljs-built_in,
-#art-detail-body pre code .hljs-type { 
-  color: #c678dd !important; /* Roxo */
-}
-
-#art-detail-body pre code .hljs-string,
-#art-detail-body pre code .hljs-meta .hljs-string { 
-  color: #98c379 !important; /* Verde */
-}
-
-#art-detail-body pre code .hljs-title,
-#art-detail-body pre code .hljs-title.function_ { 
-  color: #61afef !important; /* Azul */
-}
-
-#art-detail-body pre code .hljs-params,
-#art-detail-body pre code .hljs-variable { 
-  color: #e06c75 !important; /* Vermelho claro */
-}
-
-#art-detail-body pre code .hljs-number,
-#art-detail-body pre code .hljs-literal { 
-  color: #d19a66 !important; /* Laranja */
-}
-
-#art-detail-body pre code .hljs-comment { 
-  color: #5c6370 !important; 
-  font-style: italic !important; 
-}
-
-#art-detail-body pre code .hljs-subst { 
-  color: #abb2bf !important; 
-}
 
 /* ────────────────────────────────────────────────────────────
-   BOTÃO DE COPIAR E BLOCO DE CÓDIGO (Garantia Absoluta)
+   8. BLOCO DE CÓDIGO INJETADO (O SEGREDO DO BOTÃO)
    ──────────────────────────────────────────────────────────── */
+/* Container do bloco de código gerado pelo CRM */
 .code-block {
   position: relative !important;
-  background-color: #0f172a !important;
+  background-color: #0f172a !important; /* Fundo escuro */
   border: 1px solid #334155 !important;
   border-radius: 0.5rem !important;
-  padding: 1rem !important;
   margin: 1.5rem 0 !important;
+  padding: 1rem !important;
+  overflow-x: auto;
 }
 
+/* O botão de copiar */
 .code-block .copy-code-btn {
   position: absolute !important;
   top: 0.5rem !important;
-  right: 0.5rem !important; /* Força o botão para a direita */
+  right: 0.5rem !important; /* Força ir para a direita */
   background-color: #1e293b !important;
-  color: #fcd34d !important;
+  color: #fcd34d !important; /* Amarelo */
   border: 1px solid #475569 !important;
   padding: 0.25rem 0.75rem !important;
   border-radius: 0.25rem !important;
   font-size: 0.75rem !important;
+  font-family: monospace !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
@@ -190,13 +131,6 @@ html {
 }
 
 .code-block .copy-code-btn:hover {
-  background-color: #0ea5e9 !important; /* Azul céu */
-  color: #fff !important;
-}
-
-/* Remove margens que o Prose coloca no <pre> para ficar elegante */
-.prose pre {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: transparent !important;
+  background-color: #0ea5e9 !important; /* Azul */
+  color: #ffffff !important;
 }

@@ -20,37 +20,27 @@ export default function ArticleBody({ content }) {
   const bodyRef = useRef(null);
 
   useEffect(() => {
-    // Garante que estamos no navegador
-    if (typeof window === 'undefined') return;
-
     const currentRef = bodyRef.current;
     if (!currentRef) return;
 
     const handleClick = (e) => {
-      // Procura o botão pelo seletor de classe
       const btn = e.target.closest('.copy-code-btn');
       if (!btn) return;
 
-      e.preventDefault();
-      
-      // Acha o bloco <pre> mais próximo para pegar o texto
+      // Pega o texto de dentro do <pre>
       const preElement = btn.parentElement.querySelector('pre');
-      if (preElement) {
-        // Copia o texto limpando os espaços extras
-        const textToCopy = preElement.innerText.trim();
+      const codeToCopy = preElement ? preElement.innerText : '';
+
+      navigator.clipboard.writeText(codeToCopy).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+        btn.style.backgroundColor = '#10b981';
         
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          // Feedback visual
-          const originalHTML = btn.innerHTML;
-          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-          btn.style.backgroundColor = '#10b981'; // Verde sucesso
-          
-          setTimeout(() => {
-            btn.innerHTML = originalHTML;
-            btn.style.backgroundColor = '#1e293b'; // Volta ao normal
-          }, 2000);
-        }).catch(err => console.error('Erro ao copiar:', err));
-      }
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.style.backgroundColor = '#1e293b';
+        }, 2000);
+      }).catch(err => console.error('Erro ao copiar:', err));
     };
 
     currentRef.addEventListener('click', handleClick);
