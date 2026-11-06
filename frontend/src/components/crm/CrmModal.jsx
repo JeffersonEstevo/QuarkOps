@@ -91,9 +91,10 @@ export default function CrmModal({ isOpen, initialArticle, onClose, onSubmit }) 
         ? escapeHtml(rawCode)
         : hljs.highlight(rawCode, { language: lang }).value;
 
+    // ✅ O NOVO HTML: botão sem onclick e usando as classes do Tailwind
     const htmlSnippet = `
 <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto">
-  <button onclick="navigator.clipboard.writeText(this.parentElement.querySelector('pre').innerText); window.triggerToast('Código copiado para a área de transferência!');" class="absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10">
+  <button class="copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10">
     <i class="fa-regular fa-copy mr-1"></i> Copiar
   </button>
   <pre><code class="language-${lang} hljs">${highlighted}</code></pre>

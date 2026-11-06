@@ -191,7 +191,3 @@ html {
 .code-block .copy-code-btn:hover {
   background-color: #0284c7; /* sky-600 */
 }
-
-/* Força o Tailwind a compilar essas classes para o conteúdo do banco */
-@source inline("relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 my-6 overflow-x-auto");
-@source inline("copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10");
