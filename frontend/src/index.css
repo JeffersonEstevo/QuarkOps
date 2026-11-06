@@ -159,35 +159,44 @@ html {
   color: #abb2bf !important; 
 }
 
-
-/* Estilos para blocos de código injetados via HTML no blog */
+/* ────────────────────────────────────────────────────────────
+   BOTÃO DE COPIAR E BLOCO DE CÓDIGO (Garantia Absoluta)
+   ──────────────────────────────────────────────────────────── */
 .code-block {
-  position: relative;
-  background-color: #0f172a; /* slate-900 */
-  color: #f1f5f9;            /* slate-100 */
-  padding: 1rem;
-  border-radius: 0.25rem;
-  border: 1px solid #334155; /* slate-700 */
-  margin: 1rem 0;
-  font-size: 0.875rem;
-  overflow-x: auto;
+  position: relative !important;
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.5rem !important;
+  padding: 1rem !important;
+  margin: 1.5rem 0 !important;
 }
 
 .code-block .copy-code-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background-color: #1e293b; /* slate-800 */
-  color: #fcd34d;            /* amber-300 */
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid #334155; /* slate-700 */
-  cursor: pointer;
-  transition: background-color 0.2s;
-  z-index: 10;
+  position: absolute !important;
+  top: 0.5rem !important;
+  right: 0.5rem !important; /* Força o botão para a direita */
+  background-color: #1e293b !important;
+  color: #fcd34d !important;
+  border: 1px solid #475569 !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.75rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  z-index: 10 !important;
+  transition: all 0.2s ease !important;
 }
 
 .code-block .copy-code-btn:hover {
-  background-color: #0284c7; /* sky-600 */
+  background-color: #0ea5e9 !important; /* Azul céu */
+  color: #fff !important;
+}
+
+/* Remove margens que o Prose coloca no <pre> para ficar elegante */
+.prose pre {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
 }

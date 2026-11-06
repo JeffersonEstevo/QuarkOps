@@ -20,35 +20,42 @@ export default function ArticleBody({ content }) {
   const bodyRef = useRef(null);
 
   useEffect(() => {
+    // Garante que estamos no navegador
+    if (typeof window === 'undefined') return;
+
+    const currentRef = bodyRef.current;
+    if (!currentRef) return;
+
     const handleClick = (e) => {
-      // Verifica se o elemento clicado (ou o pai dele) tem a classe 'copy-code-btn'
+      // Procura o botão pelo seletor de classe
       const btn = e.target.closest('.copy-code-btn');
       if (!btn) return;
 
-      const codeBlock = btn.parentElement.querySelector('pre');
-      if (codeBlock) {
-        navigator.clipboard.writeText(codeBlock.innerText);
+      e.preventDefault();
+      
+      // Acha o bloco <pre> mais próximo para pegar o texto
+      const preElement = btn.parentElement.querySelector('pre');
+      if (preElement) {
+        // Copia o texto limpando os espaços extras
+        const textToCopy = preElement.innerText.trim();
         
-        // Feedback visual (opcional)
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Copiado!';
-        setTimeout(() => {
-          btn.innerHTML = originalText;
-        }, 2000);
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          // Feedback visual
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
+          btn.style.backgroundColor = '#10b981'; // Verde sucesso
+          
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.backgroundColor = '#1e293b'; // Volta ao normal
+          }, 2000);
+        }).catch(err => console.error('Erro ao copiar:', err));
       }
     };
 
-    const currentRef = bodyRef.current;
-    if (currentRef) {
-      currentRef.addEventListener('click', handleClick);
-    }
-
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener('click', handleClick);
-      }
-    };
-  }, [content]); // Roda sempre que o conteúdo do artigo mudar
+    currentRef.addEventListener('click', handleClick);
+    return () => currentRef.removeEventListener('click', handleClick);
+  }, [content]);
 
   return (
     <div 
