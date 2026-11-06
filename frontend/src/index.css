@@ -158,3 +158,36 @@ html {
 #art-detail-body pre code .hljs-subst { 
   color: #abb2bf !important; 
 }
+
+
+/* Estilos para blocos de código injetados via HTML no blog */
+.code-block {
+  position: relative;
+  background-color: #0f172a; /* slate-900 */
+  color: #f1f5f9;            /* slate-100 */
+  padding: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #334155; /* slate-700 */
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  overflow-x: auto;
+}
+
+.code-block .copy-code-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: #1e293b; /* slate-800 */
+  color: #fcd34d;            /* amber-300 */
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid #334155; /* slate-700 */
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 10;
+}
+
+.code-block .copy-code-btn:hover {
+  background-color: #0284c7; /* sky-600 */
+}
