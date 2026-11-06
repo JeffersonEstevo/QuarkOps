@@ -41,6 +41,8 @@ ALLOWED_ATTRIBUTES = {
     "h2": {"id"},
     "h3": {"id"},
     "h4": {"id"},
+    "pre": {"style"}, # 🆕 Permite estilos no pre
+    "code": {"class", "style"}, # 🆕 Permite estilos no code
 }
 
 # Esquemas de URL permitidos (nh3 valida automaticamente por tipo de atributo).
