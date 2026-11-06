@@ -91,14 +91,14 @@ export default function CrmModal({ isOpen, initialArticle, onClose, onSubmit }) 
         ? escapeHtml(rawCode)
         : hljs.highlight(rawCode, { language: lang }).value;
 
-    // Usa a classe "code-block" e remove o data-code (o nh3 remove ele)
+    // Voltando ao HTML com classes do Tailwind
     const htmlSnippet = `
-<div class="code-block">
-  <button class="copy-code-btn">
-    <i class="fa-regular fa-copy"></i> Copiar
-  </button>
-  <pre><code class="language-${lang} hljs">${highlighted}</code></pre>
-</div>`.trim();
+    <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 my-6 text-sm overflow-x-auto">
+      <button class="copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10">
+        <i class="fa-regular fa-copy mr-1"></i> Copiar
+      </button>
+      <pre><code class="language-${lang} hljs">${highlighted}</code></pre>
+    </div>`.trim();
 
     const textarea = contentRef.current;
     if (!textarea) return;
