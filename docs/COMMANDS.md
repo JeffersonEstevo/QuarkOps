@@ -497,3 +497,69 @@ python manage.py runserver "[::1]:8000"
 cd frontend
 npm run dev                                   # http://localhost:5173
 ```
+---
+
+## 7. Deploy em Nuvem (Railway)
+
+O QuarkOps está hospedado no Railway (plano gratuito com limites). A arquitetura usa 3 serviços separados: `Backend` (Django), `Frontend` (Nginx) e `Postgres`.
+
+### 1. Variáveis de Ambiente no Backend
+
+No painel do Railway, vá em **Backend** -> **Variables** e configure:
+
+```env
+DJANGO_SECRET_KEY=sua_chave_gerada
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend,quarkops.railway.internal,healthcheck.railway.app,quarkops-backend-production.up.railway.app,frontend-production-a978.up.railway.app
+CORS_ALLOWED_ORIGINS=https://frontend-production-a978.up.railway.app
+CSRF_TRUSTED_ORIGINS=https://frontend-production-a978.up.railway.app
+POSTGRES_DB=${{Postgres.PGDATABASE}}
+POSTGRES_USER=${{Postgres.PGUSER}}
+POSTGRES_PASSWORD=${{Postgres.PGPASSWORD}}
+POSTGRES_HOST=${{Postgres.PGHOST}}
+POSTGRES_PORT=${{Postgres.PGPORT}}
+```
+
+> ⚠️ **Atenção:** O domínio `frontend-production-a978...` e `quarkops-backend-production...` mudam de projeto para projeto. Use os domínios reais que o Railway gerou para você.
+
+### 2. Nginx Dinâmico (Fix para erro 504)
+
+O `frontend/nginx.conf` usa uma configuração especial para o Railway:
+
+```nginx
+resolver [fd12::10] valid=10s; # DNS interno do Railway
+# ...
+location /api/ {
+    set $backend_upstream "http://quarkops.railway.internal:8000";
+    proxy_pass $backend_upstream/api/;
+    # ...
+}
+```
+Isso evita o erro `504 Gateway Timeout` quando o Railway reinicia o container do backend e troca o IP interno.
+
+### 3. Comandos Úteis no Railway
+
+Para rodar comandos no banco ou no backend, use o **Console** (terminal do navegador):
+
+```bash
+# Criar superusuário (primeiro acesso)
+python manage.py createsuperuser
+
+# Resetar senha
+python manage.py changepassword <username>
+
+# Rodar migrations manualmente (se necessário)
+python manage.py migrate
+
+# Acessar o shell do Django
+python manage.py shell
+```
+
+### 4. Fazer o Deploy
+
+O Railway está conectado ao repositório do GitHub. Para atualizar a aplicação:
+1. Faça o commit e o push das suas alterações.
+2. O Railway detecta e faz o build automaticamente.
+3. Se o build falhar, a versão anterior continua no ar.
+
+---

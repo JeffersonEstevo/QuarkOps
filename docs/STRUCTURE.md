@@ -165,3 +165,31 @@ A fachada já existe. Para plugar o Django:
 O projeto mantém **dois fluxos** ativos:
 - **Dev local:** `backend/docker-compose.yml` (só Postgres) + `runserver` + `npm run dev`.
 - **Deploy:** `docker-compose.yml` (raiz) com tudo containerizado.
+
+---
+## 7. Deploy em Nuvem (Railway)
+
+### Arquitetura
+
+O Railway não lê o `docker-compose.yml` inteiro. Ele usa 3 serviços isolados:
+
+```text
+┌─────────────────────────────────────────┐
+│             Railway Platform            │
+│                                         │
+│  ┌────────────┐       ┌──────────────┐  │
+│  │  Frontend  │─────▶│   Backend    │  │
+│  │  (Nginx)   │ HTTP  │  (Gunicorn)  │  │
+│  │  :80       │       │   :8000      │  │
+│  └────────────┘       └──────┬───────┘  │
+│                              │          │
+│                              ▼          │
+│                       ┌──────────────┐  │
+│                       │  PostgreSQL  │  │
+│                       └──────────────┘  │
+└─────────────────────────────────────────┘
+```
+
+- **Frontend:** Build do Vite servido pelo Nginx. Acesso público via HTTPS.
+- **Backend:** Gunicorn rodando o Django. Comunicação apenas via rede privada (`quarkops.railway.internal:8000`).
+- **Postgres:** Banco gerenciado. O Backend se conecta via rede privada.

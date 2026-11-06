@@ -208,3 +208,15 @@
   - **Payload do CRM:** O `CrmModal` agora envia `category_id` e `subcategory_id` (UUIDs) além dos nomes (para compatibilidade com o modo `localStorage`).
   - **Unificação de Componentes:** O arquivo `pages/HomePage.jsx` (legado) foi substituído pelo novo componente em `components/home/HomePage.jsx` (que já possuía a lógica correta de filtro por slug).
 - **Consequências:** O QuarkOps agora suporta trilhas de conteúdo reais (Programação -> Python, Linux -> Ubuntu). O frontend é totalmente agnóstico às categorias (o admin pode criar novas no Django Admin e elas aparecerão imediatamente no CRM e na Home). **Bug resolvido:** conflito de importação do `HomePage` (o App importava o arquivo legado que não usava os slugs).
+
+## ADR-019: Deploy em Nuvem e Configuração de Produção (Railway)
+- **Data:** 05/11/2026
+- **Status:** Aceito
+- **Contexto:** O QuarkOps precisava ir ao ar de forma gratuita para validação e divulgação. O Railway foi escolhido por suportar Docker e PostgreSQL nativamente.
+- **Decisão:**
+  - **Arquitetura:** 3 serviços separados no Railway (`Backend`, `Frontend`, `Postgres`), pois o Railway não roda o `docker-compose.yml` completo diretamente.
+  - **Comunicação Interna:** O Nginx (Frontend) se comunica com o Django (Backend) via rede privada do Railway (`quarkops.railway.internal`).
+  - **Resolver Dinâmico no Nginx:** Para evitar o erro **504 (Gateway Timeout)**, o `nginx.conf` foi configurado com `resolver [fd12::10] valid=10s;` e a URL do `proxy_pass` foi movida para uma variável (`set $backend_upstream ...`). Isso força o Nginx a resolver o IP do backend dinamicamente a cada requisição, já que o Railway troca os IPs dos containers com frequência.
+  - **Variáveis de Ambiente:** O Django agora lê o `DJANGO_ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` e `CSRF_TRUSTED_ORIGINS` via `.env` dinâmico. O host `healthcheck.railway.app` foi incluído para permitir que o Railway valide a saúde do app sem retornar 400.
+  - **Seed:** A execução do `seed_articles` foi removida do `entrypoint.sh` para permitir que o banco de produção suba vazio.
+- **Consequências:** Aplicação no ar e acessível publicamente. O Superusuário é criado manualmente via Console (Railway). O banco não possui dados de teste em produção.

@@ -4,6 +4,7 @@
 - **Nome do Projeto:** [QuarkOps]
 - **Objetivo:** [Blog/Agregador_de_Conteúdo/Leitor_de_RSS]
 - **Público-Alvo:** [Desenvolvedores/Amantes_de_Tecnologia]
+- **Link de Produção:** [https://frontend-production-a978.up.railway.app](https://frontend-production-a978.up.railway.app)
 
 ## 2. Stack Tecnológica (REGRAS RÍGIDAS)
 > **Instrução para a IA:** Não sugira nenhuma biblioteca ou ferramenta fora desta lista.
