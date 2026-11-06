@@ -30,7 +30,7 @@ ALLOWED_TAGS = {
     "img",
     # Tabelas (suporte futuro)
     "table", "thead", "tbody", "tr", "td", "th",
-    "pre", "code", "button", # 🆕 Adiciona button
+    "button", # 🆕 Adiciona button
 }
 
 # `class` liberado em `span`/`div`/`pre`/`code` (highlight.js + Tailwind).
@@ -42,9 +42,7 @@ ALLOWED_ATTRIBUTES = {
     "h2": {"id"},
     "h3": {"id"},
     "h4": {"id"},
-    "pre": {"style"}, # 🆕 Permite estilos no pre
-    "code": {"class", "style"}, # 🆕 Permite estilos no code
-    "button": {"class", "type"}, # 🆕 Adicionado
+    "button": {"class"}, # 🆕 Adicionado
 }
 
 # Esquemas de URL permitidos (nh3 valida automaticamente por tipo de atributo).
