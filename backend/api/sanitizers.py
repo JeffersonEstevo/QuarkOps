@@ -30,6 +30,7 @@ ALLOWED_TAGS = {
     "img",
     # Tabelas (suporte futuro)
     "table", "thead", "tbody", "tr", "td", "th",
+    "pre", "code", "button", # 🆕 Adiciona button
 }
 
 # `class` liberado em `span`/`div`/`pre`/`code` (highlight.js + Tailwind).
