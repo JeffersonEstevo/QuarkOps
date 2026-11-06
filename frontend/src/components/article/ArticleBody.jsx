@@ -14,32 +14,48 @@
  *  - content → string HTML
  */
 
+import { useEffect, useRef } from 'react';
 
 export default function ArticleBody({ content }) {
+  const bodyRef = useRef(null);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      // Verifica se o elemento clicado (ou o pai dele) tem a classe 'copy-code-btn'
+      const btn = e.target.closest('.copy-code-btn');
+      if (!btn) return;
+
+      const codeBlock = btn.parentElement.querySelector('pre');
+      if (codeBlock) {
+        navigator.clipboard.writeText(codeBlock.innerText);
+        
+        // Feedback visual (opcional)
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Copiado!';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 2000);
+      }
+    };
+
+    const currentRef = bodyRef.current;
+    if (currentRef) {
+      currentRef.addEventListener('click', handleClick);
+    }
+
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('click', handleClick);
+      }
+    };
+  }, [content]); // Roda sempre que o conteúdo do artigo mudar
+
   return (
-    <div
-      id="art-detail-body"
-      className="
-        prose dark:prose-invert max-w-none font-sans leading-relaxed space-y-6
-        prose-headings:font-bold prose-headings:font-sans prose-headings:tracking-tight
-        prose-h2:text-2xl prose-h2:pt-2 prose-h2:mt-6
-        prose-h3:text-xl prose-h3:pt-2 prose-h3:mt-4
-        prose-p:opacity-95
-        prose-a:text-python-blue dark:prose-a:text-python-yellow prose-a:underline hover:prose-a:opacity-80
-        prose-strong:text-python-blue dark:prose-strong:text-python-yellow
-        
-        /* --- CÓDIGO INLINE --- */
-        prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none
-        
-        /* --- O SEGREDO ESTÁ AQUI: Reset para blocos <pre> --- */
-        prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0
-        [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:rounded-none [&_pre_code]:text-inherit [&_pre_code]:font-normal [&_pre_code]:before:content-none [&_pre_code]:after:content-none
-        
-        prose-blockquote:border-l-4 prose-blockquote:border-python-yellow prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:opacity-90
-        prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
-        prose-img:rounded prose-img:border prose-img:border-slate-700
-      "
-      dangerouslySetInnerHTML={{ __html: content }}
+    <div 
+      ref={bodyRef}
+      id="art-detail-body" 
+      className="prose prose-slate dark:prose-invert max-w-none" 
+      dangerouslySetInnerHTML={{ __html: content }} 
     />
   );
 }
