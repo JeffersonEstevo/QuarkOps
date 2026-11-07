@@ -30,7 +30,6 @@ ALLOWED_TAGS = {
     "img",
     # Tabelas (suporte futuro)
     "table", "thead", "tbody", "tr", "td", "th",
-    "button", # 🆕 Adiciona button
 }
 
 # `class` liberado em `span`/`div`/`pre`/`code` (highlight.js + Tailwind).
@@ -42,7 +41,6 @@ ALLOWED_ATTRIBUTES = {
     "h2": {"id"},
     "h3": {"id"},
     "h4": {"id"},
-    "button": {"class"}, # 🆕 Adicionado
 }
 
 # Esquemas de URL permitidos (nh3 valida automaticamente por tipo de atributo).
@@ -74,9 +72,9 @@ def sanitize_html(raw_html: str) -> str:
 
     return nh3.clean(
         raw_html,
-        tags={"*"}, # ⚠️ Permite TODAS as tags (cuidado, só para teste)
-        attributes={"*": {"*"}}, # ⚠️ Permite TODOS os atributos
-        url_schemes={"http", "https", "mailto"},
-        link_rel=None, # Remove a injeção automática de rel que pode quebrar coisas
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES,
+        url_schemes=URL_SCHEMES,
+        link_rel="noopener noreferrer",  # hardening em links externos
         strip_comments=True,
     )
