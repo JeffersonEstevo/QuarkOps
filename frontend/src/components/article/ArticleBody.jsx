@@ -32,16 +32,32 @@ hljs.registerLanguage('json', json);
 hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('xml', xml);
 
+// export default function ArticleBody({ content }) {
+//   const containerRef = useRef(null);
+
+//   useEffect(() => {
+//     console.log('[ArticleBody] useEffect executado!', {
+//         contentLength: content?.length,
+//         container: !!containerRef.current
+//     });
+//     if (!containerRef.current) return;
 export default function ArticleBody({ content }) {
+  console.log('[ArticleBody] COMPONENTE RENDERIZADO');
+
   const containerRef = useRef(null);
 
   useEffect(() => {
-    console.log('[ArticleBody] useEffect executado!', {
-        contentLength: content?.length,
-        container: !!containerRef.current
-    });
-    if (!containerRef.current) return;
+    console.log('[ArticleBody] USE EFFECT EXECUTADO');
 
+    const container = containerRef.current;
+
+    console.log('[ArticleBody] DIAGNÓSTICO:', {
+      contentLength: content?.length,
+      containerEncontrado: !!container,
+      quantidadePre: container?.querySelectorAll('pre').length
+    });
+
+    if (!container) return;
     // Encontra todos os blocos <pre> renderizados no artigo
     const preElements = containerRef.current.querySelectorAll('pre');
 
