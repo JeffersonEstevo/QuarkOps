@@ -36,6 +36,10 @@ export default function ArticleBody({ content }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    console.log('[ArticleBody] useEffect executado!', {
+        contentLength: content?.length,
+        container: !!containerRef.current
+    });
     if (!containerRef.current) return;
 
     // Encontra todos os blocos <pre> renderizados no artigo
