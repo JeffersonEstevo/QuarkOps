@@ -74,9 +74,9 @@ def sanitize_html(raw_html: str) -> str:
 
     return nh3.clean(
         raw_html,
-        tags=ALLOWED_TAGS,
-        attributes=ALLOWED_ATTRIBUTES,
-        url_schemes=URL_SCHEMES,
-        link_rel="noopener noreferrer",  # hardening em links externos
+        tags={"*"}, # ⚠️ Permite TODAS as tags (cuidado, só para teste)
+        attributes={"*": {"*"}}, # ⚠️ Permite TODOS os atributos
+        url_schemes={"http", "https", "mailto"},
+        link_rel=None, # Remove a injeção automática de rel que pode quebrar coisas
         strip_comments=True,
     )
