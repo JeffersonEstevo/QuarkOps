@@ -107,8 +107,15 @@ function mapPost(backendPost) {
 // Fetch base e fetch autenticado
 // ────────────────────────────────────────────────────────────
 
+// Função utilitária para montar a URL corretamente sem barras duplas
+function getUrl(path) {
+  const base = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${base}${cleanPath}`;
+}
+
 async function request(path, { method = 'GET', body } = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const res = await fetch(getUrl(path), {
     method,
     headers: { 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined,
@@ -136,7 +143,7 @@ async function fetchWithAuth(path, options = {}) {
     ...(options.headers || {}),
   };
 
-  const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  const res = await fetch(`${getUrl(path)}`, { ...options, headers });
 
   if (res.status !== 401) {
     if (!res.ok) {
@@ -150,7 +157,7 @@ async function fetchWithAuth(path, options = {}) {
     return new Promise((resolve, reject) => {
       refreshSubscribers.push(async (newAccess) => {
         try {
-          const retryRes = await fetch(`${BASE_URL}${path}`, {
+          const retryRes = await fetch(`${getUrl(path)}`, {
             ...options,
             headers: { ...headers, Authorization: `Bearer ${newAccess}` },
           });
@@ -171,7 +178,7 @@ async function fetchWithAuth(path, options = {}) {
     const refresh = authStorage.getRefresh();
     if (!refresh) throw new Error('Sem refresh token');
 
-    const refreshRes = await fetch(`${BASE_URL}/token/refresh/`, {
+    const refreshRes = await fetch(`${getUrl(path)}/token/refresh/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh }),
@@ -186,7 +193,7 @@ async function fetchWithAuth(path, options = {}) {
     authStorage.setTokens({ access: newAccess });
     onRefreshed(newAccess);
 
-    const retryRes = await fetch(`${BASE_URL}${path}`, {
+    const retryRes = await fetch(`${getUrl(path)}`, {
       ...options,
       headers: { ...headers, Authorization: `Bearer ${newAccess}` },
     });
