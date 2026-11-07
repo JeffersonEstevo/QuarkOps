@@ -15,87 +15,101 @@
  */
 
 import { useEffect, useRef } from 'react';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
+import python from 'highlight.js/lib/languages/python';
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import bash from 'highlight.js/lib/languages/bash';
+import json from 'highlight.js/lib/languages/json';
+import sql from 'highlight.js/lib/languages/sql';
+import xml from 'highlight.js/lib/languages/xml';
+
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('xml', xml);
 
 export default function ArticleBody({ content }) {
-  const bodyRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const currentRef = bodyRef.current;
-    if (!currentRef) return;
+    if (!containerRef.current) return;
 
-    // 1. Aplica o highlight.js em todos os blocos de código
-    const codeBlocks = currentRef.querySelectorAll('pre code');
-    codeBlocks.forEach((block) => {
-      try {
-        hljs.highlightElement(block);
-      } catch {
-        // ignora
-      }
-    });
+    // Encontra todos os blocos <pre> renderizados no artigo
+    const preElements = containerRef.current.querySelectorAll('pre');
 
-    // 2. Encontra os blocos <pre> e cria o botão ao redor deles
-    const preElements = currentRef.querySelectorAll('pre');
-    
     preElements.forEach((pre) => {
-      // Evita duplicar se o React já passou aqui
-      if (pre.parentElement.classList.contains('my-custom-code-wrapper')) return;
+      // 1. Garante que o <pre> está dentro da caixa de fundo estilizada (.code-block)
+      let wrapper = pre.closest('.code-block');
 
-      // Cria a caixa escura
-      const wrapper = document.createElement('div');
-      wrapper.className = 'my-custom-code-wrapper';
-      wrapper.style.cssText = `
-        position: relative; 
-        background-color: #0f172a; 
-        padding: 1rem; 
-        border-radius: 0.5rem; 
-        border: 1px solid #334155; 
-        margin: 1.5rem 0; 
-        overflow-x: auto;
-      `;
+      if (!wrapper) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto';
+        
+        // Move o <pre> para dentro da nova caixa de fundo
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+      }
 
-      // Cria o botão de copiar
-      const btn = document.createElement('button');
-      btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
-      btn.style.cssText = `
-        position: absolute; top: 0.5rem; right: 0.5rem; 
-        background-color: #1e293b; color: #fcd34d; 
-        padding: 0.25rem 0.5rem; border-radius: 0.25rem; 
-        border: 1px solid #334155; font-size: 0.75rem; 
-        cursor: pointer; z-index: 10; transition: all 0.2s;
-      `;
+      // Estiliza o pre interno para não conflitar com a caixa
+      pre.className = 'bg-transparent p-0 m-0 overflow-x-auto';
 
-      // Ação de copiar
-      btn.onclick = () => {
-        const codeElement = pre.querySelector('code');
-        const textToCopy = codeElement ? codeElement.innerText : pre.innerText;
-        navigator.clipboard.writeText(textToCopy);
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-        btn.style.backgroundColor = '#10b981';
-        setTimeout(() => {
-          btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
-          btn.style.backgroundColor = '#1e293b';
-        }, 2000);
-      };
+      // 2. Adiciona o botão de copiar dinamicamente se já não existir
+      if (!wrapper.querySelector('.copy-code-btn')) {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10 flex items-center gap-1 font-mono';
+        copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+        
+        copyBtn.onclick = () => {
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            copyBtn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> Copiado!';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+            }, 2000);
 
-      // Move o <pre> para dentro da caixa e adiciona o botão
-      pre.parentNode.insertBefore(wrapper, pre);
-      wrapper.appendChild(btn);
-      wrapper.appendChild(pre);
-      
-      // Remove fundos do prose
-      pre.style.margin = '0';
-      pre.style.padding = '0';
-      pre.style.backgroundColor = 'transparent';
+            // Se houver toast global, chama também
+            if (typeof window.triggerToast === 'function') {
+              window.triggerToast('Código copiado para a área de transferência!');
+            }
+          });
+        };
+
+        wrapper.appendChild(copyBtn);
+      }
+
+      // 3. Aplica o Highlight.js no elemento <code> interno
+      const code = pre.querySelector('code');
+      if (code) {
+        hljs.highlightElement(code);
+      }
     });
   }, [content]);
 
   return (
-    <div 
-      ref={bodyRef}
-      id="art-detail-body" 
-      className="prose prose-slate dark:prose-invert max-w-none" 
-      dangerouslySetInnerHTML={{ __html: content }} 
+    <div
+      ref={containerRef}
+      id="art-detail-body"
+      className="
+        prose dark:prose-invert max-w-none font-sans leading-relaxed space-y-6
+        prose-headings:font-bold prose-headings:font-sans prose-headings:tracking-tight
+        prose-h2:text-2xl prose-h2:pt-2 prose-h2:mt-6
+        prose-h3:text-xl prose-h3:pt-2 prose-h3:mt-4
+        prose-p:opacity-95
+        prose-a:text-python-blue dark:prose-a:text-python-yellow prose-a:underline hover:prose-a:opacity-80
+        prose-strong:text-python-blue dark:prose-strong:text-python-yellow
+        
+        /* --- CÓDIGO INLINE --- */
+        prose-code:bg-slate-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none
+        
+        prose-blockquote:border-l-4 prose-blockquote:border-python-yellow prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:opacity-90
+        prose-ul:list-disc prose-ul:pl-6 prose-ol:list-decimal prose-ol:pl-6
+        prose-img:rounded prose-img:border prose-img:border-slate-700
+      "
+      dangerouslySetInnerHTML={{ __html: content }}
     />
   );
 }

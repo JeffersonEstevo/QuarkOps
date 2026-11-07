@@ -85,20 +85,17 @@ export default function CrmModal({ isOpen, initialArticle, onClose, onSubmit }) 
     });
   };
 
-   const handleInsertCode = (lang, rawCode) => {
+  const handleInsertCode = (lang, rawCode) => {
     const highlighted =
       lang === 'plaintext'
         ? escapeHtml(rawCode)
         : hljs.highlight(rawCode, { language: lang }).value;
 
-    // Voltando ao HTML com classes do Tailwind
+    // Removido o <button> antigo daqui — o ArticleBody agora cuida disso dinamicamente e com segurança!
     const htmlSnippet = `
-    <div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 my-6 text-sm overflow-x-auto">
-      <button class="copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10">
-        <i class="fa-regular fa-copy mr-1"></i> Copiar
-      </button>
-      <pre><code class="language-${lang} hljs">${highlighted}</code></pre>
-    </div>`.trim();
+<div class="code-block my-4">
+  <pre><code class="language-${lang} hljs">${highlighted}</code></pre>
+</div>`.trim();
 
     const textarea = contentRef.current;
     if (!textarea) return;
@@ -109,7 +106,6 @@ export default function CrmModal({ isOpen, initialArticle, onClose, onSubmit }) 
     const next = `${before}\n\n${htmlSnippet}\n\n${after}`;
     setContent(next);
     setIsCodeModalOpen(false);
-    
     const newCursorPos = before.length + htmlSnippet.length + 4;
     requestAnimationFrame(() => {
       textarea.focus();

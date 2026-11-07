@@ -563,3 +563,62 @@ O Railway está conectado ao repositório do GitHub. Para atualizar a aplicaçã
 3. Se o build falhar, a versão anterior continua no ar.
 
 ---
+
+
+## 8. Rodar a aplicação localmente (Ambiente de Desenvolvimento)
+
+Para testar alterações de código sem precisar esperar o deploy na nuvem, siga estes passos. O fluxo local usa o Docker apenas para o banco de dados, enquanto o Django e o React rodam nativamente com *hot reload*.
+
+### 8.1 Subir o Banco de Dados (PostgreSQL)
+1. Abra o **Docker Desktop**.
+2. No terminal, acesse a pasta do backend e suba o container:
+```bash
+cd backend
+docker compose -f docker-compose.yml up -d
+```
+*(Isso vai subir o banco na porta 5432).*
+
+### 8.2 Rodar o Backend (Django)
+Em um terminal, acesse a pasta `backend`, ative o ambiente virtual e inicie o servidor:
+```bash
+cd backend
+.\venv\Scripts\Activate.ps1
+python manage.py migrate
+python manage.py runserver "[::1]:8000"
+```
+*(O terminal vai travar mostrando os logs das requisições).*
+
+### 8.3 Criar Superusuário Local (Primeira vez)
+Como o banco local é separado do banco de produção (Railway), você precisa de um usuário para acessar o CRM localmente. Em **outro terminal**:
+```bash
+cd backend
+.\venv\Scripts\Activate.ps1
+python manage.py createsuperuser
+```
+
+### 8.4 Rodar o Frontend (React/Vite)
+Abra um **segundo terminal** (deixe o do Django rodando), acesse a pasta `frontend` e inicie o Vite:
+```bash
+cd frontend
+npm run dev
+```
+*(O site estará disponível em `http://localhost:5173`).*
+
+### 8.5 Configurar Variáveis de Ambiente (Frontend)
+Garanta que o arquivo `frontend/.env.local` está apontando para o backend local:
+```env
+VITE_API_ADAPTER=http
+VITE_API_URL=http://localhost:8000/api
+```
+> ⚠️ **Atenção:** Se você alterar o `.env.local`, é obrigatório parar o Vite (`Ctrl+C`) e rodá-lo novamente (`npm run dev`) para que a nova variável seja lida.
+
+### 8.6 Testando e Debugando
+- **Frontend:** Abra o DevTools do navegador (F12) para ver erros de React, console e rede. O Vite fará o *hot reload* automaticamente ao salvar um arquivo.
+- **Backend:** Os erros do Django aparecerão no terminal onde o `runserver` está rodando.
+- **Banco de dados:** Se precisar rodar comandos SQL, você pode acessar o container do banco local via `docker exec -it quarkops_db psql -U quarkops -d quarkops`.
+
+### 8.7 Fazer a atualização no ambiente de produção
+Quando terminar os testes locais e validar que tudo está funcionando:
+1. Faça o commit das alterações no Git.
+2. Envie para o GitHub (push).
+3. O Railway fará o deploy automático em alguns minutos.

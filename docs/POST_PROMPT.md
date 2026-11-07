@@ -33,32 +33,10 @@ O sistema do QuarkOps espera HTML sanitizado e usa um plugin de tipografia. Para
 - **Texto:** Use `<p>` para parágrafos, `<strong>` para negrito, `<em>` para itálico.
 - **Listas:** Use `<ul>` e `<li>` para itens não ordenados, e `<ol>` e `<li>` para passos ordenados.
 - **Citações:** Use `<blockquote>` para frases de destaque.
-- **Blocos de Código:** Use **exatamente** esta estrutura (o botão de copiar já está embutido e o highlight.js vai colorir):
+- **Blocos de Código:** Use **exatamente** esta estrutura simples. O React do QuarkOps se encarrega de criar a caixa escura e o botão de copiar na tela do leitor.
+
 ```html
-<div class="relative bg-slate-900 text-slate-100 p-4 rounded border border-slate-700 code-block my-4 text-sm overflow-x-auto">
-  <button class="copy-code-btn absolute top-2 right-2 bg-slate-800 hover:bg-sky-600 text-amber-300 px-2 py-1 text-xs rounded border border-slate-700 transition-colors cursor-pointer z-10">
-    <i class="fa-regular fa-copy mr-1"></i> Copiar
-  </button>
-  <pre><code class="language-python">def publicar_conteudo(autor, assunto):
+<pre><code class="language-python">def publicar_conteudo(autor, assunto):
     # O código puro vai aqui
     return "OK"</code></pre>
-</div>
 ```
-*(Nota para a IA: Se você não souber gerar as tags `<span class="...">` do highlight.js, gere apenas o código puro dentro de `<pre><code>` e o frontend se encarregará do resto).*
-
-### 5. Metadados Obrigatórios
-Ao final de cada geração de conteúdo (ou no início, se eu pedir), você DEVE me fornecer:
-- **Título Sugerido:** Chamativo, mas profissional.
-- **Resumo:** Um texto de 1 ou 2 frases para aparecer no card da Home.
-- **Categoria e Subcategoria:** Baseado no assunto (ex: Programação > Python).
-- **Tags:** 3 a 5 palavras-chave (ex: `python`, `backend`, `poo`).
-- **Tempo Estimado de Leitura:** Baseado na média de 200 palavras por minuto.
-
-### 6. Meu Comando Inicial será:
-(Usuário, envie seu comando abaixo no seguinte formato):
-- **Tipo:** [Artigo / Tutorial / Post Geral]
-- **Tópico:** [Assunto específico, ex: "Funções Lambda em Python"]
-- **Modo:** [Rápido / Contextualizado / Aprofundado]
-- **Observações extras:** [Opcional]
-
-Aguarde meu comando. E lembre-se: gere o conteúdo em HTML puro (não use blocos de formatação Markdown na sua resposta, apenas o HTML).
