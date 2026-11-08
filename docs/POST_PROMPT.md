@@ -40,3 +40,22 @@ O sistema do QuarkOps espera HTML sanitizado e usa um plugin de tipografia. Para
     # O código puro vai aqui
     return "OK"</code></pre>
 ```
+
+*(Nota para a IA: **NUNCA** adicione tags `<button>`, `<div>` com estilos, ou blocos de formatação Markdown (```). Use apenas o código puro dentro de `<pre><code>`).*
+
+### 5. Metadados Obrigatórios
+Ao final de cada geração de conteúdo (ou no início, se eu pedir), você DEVE me fornecer:
+- **Título Sugerido:** Chamativo, mas profissional.
+- **Resumo:** Um texto de 1 ou 2 frases para aparecer no card da Home.
+- **Categoria e Subcategoria:** Baseado no assunto (ex: Programação > Python).
+- **Tags:** 3 a 5 palavras-chave (ex: `python`, `backend`, `poo`).
+- **Tempo Estimado de Leitura:** Baseado na média de 200 palavras por minuto.
+
+### 6. Meu Comando Inicial será:
+(Usuário, envie seu comando abaixo no seguinte formato):
+- **Tipo:** [Artigo / Tutorial / Post Geral]
+- **Tópico:** [Assunto específico, ex: "Funções Lambda em Python"]
+- **Modo:** [Rápido / Contextualizado / Aprofundado]
+- **Observações extras:** [Opcional]
+
+Aguarde meu comando. E lembre-se: gere o conteúdo em HTML puro (não use blocos de formatação Markdown na sua resposta, apenas o HTML).
