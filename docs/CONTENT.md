@@ -79,3 +79,93 @@
   * *Tipo:* Artigo | *Modo:* Deep Dive
 * [ ] **Aula 25:** Boas Práticas, PEP 8, Linters (`Ruff`) e Formatação Automática (`Black`)
   * *Tipo:* Post Geral | *Modo:* Fast
+
+---
+
+## 📌 Módulo 6: Ecossistema Web, Bancos de Dados e Docker (Engenharia Aplicada)
+*Foco em construir aplicações reais, lidar com persistência de dados e conteinerização.*
+
+* [ ] **Aula 26:** Estruturas de Dados Avançadas da Biblioteca Padrão: `collections` (`deque`, `Counter`, `defaultdict`) e `itertools`
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 27:** Manipulação Profissional de Datas e Fusos Horários com `datetime` e `zoneinfo`
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 28:** Construção de APIs Modernas e Assíncronas com FastAPI e Validação via Pydantic
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 29:** Bancos de Dados Relacionais com SQLAlchemy (Core/ORM) e Migrações com Alembic
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 30:** Docker para Desenvolvedores Python: Empacotamento, Ambientes e Multi-stage Builds
+  * *Tipo:* Artigo | *Modo:* Contextualizado
+
+---
+
+## 📌 Módulo 7: Estruturas de Dados Clássicas e Algoritmos (Ciência da Computação Aplicada)
+*Foco em fundamentos de computação, eficiência algorítmica, estruturas lineares/não-lineares e algoritmos de busca e ordenação.*
+
+* [ ] **Aula 31:** Arrays, Vetores e Alocação de Memória: Como os dados vivem na RAM e Complexidade de Espaço/Tempo (Big O)
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 32:** Estruturas Lineares I: Pilhas (Stacks), Filas (Queues) e Deques (Implementações e Aplicações Práticas)
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 33:** Estruturas Lineares II: Listas Encadeadas (*Linked Lists*): Simples, Duplamente Encadeadas e Ponteiros
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 34:** Árvores e Grafos I: Árvores Binárias de Busca (BST), Árvores AVL e Algoritmos de Percurso
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 35:** Algoritmos de Busca: Busca Linear, Busca Binária e Aplicações de Espalhamento (Hashing)
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 36:** Algoritmos de Ordenação Elementares: Bubble Sort, Selection Sort e Insertion Sort (Mecânica e Big O)
+  * *Tipo:* Tutorial | *Modo:* Fast
+* [ ] **Aula 37:** Algoritmos de Ordenação Avançados: Merge Sort, Quick Sort e o Timsort (O algoritmo nativo do Python)
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+
+---
+
+## 📌 Módulo 8: Arquitetura, Engenharia de Software e Qualidade Avançada
+*Foco em padrões de projeto, segurança, observabilidade e processamento de alta performance para ambientes corporativos.*
+
+* [ ] **Aula 38:** Princípios SOLID Aplicados a Python: Escrevendo Código Extensível e de Baixo Acoplamento
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 39:** Padrões de Projeto (*Design Patterns*) em Python: Criacionais, Estruturais e Comportamentais Idiomáticos
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 40:** Segurança em Aplicações Python: Gestão de Segredos, Criptografia, Hashing de Senhas e OAuth2/JWT
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 41:** Observabilidade em Produção: Logging Estruturado, Rastreamento de Erros e Telemetria com OpenTelemetry
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 42:** Processamento de Dados de Alta Performance: Otimização com Polars/Pandas, Evitando Gargalos e Computação Assíncrona com Celery
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+
+---
+
+## 📌 Módulo 9: Inteligência Artificial e Machine Learning com Python
+*Foco em manipulação de dados, machine learning clássico, deep learning e engenharia de IA generativa.*
+
+* [ ] **Aula 43:** Fundamentos de Ciência de Dados: Manipulação Eficiente com NumPy, Pandas e Visualização com Matplotlib/Seaborn
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 44:** Machine Learning Clássico com Scikit-Learn: Algoritmos de Regressão, Classificação, Validação Cruzada e Métricas
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 45:** Deep Learning e Redes Neurais com PyTorch: Tensores, Otimizadores, Camadas Convolucionais e Treinamento
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 46:** Ecossistema de IA Generativa e LLMs: Hugging Face, LangChain, LlamaIndex e Integração com APIs de Modelos
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 47:** Arquiteturas de RAG (*Retrieval-Augmented Generation*) e Fine-Tuning: Conectando Dados Privados a LLMs e Vetorização
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+
+## 📌 Módulo 10: Ecossistema de Bibliotecas Essenciais e Utilitários do Python
+*Foco no domínio das bibliotecas mais poderosas da linguagem para automação, computação científica, manipulação de arquivos e visão computacional.*
+
+* [ ] **Aula 48:** Automação de Sistema e Arquivos com `shutil`, `pathlib` e `os`: Manipulação Avançada de Diretórios e Processos do SO
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 49:** Computação Simbólica e Álgebra com `SymPy`: Resolvendo Equações, Derivadas e Integrais de Forma Exata
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 50:** Visualização Estatística Avançada com `Seaborn`: Gráficos de Distribuição, Correlação e Estética de Dados
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 51:** Visão Computacional e Processamento de Imagens com `OpenCV`: Filtros, Detecção de Bordas e Manipulação de Frames
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 52:** Utilitários de Alta Produtividade: `requests` (Requisições HTTP), `Pillow` (Processamento de Imagens) e `BeautifulSoup` (Web Scraping)
+  * *Tipo:* Tutorial | *Modo:* Fast
+* [ ] **Aula 53:** Processamento de Linguagem Natural (NLP) e Extração de Texto com `NLTK` e `spaCy`: Tokenização, Lemmatização e Named Entity Recognition (NER)
+  * *Tipo:* Tutorial | *Modo:* Standard
+* [ ] **Aula 54:** Interface Gráfica e Desktop com `Tkinter`, `CustomTkinter` e `PyQt`/`PySide`: Construindo Aplicações de Desktop Nativas
+  * *Tipo:* Tutorial | *Modo:* Deep Dive
+* [ ] **Aula 55:** Manipulação de Arquivos de Escritório e PDF com `openpyxl`, `python-docx` e `PyPDF2`/`pypdf`: Automação de Planilhas Excel, Word e Relatórios
+  * *Tipo:* Tutorial | *Modo:* Fast
+* [ ] **Aula 56:** Criação de Dashboards Interativos com `Streamlit` e `Plotly`: Transformando Scripts em Web Apps de Dados Rapidamente
+  * *Tipo:* Tutorial | *Modo:* Standard
