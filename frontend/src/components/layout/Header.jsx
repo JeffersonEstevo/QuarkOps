@@ -35,7 +35,7 @@ export default function Header({
           aria-label="Ir para a página inicial"
         >
           <i className="fa-solid fa-terminal text-lg" aria-hidden="true" />
-          <span>BYTE_LORE</span>
+          <span>QUARK_OPS</span>
         </button>
 
         {/* Busca */}
