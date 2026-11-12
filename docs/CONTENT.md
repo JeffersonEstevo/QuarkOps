@@ -13,7 +13,7 @@
   * *Tipo:* Tutorial | *Modo:* Fast
 * [x] **Aula 04:** Estruturas de Repetição: `for` vs `while` e o Controle de Fluxo (`break`, `continue`, `else`)
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 05:** Tratamento de Erros e Exceções: `try`, `except`, `else`, `finally` e `raise`
+* [x] **Aula 05:** Tratamento de Erros e Exceções: `try`, `except`, `else`, `finally` e `raise`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 
 ---
@@ -21,15 +21,15 @@
 ## 📌 Módulo 2: Estruturas de Dados e Organização (Iniciante / Intermediário)
 *Foco em como armazenar, manipular e estruturar coleções de dados de forma eficiente.*
 
-* [ ] **Aula 06:** Listas e Tuplas: Métodos, Fatiamento (Slicing) e Desempacotamento
+* [x] **Aula 06:** Listas e Tuplas: Métodos, Fatiamento (Slicing) e Desempacotamento
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 07:** Dicionários e Conjuntos (Sets): Tabelas Hash por dentro (*under the hood*)
+* [x] **Aula 07:** Dicionários e Conjuntos (Sets): Tabelas Hash por dentro (*under the hood*)
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 08:** Compreensões de Listas, Dicionários e Sets (*List Comprehensions*)
+* [x] **Aula 08:** Compreensões de Listas, Dicionários e Sets (*List Comprehensions*)
   * *Tipo:* Tutorial | *Modo:* Fast
-* [ ] **Aula 09:** Funções I: Parâmetros Posicionais, Nomeados, `*args` e `**kwargs`
+* [x] **Aula 09:** Funções I: Parâmetros Posicionais, Nomeados, `*args` e `**kwargs`
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 10:** Funções II: Escopo de Variáveis (LEGB), Funções Anônimas (`lambda`) e *Closures*
+* [x] **Aula 10:** Funções II: Escopo de Variáveis (LEGB), Funções Anônimas (`lambda`) e *Closures*
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 
 ---
