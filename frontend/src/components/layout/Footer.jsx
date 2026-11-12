@@ -11,7 +11,7 @@ export default function Footer({ onNavigateHome, onOpenCrm }) {
     <footer className="border-t border-python-lightborder dark:border-slate-800 bg-white/50 dark:bg-python-deep/50 py-8 mt-12">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono opacity-80">
         <div>
-          <p>&copy; 2026 BYTE_LORE. Todos os direitos reservados sob licença MIT.</p>
+          <p>&copy; 2026 QUARK_OPS. Todos os direitos reservados sob licença MIT.</p>
           <p className="mt-1 text-python-blue">
             Desenvolvido com estética Retro, Python Colors &amp; Foco em Leitura.
           </p>
