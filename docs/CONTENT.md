@@ -37,15 +37,15 @@
 ## 📌 Módulo 3: Programação Orientada a Objetos (Intermediário)
 *Foco em modelagem de software, encapsulamento e reutilização de código.*
 
-* [ ] **Aula 11:** Introdução à POO: Classes, Instâncias, Atributos de Instância e de Classe
+* [x] **Aula 11:** Introdução à POO: Classes, Instâncias, Atributos de Instância e de Classe
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 12:** Pilares da POO: Herança, Sobrescrita de Métodos e Polimorfismo
+* [x] **Aula 12:** Pilares da POO: Herança, Sobrescrita de Métodos e Polimorfismo
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 13:** Encapsulamento em Python: Atributos Privados, Getters, Setters e a Propriedade `@property`
+* [x] **Aula 13:** Encapsulamento em Python: Atributos Privados, Getters, Setters e a Propriedade `@property`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 14:** Métodos Especiais (*Dunder Methods*): `__init__`, `__str__`, `__repr__`, `__len__`
+* [x] **Aula 14:** Métodos Especiais (*Dunder Methods*): `__init__`, `__str__`, `__repr__`, `__len__`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 15:** Composição vs Herança: Como modelar sistemas reais sem acoplamento excessivo
+* [x] **Aula 15:** Composição vs Herança: Como modelar sistemas reais sem acoplamento excessivo
   * *Tipo:* Artigo | *Modo:* Contextualizado
 
 ---
