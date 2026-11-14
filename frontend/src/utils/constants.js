@@ -23,7 +23,7 @@ export const CATEGORIES = [
   'Infraestrutura',
 ];
 
-export const DEFAULT_AUTHOR = 'Guido Dev';
+export const DEFAULT_AUTHOR = 'Jefferson Estevo'; // Guido Dev
 export const DEFAULT_READ_TIME = '5 min de leitura';
 
 export const TOAST_DURATION_MS = 3000;
