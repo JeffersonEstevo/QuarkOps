@@ -53,15 +53,15 @@
 ## 📌 Módulo 4: Python Avançado e Funcional (Avançado)
 *Foco nos recursos idiomáticos da linguagem ("Pythonic way") e otimização de performance.*
 
-* [ ] **Aula 16:** Iteradores e Geradores: O protocolo de iteração e a palavra-chave `yield`
+* [x] **Aula 16:** Iteradores e Geradores: O protocolo de iteração e a palavra-chave `yield`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 17:** Decoradores (*Decorators*): O que são, como funcionam e como criar wrappers customizados
+* [x] **Aula 17:** Decoradores (*Decorators*): O que são, como funcionam e como criar wrappers customizados
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 18:** Gerenciadores de Contexto (*Context Managers*): A instrução `with` e o protocolo `__enter__`/`__exit__`
+* [x] **Aula 18:** Gerenciadores de Contexto (*Context Managers*): A instrução `with` e o protocolo `__enter__`/`__exit__`
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 19:** Tipagem Estática Opcional: Anotações de Tipo (*Type Hints*) e ferramentas como `mypy`
+* [x] **Aula 19:** Tipagem Estática Opcional: Anotações de Tipo (*Type Hints*) e ferramentas como `mypy`
   * *Tipo:* Artigo | *Modo:* Standard
-* [ ] **Aula 20:** Manipulação de Arquivos e Formatos (JSON, CSV) de forma eficiente e segura
+* [x] **Aula 20:** Manipulação de Arquivos e Formatos (JSON, CSV) de forma eficiente e segura
   * *Tipo:* Tutorial | *Modo:* Fast
 
 ---
