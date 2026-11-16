@@ -69,15 +69,15 @@
 ## 📌 Módulo 5: Ecossistema, Qualidade de Código e Engenharia (Sênior)
 *Foco em preparar o código para produção, testes e concorrência.*
 
-* [ ] **Aula 21:** Testes Unitários e de Integração com `pytest` (Mocks, Fixtures e Cobertura)
+* [x] **Aula 21:** Testes Unitários e de Integração com `pytest` (Mocks, Fixtures e Cobertura)
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 22:** Gerenciamento de Pacotes Moderno: Poetry vs `uv` vs Ambientes Virtuais
+* [x] **Aula 22:** Gerenciamento de Pacotes Moderno: Poetry vs `uv` vs Ambientes Virtuais
   * *Tipo:* Artigo | *Modo:* Contextualizado
-* [ ] **Aula 23:** Concorrência e Paralelismo I: Programação Assíncrona com `asyncio` (`async`/`await`)
+* [x] **Aula 23:** Concorrência e Paralelismo I: Programação Assíncrona com `asyncio` (`async`/`await`)
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 24:** Concorrência e Paralelismo II: Threads vs Processes e o famigerado GIL (*Global Interpreter Lock*)
+* [x] **Aula 24:** Concorrência e Paralelismo II: Threads vs Processes e o famigerado GIL (*Global Interpreter Lock*)
   * *Tipo:* Artigo | *Modo:* Deep Dive
-* [ ] **Aula 25:** Boas Práticas, PEP 8, Linters (`Ruff`) e Formatação Automática (`Black`)
+* [x] **Aula 25:** Boas Práticas, PEP 8, Linters (`Ruff`) e Formatação Automática (`Black`)
   * *Tipo:* Post Geral | *Modo:* Fast
 
 ---
