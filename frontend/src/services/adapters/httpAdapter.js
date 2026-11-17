@@ -234,10 +234,15 @@ export const httpAdapter = {
   },
 
   // ---------- Articles ----------
-  async listArticles() {
-    const data = await request('/posts/');
+  async listArticles(page = 1) {
+    const data = await request(`/posts/?page=${page}`);
     const posts = Array.isArray(data) ? data : data.results || [];
-    return posts.map(mapPost);
+    
+    // Retorna os posts mapeados e um booleano indicando se há mais páginas
+    return {
+      posts: posts.map(mapPost),
+      hasNext: Boolean(data.next), 
+    };
   },
 
   async getArticle(id) {

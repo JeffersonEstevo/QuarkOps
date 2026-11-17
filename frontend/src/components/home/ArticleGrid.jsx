@@ -18,6 +18,9 @@ export default function ArticleGrid({
   activeSubcategory,        // 🆕
   onSelectSubcategory,      // 🆕
   onOpen,
+  hasMore, 
+  loadMore, 
+  loadingMore
 }) {
   return (
     <section className="space-y-4">
@@ -45,6 +48,19 @@ export default function ArticleGrid({
           ))}
         </div>
       )}
+      
+    {hasMore && (
+        <div className="flex justify-center pt-8">
+          <button
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="px-6 py-2 bg-python-blue text-white font-mono text-sm font-bold border-2 border-slate-800 hover:bg-python-darkblue transition-colors disabled:opacity-50"
+          >
+            {loadingMore ? 'Carregando...' : 'Carregar mais artigos'}
+          </button>
+        </div>
+      )}  
+
     </section>
   );
 }

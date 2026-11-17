@@ -4,7 +4,7 @@ import { api } from '../services/api';
 
 export function useArticles({
   activeCategory = 'ALL',
-  activeSubcategory = null,   // 🆕
+  activeSubcategory = null,
   searchTerm = '',
   onOpen,
   onCreated,
@@ -12,13 +12,15 @@ export function useArticles({
   onUpdated,
   onDeleted,
   onCommentDeleted,
-  onError, // 🆕
+  onError,
 } = {}) {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
 
-  // -------- Helper centralizado de erros --------
   const handleErr = useCallback(
     (err, defaultMsg = 'Erro inesperado') => {
       const msg = err?.message || defaultMsg;
@@ -28,30 +30,52 @@ export function useArticles({
     [onError]
   );
 
-  // -------- Fetch inicial --------
-  // ⚠️ Dependência vazia INTENCIONAL.
-  // handleErr depende de onError (callback instável do App). Incluí-lo aqui
-  // causava loop infinito de fetch. O fetch inicial roda UMA VEZ na montagem.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // -------- Fetch inicial (dentro do useEffect para evitar warnings) --------
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+
+    const fetchInitial = async () => {
       try {
-        const data = await api.listArticles();
-        if (!cancelled) setArticles(data);
+        const { posts, hasNext } = await api.listArticles(1);
+        if (!cancelled) {
+          setArticles(posts);
+          setHasMore(hasNext);
+          setPage(1);
+        }
       } catch (err) {
         if (!cancelled) handleErr(err, 'Erro ao carregar artigos');
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    };
+
+    fetchInitial();
+
     return () => {
       cancelled = true;
     };
-  }, []); // ⚠️ Deliberadamente vazio — ver comentário acima
+  }, [handleErr]);
 
-  // -------- Ações (mesmo contrato público de antes) --------
+  // -------- Carregar mais (Paginação) --------
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
 
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const { posts, hasNext } = await api.listArticles(nextPage);
+      
+      setArticles((prev) => [...prev, ...posts]);
+      setHasMore(hasNext);
+      setPage(nextPage);
+    } catch (err) {
+      handleErr(err, 'Erro ao carregar mais artigos');
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, loadingMore, hasMore, handleErr]);
+
+  // -------- Ações (mesmo contrato) --------
   const openArticle = useCallback(
     async (id) => {
       try {
@@ -164,7 +188,7 @@ export function useArticles({
     [handleErr]
   );
 
-  // -------- Derivados (mesma lógica de antes) --------
+  // -------- Derivados --------
   const sortedByViews = useMemo(
     () => [...articles].sort((a, b) => b.views - a.views),
     [articles]
@@ -192,6 +216,9 @@ export function useArticles({
     sortedByViews,
     filteredArticles,
     loading,
+    loadingMore,
+    hasMore,
+    loadMore,
     error,
     openArticle,
     createArticle,

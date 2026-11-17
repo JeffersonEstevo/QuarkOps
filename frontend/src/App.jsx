@@ -115,6 +115,9 @@ export default function App() {
     articles,
     featured,
     filteredArticles,
+    loadingMore, 
+    hasMore, 
+    loadMore, // 🆕
     openArticle,
     createArticle,
     updateArticle,
@@ -277,6 +280,9 @@ export default function App() {
             activeSubcategory={activeSubcategory}         // 🆕
             setActiveSubcategory={setActiveSubcategory}   // 🆕
             onOpenArticle={openArticle}
+            hasMore={hasMore}
+            loadingMore={loadingMore}
+            loadMore={loadMore}
           />
         )}
 
