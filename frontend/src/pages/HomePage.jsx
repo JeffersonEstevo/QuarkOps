@@ -1,4 +1,4 @@
-// frontend/src/pages/HomePage.jsx
+// src/pages/HomePage.jsx
 import WelcomeBanner from '../components/home/WelcomeBanner';
 import FeaturedArticle from '../components/home/FeaturedArticle';
 import ArticleGrid from '../components/home/ArticleGrid';
@@ -8,9 +8,12 @@ export default function HomePage({
   filteredArticles,
   activeCategory,
   setActiveCategory,
-  activeSubcategory,       // 🆕
-  setActiveSubcategory,    // 🆕
+  activeSubcategory,
+  setActiveSubcategory,
   onOpenArticle,
+  hasMore,        // 🆕 Recebe do App
+  loadingMore,    // 🆕
+  loadMore,       // 🆕
 }) {
   return (
     <div className="space-y-8">
@@ -20,9 +23,12 @@ export default function HomePage({
         articles={filteredArticles}
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
-        activeSubcategory={activeSubcategory}       // 🆕
-        onSelectSubcategory={setActiveSubcategory}  // 🆕
+        activeSubcategory={activeSubcategory}
+        onSelectSubcategory={setActiveSubcategory}
         onOpen={onOpenArticle}
+        hasMore={hasMore}           // 🆕 Repassa pro Grid
+        loadingMore={loadingMore}   // 🆕
+        loadMore={loadMore}         // 🆕
       />
     </div>
   );
