@@ -41,6 +41,20 @@ class PostViewSet(viewsets.ModelViewSet):
         post.save(update_fields=["views"])
         return Response({"views": post.views})
 
+    @action(detail=False, methods=["get"], permission_classes=[AllowAny])
+    def featured(self, request):
+        """Retorna o post mais lido de todo o banco de dados."""
+        post = self.get_queryset().order_by("-views").first()
+        
+        if not post:
+            return Response(
+                {"detail": "Nenhum post encontrado no banco de dados."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
+        serializer = self.get_serializer(post)
+        return Response(serializer.data)
+    
     @action(detail=True, methods=["get", "post"], permission_classes=[AllowAnyForCreateReadAuth])
     def comments(self, request, pk=None):
         post = self.get_object()

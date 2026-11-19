@@ -245,6 +245,12 @@ export const httpAdapter = {
     };
   },
 
+  async getFeaturedArticle() {
+    // O Django vai retornar um único post com o maior número de views
+    const data = await request('/posts/featured/');
+    return mapPost(data);
+  },
+
   async getArticle(id) {
     return mapPost(await request(`/posts/${id}/`));
   },

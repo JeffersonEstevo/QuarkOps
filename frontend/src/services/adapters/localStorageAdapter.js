@@ -86,6 +86,14 @@ export const localStorageAdapter = {
     return readAll();
   },
 
+  async getFeaturedArticle() {
+    await delay();
+    const posts = readAll();
+    if (posts.length === 0) return null;
+    // No modo local, pegamos o mais lido da lista inteira (já que tudo está na memória)
+    return [...posts].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+  },
+
   async getArticle(id) {
     await delay();
     const article = readAll().find((a) => a.id === id);

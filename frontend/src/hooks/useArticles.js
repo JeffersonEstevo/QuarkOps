@@ -15,6 +15,7 @@ export function useArticles({
   onError,
 } = {}) {
   const [articles, setArticles] = useState([]);
+  const [featured, setFeatured] = useState(null); // 🆕 Destaque Global
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
@@ -30,17 +31,22 @@ export function useArticles({
     [onError]
   );
 
-  // -------- Fetch inicial (dentro do useEffect para evitar warnings) --------
+  // -------- Fetch inicial (Lista + Destaque em paralelo) --------
   useEffect(() => {
     let cancelled = false;
 
     const fetchInitial = async () => {
       try {
-        const { posts, hasNext } = await api.listArticles(1);
+        const [postsData, featuredData] = await Promise.all([
+          api.listArticles(1),
+          api.getFeaturedArticle().catch(() => null), // Fallback se não houver destaque
+        ]);
+
         if (!cancelled) {
-          setArticles(posts);
-          setHasMore(hasNext);
+          setArticles(postsData.posts);
+          setHasMore(postsData.hasNext);
           setPage(1);
+          setFeatured(featuredData);
         }
       } catch (err) {
         if (!cancelled) handleErr(err, 'Erro ao carregar artigos');
@@ -81,12 +87,17 @@ export function useArticles({
       try {
         const updated = await api.incrementViews(id);
         setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
+        
+        // Se o post aberto for o destaque, atualiza as views dele
+        if (featured?.id === id) {
+          setFeatured(updated);
+        }
       } catch (err) {
         handleErr(err);
       }
       onOpen?.(id);
     },
-    [onOpen, handleErr]
+    [onOpen, handleErr, featured]
   );
 
   const createArticle = useCallback(
@@ -109,6 +120,9 @@ export function useArticles({
       try {
         const updated = await api.updateArticle(id, payload);
         setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
+        
+        if (featured?.id === id) setFeatured(updated);
+        
         onUpdated?.(id);
         return updated;
       } catch (err) {
@@ -116,7 +130,7 @@ export function useArticles({
         return null;
       }
     },
-    [onUpdated, handleErr]
+    [onUpdated, handleErr, featured]
   );
 
   const deleteArticle = useCallback(
@@ -124,12 +138,16 @@ export function useArticles({
       try {
         await api.deleteArticle(id);
         setArticles((prev) => prev.filter((art) => art.id !== id));
+        
+        // Se o destaque foi apagado, limpa o estado
+        if (featured?.id === id) setFeatured(null);
+        
         onDeleted?.(id);
       } catch (err) {
         handleErr(err);
       }
     },
-    [onDeleted, handleErr]
+    [onDeleted, handleErr, featured]
   );
 
   const postComment = useCallback(
@@ -181,11 +199,13 @@ export function useArticles({
       try {
         const updated = await api.incrementLikes(articleId);
         setArticles((prev) => prev.map((art) => (art.id === articleId ? updated : art)));
+        
+        if (featured?.id === articleId) setFeatured(updated);
       } catch (err) {
         handleErr(err);
       }
     },
-    [handleErr]
+    [handleErr, featured]
   );
 
   // -------- Derivados --------
@@ -193,8 +213,6 @@ export function useArticles({
     () => [...articles].sort((a, b) => b.views - a.views),
     [articles]
   );
-
-  const featured = sortedByViews[0];
 
   const filteredArticles = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -212,7 +230,7 @@ export function useArticles({
 
   return {
     articles,
-    featured,
+    featured, // 🆕 Agora vem do backend
     sortedByViews,
     filteredArticles,
     loading,
