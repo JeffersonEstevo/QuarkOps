@@ -224,16 +224,25 @@ export function useArticles({
 
   const filteredArticles = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    return articles.filter((art) => {
-      const matchesCat = activeCategory === 'ALL' || art.categorySlug === activeCategory;
-      const matchesSub = !activeSubcategory || art.subcategorySlug === activeSubcategory;
-      const matchesSearch =
-        !term ||
-        art.title.toLowerCase().includes(term) ||
-        art.summary.toLowerCase().includes(term) ||
-        (art.tags || []).some((t) => t.toLowerCase().includes(term));
-      return matchesCat && matchesSub && matchesSearch;
-    });
+    return articles
+      .filter((art) => {
+        const matchesCat = activeCategory === 'ALL' || art.categorySlug === activeCategory;
+        const matchesSub = !activeSubcategory || art.subcategorySlug === activeSubcategory;
+        const matchesSearch =
+          !term ||
+          art.title.toLowerCase().includes(term) ||
+          art.summary.toLowerCase().includes(term) ||
+          (art.tags || []).some((t) => t.toLowerCase().includes(term));
+        return matchesCat && matchesSub && matchesSearch;
+      })
+      .sort((a, b) => {
+        // Ordena pela data de criação (mais recente primeiro).
+        // O 'a.date' no frontend é uma string como "11 Nov 2026". 
+        // Para ordenar, precisamos converter para Date.
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB - dateA;
+      });
   }, [articles, activeCategory, activeSubcategory, searchTerm]);
 
   return {
