@@ -37,16 +37,24 @@ export function useArticles({
 
     const fetchInitial = async () => {
       try {
-        const [postsData, featuredData] = await Promise.all([
-          api.listArticles(1),
-          api.getFeaturedArticle().catch(() => null), // Fallback se não houver destaque
-        ]);
+        // 1. Carrega a lista de posts (isso NUNCA pode falhar)
+        const postsData = await api.listArticles(1);
+        
+        // 2. Tenta carregar o destaque, mas se der erro (404), não quebra a lista
+        let featuredData = null;
+        try {
+          featuredData = await api.getFeaturedArticle();
+        } catch (e) {
+          // ✅ Agora o 'e' está sendo usado no log
+          console.warn('Rota de destaque não encontrada. Usando fallback da lista.', e.message);
+          featuredData = postsData.posts.sort((a, b) => b.views - a.views)[0];
+        }
 
         if (!cancelled) {
           setArticles(postsData.posts);
           setHasMore(postsData.hasNext);
           setPage(1);
-          setFeatured(featuredData);
+          setFeatured(featuredData || null);
         }
       } catch (err) {
         if (!cancelled) handleErr(err, 'Erro ao carregar artigos');
