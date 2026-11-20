@@ -85,20 +85,34 @@ export function useArticles({
   // -------- Ações (mesmo contrato) --------
   const openArticle = useCallback(
     async (id) => {
+      // 1. Chama a API para incrementar views (como já fazia)
       try {
         const updated = await api.incrementViews(id);
-        setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
         
-        // Se o post aberto for o destaque, atualiza as views dele
+        // 2. Verifica se o post já está na lista local
+        const isPostInList = articles.some((art) => art.id === id);
+        
+        if (isPostInList) {
+          // Se estiver, só atualiza as views
+          setArticles((prev) => prev.map((art) => (art.id === id ? updated : art)));
+        } else {
+          // Se NÃO estiver (como o Marco Zero no destaque), adiciona ao estado
+          // para que o ArticlePage consiga encontrá-lo
+          setArticles((prev) => [updated, ...prev]);
+        }
+
+        // Se o post aberto for o destaque, atualiza o estado do destaque também
         if (featured?.id === id) {
           setFeatured(updated);
         }
       } catch (err) {
         handleErr(err);
       }
+      
+      // 3. Avisa o App.jsx para mudar de tela
       onOpen?.(id);
     },
-    [onOpen, handleErr, featured]
+    [onOpen, handleErr, featured, articles] // Adicionado 'articles' nas dependências
   );
 
   const createArticle = useCallback(
