@@ -101,19 +101,19 @@
 ## 📌 Módulo 7: Estruturas de Dados Clássicas e Algoritmos (Ciência da Computação Aplicada)
 *Foco em fundamentos de computação, eficiência algorítmica, estruturas lineares/não-lineares e algoritmos de busca e ordenação.*
 
-* [ ] **Aula 31:** Arrays, Vetores e Alocação de Memória: Como os dados vivem na RAM e Complexidade de Espaço/Tempo (Big O)
+* [x] **Aula 31:** Arrays, Vetores e Alocação de Memória: Como os dados vivem na RAM e Complexidade de Espaço/Tempo (Big O)
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 32:** Estruturas Lineares I: Pilhas (Stacks), Filas (Queues) e Deques (Implementações e Aplicações Práticas)
+* [x] **Aula 32:** Estruturas Lineares I: Pilhas (Stacks), Filas (Queues) e Deques (Implementações e Aplicações Práticas)
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 33:** Estruturas Lineares II: Listas Encadeadas (*Linked Lists*): Simples, Duplamente Encadeadas e Ponteiros
+* [x] **Aula 33:** Estruturas Lineares II: Listas Encadeadas (*Linked Lists*): Simples, Duplamente Encadeadas e Ponteiros
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 34:** Árvores e Grafos I: Árvores Binárias de Busca (BST), Árvores AVL e Algoritmos de Percurso
+* [x] **Aula 34:** Árvores e Grafos I: Árvores Binárias de Busca (BST), Árvores AVL e Algoritmos de Percurso
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 35:** Algoritmos de Busca: Busca Linear, Busca Binária e Aplicações de Espalhamento (Hashing)
+* [x] **Aula 35:** Algoritmos de Busca: Busca Linear, Busca Binária e Aplicações de Espalhamento (Hashing)
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 36:** Algoritmos de Ordenação Elementares: Bubble Sort, Selection Sort e Insertion Sort (Mecânica e Big O)
+* [x] **Aula 36:** Algoritmos de Ordenação Elementares: Bubble Sort, Selection Sort e Insertion Sort (Mecânica e Big O)
   * *Tipo:* Tutorial | *Modo:* Fast
-* [ ] **Aula 37:** Algoritmos de Ordenação Avançados: Merge Sort, Quick Sort e o Timsort (O algoritmo nativo do Python)
+* [x] **Aula 37:** Algoritmos de Ordenação Avançados: Merge Sort, Quick Sort e o Timsort (O algoritmo nativo do Python)
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 
 ---
