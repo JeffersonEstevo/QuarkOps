@@ -87,13 +87,13 @@
 
 * [x] **Aula 26:** Estruturas de Dados Avançadas da Biblioteca Padrão: `collections` (`deque`, `Counter`, `defaultdict`) e `itertools`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 27:** Manipulação Profissional de Datas e Fusos Horários com `datetime` e `zoneinfo`
+* [x] **Aula 27:** Manipulação Profissional de Datas e Fusos Horários com `datetime` e `zoneinfo`
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 28:** Construção de APIs Modernas e Assíncronas com FastAPI e Validação via Pydantic
+* [x] **Aula 28:** Construção de APIs Modernas e Assíncronas com FastAPI e Validação via Pydantic
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 29:** Bancos de Dados Relacionais com SQLAlchemy (Core/ORM) e Migrações com Alembic
+* [x] **Aula 29:** Bancos de Dados Relacionais com SQLAlchemy (Core/ORM) e Migrações com Alembic
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 30:** Docker para Desenvolvedores Python: Empacotamento, Ambientes e Multi-stage Builds
+* [x] **Aula 30:** Docker para Desenvolvedores Python: Empacotamento, Ambientes e Multi-stage Builds
   * *Tipo:* Artigo | *Modo:* Contextualizado
 
 ---
