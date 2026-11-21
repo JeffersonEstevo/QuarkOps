@@ -85,7 +85,7 @@
 ## 📌 Módulo 6: Ecossistema Web, Bancos de Dados e Docker (Engenharia Aplicada)
 *Foco em construir aplicações reais, lidar com persistência de dados e conteinerização.*
 
-* [ ] **Aula 26:** Estruturas de Dados Avançadas da Biblioteca Padrão: `collections` (`deque`, `Counter`, `defaultdict`) e `itertools`
+* [x] **Aula 26:** Estruturas de Dados Avançadas da Biblioteca Padrão: `collections` (`deque`, `Counter`, `defaultdict`) e `itertools`
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 * [ ] **Aula 27:** Manipulação Profissional de Datas e Fusos Horários com `datetime` e `zoneinfo`
   * *Tipo:* Tutorial | *Modo:* Standard
