@@ -137,15 +137,15 @@
 ## 📌 Módulo 9: Inteligência Artificial e Machine Learning com Python
 *Foco em manipulação de dados, machine learning clássico, deep learning e engenharia de IA generativa.*
 
-* [ ] **Aula 43:** Fundamentos de Ciência de Dados: Manipulação Eficiente com NumPy, Pandas e Visualização com Matplotlib/Seaborn
+* [x] **Aula 43:** Fundamentos de Ciência de Dados: Manipulação Eficiente com NumPy, Pandas e Visualização com Matplotlib/Seaborn
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 44:** Machine Learning Clássico com Scikit-Learn: Algoritmos de Regressão, Classificação, Validação Cruzada e Métricas
+* [x] **Aula 44:** Machine Learning Clássico com Scikit-Learn: Algoritmos de Regressão, Classificação, Validação Cruzada e Métricas
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 45:** Deep Learning e Redes Neurais com PyTorch: Tensores, Otimizadores, Camadas Convolucionais e Treinamento
+* [x] **Aula 45:** Deep Learning e Redes Neurais com PyTorch: Tensores, Otimizadores, Camadas Convolucionais e Treinamento
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 46:** Ecossistema de IA Generativa e LLMs: Hugging Face, LangChain, LlamaIndex e Integração com APIs de Modelos
+* [x] **Aula 46:** Ecossistema de IA Generativa e LLMs: Hugging Face, LangChain, LlamaIndex e Integração com APIs de Modelos
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 47:** Arquiteturas de RAG (*Retrieval-Augmented Generation*) e Fine-Tuning: Conectando Dados Privados a LLMs e Vetorização
+* [x] **Aula 47:** Arquiteturas de RAG (*Retrieval-Augmented Generation*) e Fine-Tuning: Conectando Dados Privados a LLMs e Vetorização
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 
 ## 📌 Módulo 10: Ecossistema de Bibliotecas Essenciais e Utilitários do Python
