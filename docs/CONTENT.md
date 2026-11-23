@@ -121,15 +121,15 @@
 ## 📌 Módulo 8: Arquitetura, Engenharia de Software e Qualidade Avançada
 *Foco em padrões de projeto, segurança, observabilidade e processamento de alta performance para ambientes corporativos.*
 
-* [ ] **Aula 38:** Princípios SOLID Aplicados a Python: Escrevendo Código Extensível e de Baixo Acoplamento
+* [x] **Aula 38:** Princípios SOLID Aplicados a Python: Escrevendo Código Extensível e de Baixo Acoplamento
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 39:** Padrões de Projeto (*Design Patterns*) em Python: Criacionais, Estruturais e Comportamentais Idiomáticos
+* [x] **Aula 39:** Padrões de Projeto (*Design Patterns*) em Python: Criacionais, Estruturais e Comportamentais Idiomáticos
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 40:** Segurança em Aplicações Python: Gestão de Segredos, Criptografia, Hashing de Senhas e OAuth2/JWT
+* [x] **Aula 40:** Segurança em Aplicações Python: Gestão de Segredos, Criptografia, Hashing de Senhas e OAuth2/JWT
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 41:** Observabilidade em Produção: Logging Estruturado, Rastreamento de Erros e Telemetria com OpenTelemetry
+* [x] **Aula 41:** Observabilidade em Produção: Logging Estruturado, Rastreamento de Erros e Telemetria com OpenTelemetry
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 42:** Processamento de Dados de Alta Performance: Otimização com Polars/Pandas, Evitando Gargalos e Computação Assíncrona com Celery
+* [x] **Aula 42:** Processamento de Dados de Alta Performance: Otimização com Polars/Pandas, Evitando Gargalos e Computação Assíncrona com Celery
   * *Tipo:* Tutorial | *Modo:* Deep Dive
 
 ---
