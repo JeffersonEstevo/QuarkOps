@@ -151,21 +151,21 @@
 ## 📌 Módulo 10: Ecossistema de Bibliotecas Essenciais e Utilitários do Python
 *Foco no domínio das bibliotecas mais poderosas da linguagem para automação, computação científica, manipulação de arquivos e visão computacional.*
 
-* [ ] **Aula 48:** Automação de Sistema e Arquivos com `shutil`, `pathlib` e `os`: Manipulação Avançada de Diretórios e Processos do SO
+* [x] **Aula 48:** Automação de Sistema e Arquivos com `shutil`, `pathlib` e `os`: Manipulação Avançada de Diretórios e Processos do SO
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 49:** Computação Simbólica e Álgebra com `SymPy`: Resolvendo Equações, Derivadas e Integrais de Forma Exata
+* [x] **Aula 49:** Computação Simbólica e Álgebra com `SymPy`: Resolvendo Equações, Derivadas e Integrais de Forma Exata
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 50:** Visualização Estatística Avançada com `Seaborn`: Gráficos de Distribuição, Correlação e Estética de Dados
+* [x] **Aula 50:** Visualização Estatística Avançada com `Seaborn`: Gráficos de Distribuição, Correlação e Estética de Dados
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 51:** Visão Computacional e Processamento de Imagens com `OpenCV`: Filtros, Detecção de Bordas e Manipulação de Frames
+* [x] **Aula 51:** Visão Computacional e Processamento de Imagens com `OpenCV`: Filtros, Detecção de Bordas e Manipulação de Frames
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 52:** Utilitários de Alta Produtividade: `requests` (Requisições HTTP), `Pillow` (Processamento de Imagens) e `BeautifulSoup` (Web Scraping)
+* [x] **Aula 52:** Utilitários de Alta Produtividade: `requests` (Requisições HTTP), `Pillow` (Processamento de Imagens) e `BeautifulSoup` (Web Scraping)
   * *Tipo:* Tutorial | *Modo:* Fast
-* [ ] **Aula 53:** Processamento de Linguagem Natural (NLP) e Extração de Texto com `NLTK` e `spaCy`: Tokenização, Lemmatização e Named Entity Recognition (NER)
+* [x] **Aula 53:** Processamento de Linguagem Natural (NLP) e Extração de Texto com `NLTK` e `spaCy`: Tokenização, Lemmatização e Named Entity Recognition (NER)
   * *Tipo:* Tutorial | *Modo:* Standard
-* [ ] **Aula 54:** Interface Gráfica e Desktop com `Tkinter`, `CustomTkinter` e `PyQt`/`PySide`: Construindo Aplicações de Desktop Nativas
+* [x] **Aula 54:** Interface Gráfica e Desktop com `Tkinter`, `CustomTkinter` e `PyQt`/`PySide`: Construindo Aplicações de Desktop Nativas
   * *Tipo:* Tutorial | *Modo:* Deep Dive
-* [ ] **Aula 55:** Manipulação de Arquivos de Escritório e PDF com `openpyxl`, `python-docx` e `PyPDF2`/`pypdf`: Automação de Planilhas Excel, Word e Relatórios
+* [x] **Aula 55:** Manipulação de Arquivos de Escritório e PDF com `openpyxl`, `python-docx` e `PyPDF2`/`pypdf`: Automação de Planilhas Excel, Word e Relatórios
   * *Tipo:* Tutorial | *Modo:* Fast
-* [ ] **Aula 56:** Criação de Dashboards Interativos com `Streamlit` e `Plotly`: Transformando Scripts em Web Apps de Dados Rapidamente
+* [x] **Aula 56:** Criação de Dashboards Interativos com `Streamlit` e `Plotly`: Transformando Scripts em Web Apps de Dados Rapidamente
   * *Tipo:* Tutorial | *Modo:* Standard
