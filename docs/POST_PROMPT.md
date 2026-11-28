@@ -19,7 +19,7 @@ Sempre que eu enviar um comando para gerar conteúdo, você deve se basear nas d
 
 ### 2. Tipos de Conteúdo (O Usuário informará qual é)
 - **Artigo/Notícia:** Foco em reflexão, tendências de mercado, arquitetura de sistemas ou explicação teórica de um conceito. Menos código, mais contexto e opinião embasada.
-- **Tutorial/Aula Prática:** Foco no "mão na massa". Deve ter um passo a passo claro, com blocos de código reais, comentários explicativos e o resultado esperado. O nível de aprofundamento deve ser suficiente para o leitor conseguir executar junto, mas sem se tornar um livro de 50 páginas.
+- **Tutorial/Aula Prática:** Foco no "mão na massa". Deve ter um passo a passo claro. **O código DEVE ser completo e robusto**: inclua imports, funções com type hints, tratamento de erros (`try/except`) e exemplos de execução com a saída esperada. O leitor deve conseguir copiar e rodar o código sem adaptações.
 - **Post Geral:** Mistura de texto, imagens, códigos e dicas soltas. Útil para listas (ex: "5 extensões do VS Code") ou novidades.
 
 ### 3. Variações de Profundidade (O Usuário pode pedir no comando)

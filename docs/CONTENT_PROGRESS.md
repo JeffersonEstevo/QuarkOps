@@ -28,15 +28,15 @@ Este documento rastreia a atualização dos conteúdos da trilha de Python para 
 ## 📌 Módulo 2: Estruturas de Dados e Organização
 *Foco: Listas, Tuplas, Dicionários, Sets, Funções e Escopo.*
 
-- [ ] **Aula 06:** Listas e Tuplas: Métodos, Fatiamento (Slicing) e Desempacotamento
+- [x] **Aula 06:** Listas e Tuplas: Métodos, Fatiamento (Slicing) e Desempacotamento
   * *Foco da melhoria:* Under the Hood da alocação contígua, imutabilidade das tuplas, unpacking com asterisco.
-- [ ] **Aula 07:** Dicionários e Conjuntos (Sets): Tabelas Hash por dentro
+- [x] **Aula 07:** Dicionários e Conjuntos (Sets): Tabelas Hash por dentro
   * *Foco da melhoria:* Como a função hash funciona O(1), colisões, `defaultdict` e `Counter`.
-- [ ] **Aula 08:** Compreensões de Listas, Dicionários e Sets
+- [x] **Aula 08:** Compreensões de Listas, Dicionários e Sets
   * *Foco da melhoria:* Performance vs loops tradicionais, legibilidade, quando *não* usar compreensões.
-- [ ] **Aula 09:** Funções I: Parâmetros Posicionais, Nomeados, `*args` e `**kwargs`
+- [x] **Aula 09:** Funções I: Parâmetros Posicionais, Nomeados, `*args` e `**kwargs`
   * *Foco da melhoria:* Ordem de definição, flexibilidade, desempacotamento de argumentos na chamada.
-- [ ] **Aula 10:** Funções II: Escopo de Variáveis (LEGB), Funções Anônimas (`lambda`) e *Closures*
+- [x] **Aula 10:** Funções II: Escopo de Variáveis (LEGB), Funções Anônimas (`lambda`) e *Closures*
   * *Foco da melhoria:* Regra LEGB, escopo global vs local, closures e como eles permitem funções fábrica.
 
 ---
